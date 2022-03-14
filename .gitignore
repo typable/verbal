@@ -1,0 +1,9 @@
+node_modules/
+target/
+_/
+www/asset/font/
+
+config.ron
+package-lock.json
+Cargo.lock
+www/asset/css/style.css

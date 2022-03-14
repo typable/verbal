@@ -1,0 +1,75 @@
+{
+
+    "en": {
+
+        "global.none": "-",
+        "global.search": "Search",
+        "global.favorites": "Favorites",
+        "global.account": "Account",
+        "global.like": "Like",
+        "global.unlike": "Unlike",
+        "global.play": "Play",
+        "global.pause": "Pause",
+        "global.country": "Country",
+        "global.votes": "Votes",
+        "global.trend": "Trend",
+        "global.clicks": "Clicks",
+        "global.languages": "Languages",
+        "global.state": "State",
+        "global.playback-history": "Playback History",
+
+        "player.loading": "Loading...",
+        "player.no-song-title": "- No song title available -",
+
+        "search.input.placeholder": "Search for station",
+        "search.list.end": "You've reached the end",
+
+        "account.settings": "Settings",
+        "account.username": "Username",
+        "account.username.info": "This is your primary account name which is visible to everyone",
+        "account.language": "Language",
+        "account.language.info": "The default language for the app interface",
+        "account.player": "Player",
+        "account.playback-history": "Show Playback History",
+        "account.playback-history.info": "Displays the recently played songs for the current station",
+        "account.devices": "Devices"
+
+    },
+
+    "de": {
+
+        "global.none": "-",
+        "global.search": "Suche",
+        "global.favorites": "Favoriten",
+        "global.account": "Konto",
+        "global.like": "Mag ich",
+        "global.unlike": "Mag ich nicht",
+        "global.play": "Abspielen",
+        "global.pause": "Pausieren",
+        "global.country": "Land",
+        "global.votes": "Bewertung",
+        "global.trend": "Trend",
+        "global.clicks": "Aufrufe",
+        "global.languages": "Sprachen",
+        "global.state": "Bundesland",
+        "global.playback-history": "Wiedergabeverlauf",
+
+        "player.loading": "Laden...",
+        "player.no-song-title": "- Song Titel nicht verfügbar -",
+
+        "search.input.placeholder": "Suche nach Sender",
+        "search.list.end": "Du hast das Ende erreicht",
+
+        "account.settings": "Einstellungen",
+        "account.username": "Nutzername",
+        "account.username.info": "Dies ist Ihr primärer Kontoname, der von allen gesehen werden kann",
+        "account.language": "Sprache",
+        "account.language.info": "Die Standardsprache für die Benutzeroberfläche",
+        "account.player": "Wiedergabe",
+        "account.playback-history": "Wiedergabeverlauf anzeigen",
+        "account.playback-history.info": "Zeigt die zuletzt gespielten Songs für den aktuellen Sender an",
+        "account.devices": "Geräte"
+
+    }
+
+}

@@ -1,0 +1,17 @@
+[package]
+name = "verbal"
+version = "0.0.3-dev"
+edition = "2018"
+
+[dependencies]
+ron = "*"
+tide = "*"
+rand = "*"
+surf = "*"
+regex = "*"
+tide-sqlx = "*"
+serde_json = "*"
+tide-compress = "*"
+serde = { version = "*", features = ["derive"] }
+async-std = { version = "*", features = ["attributes", "tokio1"] }
+sqlx = { version = "*", features = ["runtime-async-std-rustls", "postgres"] }
