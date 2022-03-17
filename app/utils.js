@@ -13,20 +13,28 @@ export function http(parts, ...values) {
     const line = ltr(parts, values).trim();
     const regex = /^(\w+)::([\w\/.]*)$/;
     const [, method, path] = line.match(regex) ?? [];
-    return (body) => {
+    return (data) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const headers = {
                     'content-type': 'application/json',
                 }
-                const deviceToken = localStorage.getItem('verbal.device_token');
+                const deviceToken = localStorage.getItem('verbal-token');
                 if(deviceToken) {
-                    headers['verbal-device-token'] = deviceToken;
+                    headers['verbal-token'] = deviceToken;
                 }
-                const response = await fetch(window.location.origin + path, {
+                let body = null;
+                let params = '';
+                if(method === 'get' || method === 'head') {
+                    params = '?' + new URLSearchParams(data).toString();
+                }
+                else {
+                    body = JSON.stringify(data);
+                }
+                const response = await fetch(window.location.origin + path + params, {
                     method,
                     headers,
-                    body: JSON.stringify(body)
+                    body
                 });
                 resolve(await response.json());
             }
@@ -40,5 +48,5 @@ export function http(parts, ...values) {
 const locale = await http`get::/asset/json/locale.json`();
 
 export function $lang(id) {
-    return locale[state.locale ?? 'en'][id];
+    return locale[state.account?.language ?? 'en'][id];
 }

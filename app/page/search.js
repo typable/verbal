@@ -1,4 +1,4 @@
-import {$lang} from '../utils.js';
+import {$lang, http} from '../utils.js';
 import VIcon from '../element/icon.js';
 import VPlayer from '../component/player.js';
 import VTab from '../component/tab.js';
@@ -14,7 +14,7 @@ export default {
             },
             results: [],
             loading: false,
-            more: false
+            more: true
         };
     },
     components: {
@@ -24,7 +24,16 @@ export default {
         VStation
     },
     methods: {
-        $lang
+        $lang,
+        async doSearch() {
+            this.loading = true;
+            const result = await http`get::/api/search`(this.query);
+            this.loading = false;
+            this.results = result.data;
+        }
+    },
+    mounted() {
+        this.doSearch();
     },
     template: `
         <v-tab id="search" :tab="state.tab">
@@ -40,6 +49,7 @@ export default {
                 <li
                     :key="station.id"
                     v-for="station in results"
+                    class="border-t sm:border-t-2 first:border-none border-zinc-900 py-5 first:pt-0"
                 >
                     <v-station :station="station"></v-station>
                 </li>
@@ -59,7 +69,7 @@ export default {
                 v-if="!more && results.length > 0"
                 class="text-zinc-400 text-md mx-auto pb-6"
             >
-                {{$('search.list.end')}}
+                {{$lang('search.list.end')}}
             </div>
         </v-tab>
     `

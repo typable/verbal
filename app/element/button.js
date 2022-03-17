@@ -18,7 +18,8 @@ export default {
             <v-icon
                 v-if="icon"
                 :id="icon"
-                :class="[ active ? 'bg-gray-100' : 'bg-gray-400', animation ]"
+                :class="[ active ? 'bg-gray-100' : 'bg-gray-400', text ? 'group-hover:bg-gray-700' : '', animation ]"
+                class="hover:bg-gray-700"
             ></v-icon>
             <slot v-else></slot>
             <p

@@ -4,11 +4,15 @@ import VFavorites from './page/favorites.js';
 import VAccount from './page/account.js';
 
 export const state = {
-    locale: 'en',
     tab: 'search',
+    account: {
+        username: 'typable',
+        language: 'en'
+    },
     station: {
         name: 'Liquid Trap',
-        favicon: 'https://cdn-images.audioaddict.com/6/b/5/b/d/6/6b5bd66a99e46fa1258cb565d988ea7c.jpg'
+        favicon: 'https://cdn-images.audioaddict.com/6/b/5/b/d/6/6b5bd66a99e46fa1258cb565d988ea7c.jpg',
+        is_favorite: true
     }
 };
 

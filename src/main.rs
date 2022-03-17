@@ -129,7 +129,9 @@ async fn main() -> tide::Result<()> {
         for station_id in station_ids {
             for adapter in &adapters {
                 if adapter.stationuuid == station_id {
-                    stations.push(adapter.clone().populate(Station::default()));
+                    let mut station = Station::default();
+                    station.is_favorite = true;
+                    stations.push(adapter.clone().populate(station));
                 }
             }
         }
@@ -186,12 +188,12 @@ async fn main() -> tide::Result<()> {
     });
 
     /* search */
-    app.at("/api/search").get(|mut req: tide::Request<State>| async move {
+    app.at("/api/search").get(|req: tide::Request<State>| async move {
         let account = match identify(&req).await {
             Ok(model) => model,
             Err(err) => return Response::throw(err),
         };
-        let inner = match req.body_json::<Search>().await {
+        let inner = match req.query::<Search>() {
             Ok(inner) => inner,
             Err(err) => return Response::throw(Error::new(ErrorKind::Arguments, &err.to_string())),
         };

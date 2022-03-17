@@ -13,7 +13,7 @@ export default {
     template: `
         <div
             :style="styles"
-            class="min-w-[50px] h-full group-hover:bg-gray-700 transition-colors"
+            class="min-w-[50px] h-full transition-colors"
             :class="classes"
         ></div>
     `

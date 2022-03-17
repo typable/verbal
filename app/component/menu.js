@@ -27,7 +27,7 @@ export default {
                     ></v-button>
                 </div>
                 <v-button
-                    text="typable"
+                    :text="state.account.username"
                     icon="user"
                     :title="$lang('global.account')"
                     :active="state.tab === 'account'"

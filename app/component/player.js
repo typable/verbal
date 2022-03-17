@@ -44,6 +44,7 @@ export default {
                             v-else
                             id="access-point"
                             size="65%"
+                            class="bg-gray-400"
                         ></v-icon>
                     </div>
                     <div
