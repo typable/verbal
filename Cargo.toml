@@ -15,3 +15,11 @@ tide-compress = "*"
 serde = { version = "*", features = ["derive"] }
 async-std = { version = "*", features = ["attributes", "tokio1"] }
 sqlx = { version = "*", features = ["runtime-async-std-rustls", "postgres"] }
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
+[[bin]]
+name = "import"
+path = "src/import.rs"
