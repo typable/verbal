@@ -24,7 +24,7 @@ export default {
             this.loading = true;
             const result = await http`get::/api/favorite`();
             this.loading = false;
-            this.results = result.data;
+            this.results = result;
         }
     },
     mounted() {

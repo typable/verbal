@@ -13,7 +13,7 @@ export function http(parts, ...values) {
     const line = ltr(parts, values).trim();
     const regex = /^(\w+)::([\w\/.]*)$/;
     const [, method, path] = line.match(regex) ?? [];
-    return (data) => {
+    return (query) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const headers = {
@@ -26,17 +26,27 @@ export function http(parts, ...values) {
                 let body = null;
                 let params = '';
                 if(method === 'get' || method === 'head') {
-                    params = '?' + new URLSearchParams(data).toString();
+                    params = '?' + new URLSearchParams(query).toString();
                 }
                 else {
-                    body = JSON.stringify(data);
+                    body = JSON.stringify(query);
                 }
                 const response = await fetch(window.location.origin + path + params, {
                     method,
                     headers,
                     body
                 });
-                resolve(await response.json());
+                const json = await response.json();
+                const {ok, data, error} = json;
+                if(ok === undefined) {
+                    resolve(json);
+                    return;
+                }
+                if(!ok) {
+                    reject(`[${error.kind}] ${error.message}`);
+                    return;
+                }
+                resolve(data);
             }
             catch(error) {
                 reject(error);

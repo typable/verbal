@@ -29,7 +29,7 @@ export default {
             this.loading = true;
             const result = await http`get::/api/search`(this.query);
             this.loading = false;
-            this.results = result.data;
+            this.results = result;
         }
     },
     mounted() {
@@ -44,6 +44,8 @@ export default {
                 type="text"
                 :placeholder="$lang('search.input.placeholder')"
                 class="w-full h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none"
+                spellcheck="false"
+                autocomplete="off"
             >
             <ul class="flex flex-col">
                 <li

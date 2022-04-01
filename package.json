@@ -1,6 +1,6 @@
 {
   "scripts": {
-      "build": "npx tailwindcss -i ./www/asset/css/input.css -o ./www/asset/css/style.css --minify"
+    "build": "npx tailwindcss -i ./www/asset/css/input.css -o ./www/asset/css/style.css --minify"
   },
   "devDependencies": {
     "tailwindcss": "^3.0.23"
