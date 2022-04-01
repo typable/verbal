@@ -23,3 +23,7 @@ path = "src/main.rs"
 [[bin]]
 name = "import"
 path = "src/import.rs"
+
+[[bin]]
+name = "test"
+path = "src/test.rs"

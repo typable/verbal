@@ -5,8 +5,9 @@ use regex::Regex;
 use rand::{distributions::Alphanumeric, Rng};
 
 use verbal::model::Query;
-use verbal::adapter::Adapter;
 use verbal::Utils;
+
+use crate::adapter::Adapter;
 
 #[derive(Debug, Deserialize, Serialize, FromRow)]
 pub struct Account {

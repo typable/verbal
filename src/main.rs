@@ -8,11 +8,16 @@ use tide_compress::CompressMiddleware;
 
 use verbal::Config;
 use verbal::model::Model;
-use verbal::adapter::Adapter;
 use verbal::middleware::CorsMiddleware;
-use verbal::{State, Response, Error, ErrorKind};
+use verbal::{State, Response};
 
+mod common;
+mod error;
+mod adapter;
 mod models;
+
+use error::{Error, ErrorKind};
+use adapter::Adapter;
 use models::{Account, Favorite, Search, Code, Station, StationAdapter};
 
 #[async_std::main]

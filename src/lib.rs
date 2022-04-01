@@ -1,10 +1,9 @@
 use std::fmt::Display;
-use serde::{ Serialize};
+use serde::Serialize;
 
 mod config;
 
 pub mod model;
-pub mod adapter;
 pub mod middleware;
 
 pub use config::Config;
@@ -28,27 +27,6 @@ pub struct State {
 impl State {
     pub fn new(config: Config) -> Self {
         Self { config }
-    }
-}
-
-#[derive(Debug, Serialize)]
-pub enum ErrorKind {
-    Identity,
-    Arguments,
-    Query,
-    Fetch,
-    Parse,
-}
-
-#[derive(Debug, Serialize)]
-pub struct Error {
-    kind: ErrorKind,
-    message: String,
-}
-
-impl Error {
-    pub fn new(kind: ErrorKind, message: &str) -> Self {
-        Self { kind, message: message.into() }
     }
 }
 

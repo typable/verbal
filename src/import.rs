@@ -1,9 +1,11 @@
 use surf;
 use sqlx::postgres::PgPool;
 
-use verbal::adapter::Adapter;
-
+mod common;
+mod adapter;
 mod models;
+
+use adapter::Adapter;
 use models::{Station, StationAdapter};
 
 trait IntoInsert {
