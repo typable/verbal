@@ -1,34 +1,4 @@
-use std::fmt::Display;
 use serde::Serialize;
-
-mod config;
-
-pub mod model;
-pub mod middleware;
-
-pub use config::Config;
-
-pub struct Utils {}
-
-impl Utils {
-    pub fn null<T>(value: &Option<T>) -> String where T: Display {
-        match value {
-            Some(value) => format!("'{}'", &value),
-            None => "NULL".to_string(),
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct State {
-    pub config: Config,
-}
-
-impl State {
-    pub fn new(config: Config) -> Self {
-        Self { config }
-    }
-}
 
 #[derive(Debug, Serialize)]
 pub struct Response<T, E> {

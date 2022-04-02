@@ -9,8 +9,9 @@ tide = "*"
 rand = "*"
 surf = "*"
 regex = "*"
-tide-sqlx = "*"
+diesel = { version = "*", features = ["postgres"] }
 serde_json = "*"
+tide-diesel = "*"
 tide-compress = "*"
 serde = { version = "*", features = ["derive"] }
 async-std = { version = "*", features = ["attributes", "tokio1"] }
@@ -19,10 +20,6 @@ sqlx = { version = "*", features = ["runtime-async-std-rustls", "postgres"] }
 [[bin]]
 name = "main"
 path = "src/main.rs"
-
-[[bin]]
-name = "import"
-path = "src/import.rs"
 
 [[bin]]
 name = "test"

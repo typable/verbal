@@ -1,5 +1,6 @@
 use std::fs;
-use serde::{Deserialize};
+use std::fmt;
+use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Server {
@@ -7,9 +8,10 @@ pub struct Server {
     pub port: i32,
 }
 
-impl ToString for Server {
-    fn to_string(&self) -> String {
-        format!(
+impl fmt::Display for Server {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
             "{}:{}",
             self.hostname,
             self.port,
@@ -26,10 +28,11 @@ pub struct Database {
     pub database: String,
 }
 
-impl ToString for Database {
-    fn to_string(&self) -> String {
-        format!(
-            "postgressql://{}:{}@{}:{}/{}?sslmode=disable",
+impl fmt::Display for Database {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "postgres://{}:{}@{}:{}/{}?sslmode=disable",
             self.username,
             self.password,
             self.hostname,
@@ -42,7 +45,6 @@ impl ToString for Database {
 #[derive(Debug, Clone, Deserialize)]
 pub struct Options {
     pub origin: String,
-    pub api_url: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]

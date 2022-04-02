@@ -1,12 +1,30 @@
-mod common;
-mod error;
-mod backend;
-mod adapter;
+#[macro_use]
+extern crate diesel;
 
-use backend::api::{RadioBrowserApi, Search};
+use diesel::prelude::*;
+use diesel::pg::PgConnection;
+
+mod utils;
+mod error;
+mod api;
+mod adapter;
+mod models;
+mod schema;
+
+use models::*;
+use schema::account::dsl::*;
+use api::{RadioBrowserApi, Search};
 
 #[async_std::main]
 async fn main() {
+    let database_url = "postgres://typable:De24Si98@192.168.2.3:9748/verbal";
+    let conn = PgConnection::establish(&database_url)
+        .expect("Unable to connect to database!");
+    let results = account.load::<Account>(&conn)
+        .expect("Unable to load model!");
+    for item in results {
+        println!("{:?}", item);
+    }
     let mut search = Search::default();
     search.name = "bbc".into();
     match RadioBrowserApi::search(search).await {

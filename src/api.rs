@@ -1,8 +1,9 @@
+use std::fmt;
 use serde::{Deserialize, Serialize};
 
-use crate::common::Station;
 use crate::error::{Result, Error, ErrorKind};
-use crate::adapter::{Adapter, StationAdapter};
+use crate::models::Station;
+use crate::adapter::StationAdapter;
 
 const API_URLS: [&str; 3] = [
     "https://de1.api.radio-browser.info",
@@ -16,16 +17,15 @@ pub struct Search {
     pub page: Option<i64>,
 }
 
-impl Search {
-
-    pub fn into_query(&self) -> String {
-        format!(
+impl fmt::Display for Search {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
             "name={}&offset={}&limit=10&order=votes&reverse=true&hidebroken=true",
             &self.name,
             &self.page.unwrap_or(0) * 10,
         )
     }
-
 }
 
 pub struct RadioBrowserApi;
@@ -38,7 +38,7 @@ impl RadioBrowserApi {
             let url = format!(
                 "{}/json/stations/search?{}",
                 &api_url,
-                &search.into_query(),
+                &search,
             );
             match surf::get(&url).await {
                 Ok(response) => {
@@ -57,10 +57,8 @@ impl RadioBrowserApi {
             Err(err) => return Err(Error::new(ErrorKind::Parse, &err.to_string())),
         };
         let mut stations = vec![];
-        for adapter in &adapters {
-            stations.push(
-                adapter.clone().populate(Station::default())
-            );
+        for adapter in adapters {
+            stations.push(adapter.into());
         }
         Ok(stations)
     }
