@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
-use crate::utils::{to_array, upgrade_to_https};
 use crate::models::Station;
+use crate::utils::{to_array, upgrade_to_https};
 
 #[derive(Debug, Deserialize)]
 pub struct StationAdapter {

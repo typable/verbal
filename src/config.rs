@@ -1,6 +1,6 @@
-use std::fs;
-use std::fmt;
 use serde::Deserialize;
+use std::fmt;
+use std::fs;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Server {
@@ -10,12 +10,7 @@ pub struct Server {
 
 impl fmt::Display for Server {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "{}:{}",
-            self.hostname,
-            self.port,
-        )
+        write!(f, "{}:{}", self.hostname, self.port,)
     }
 }
 
@@ -33,11 +28,7 @@ impl fmt::Display for Database {
         write!(
             f,
             "postgres://{}:{}@{}:{}/{}?sslmode=disable",
-            self.username,
-            self.password,
-            self.hostname,
-            self.port,
-            self.database,
+            self.username, self.password, self.hostname, self.port, self.database,
         )
     }
 }

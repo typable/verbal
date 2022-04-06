@@ -1,26 +1,26 @@
 #[macro_use]
 extern crate diesel;
 
-use diesel::prelude::*;
 use diesel::pg::PgConnection;
+use diesel::prelude::*;
 
-mod utils;
-mod error;
-mod api;
 mod adapter;
+mod api;
+mod error;
 mod models;
 mod schema;
+mod utils;
 
+use api::{RadioBrowserApi, Search};
 use models::*;
 use schema::account::dsl::*;
-use api::{RadioBrowserApi, Search};
 
 #[async_std::main]
 async fn main() {
     let database_url = "postgres://typable:De24Si98@192.168.2.3:9748/verbal";
-    let conn = PgConnection::establish(&database_url)
-        .expect("Unable to connect to database!");
-    let results = account.load::<Account>(&conn)
+    let conn = PgConnection::establish(&database_url).expect("Unable to connect to database!");
+    let results = account
+        .load::<Account>(&conn)
         .expect("Unable to load model!");
     for item in results {
         println!("{:?}", item);

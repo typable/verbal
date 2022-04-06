@@ -7,6 +7,8 @@ pub struct State {
 
 impl State {
     pub fn new() -> Self {
-        Self { service: Service::new() }
+        Self {
+            service: Service::new(),
+        }
     }
 }

@@ -4,7 +4,9 @@ pub struct CorsMiddleware {
 
 impl CorsMiddleware {
     pub fn new(origin: &str) -> Self {
-        Self { origin: origin.into() }
+        Self {
+            origin: origin.into(),
+        }
     }
 }
 

@@ -43,8 +43,4 @@ joinable!(device -> account (account_id));
 joinable!(favorite -> account (account_id));
 joinable!(favorite -> station (station_id));
 
-allow_tables_to_appear_in_same_query!(
-    account,
-    device,
-    favorite,
-);
+allow_tables_to_appear_in_same_query!(account, device, favorite,);

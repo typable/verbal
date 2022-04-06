@@ -1,9 +1,9 @@
-use std::fmt;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
-use crate::error::{Result, Error, ErrorKind};
-use crate::models::Station;
 use crate::adapter::StationAdapter;
+use crate::error::{Error, ErrorKind, Result};
+use crate::models::Station;
 
 const API_URLS: [&str; 3] = [
     "https://de1.api.radio-browser.info",
@@ -31,20 +31,15 @@ impl fmt::Display for Search {
 pub struct RadioBrowserApi;
 
 impl RadioBrowserApi {
-
     pub async fn search(search: Search) -> Result<Vec<Station>> {
         let mut successful_response = None;
         for api_url in API_URLS {
-            let url = format!(
-                "{}/json/stations/search?{}",
-                &api_url,
-                &search,
-            );
+            let url = format!("{}/json/stations/search?{}", &api_url, &search,);
             match surf::get(&url).await {
                 Ok(response) => {
                     successful_response = Some(response);
                     break;
-                },
+                }
                 Err(err) => println!("{}", Error::new(ErrorKind::Fetch, &err.to_string())),
             }
         }
@@ -62,5 +57,4 @@ impl RadioBrowserApi {
         }
         Ok(stations)
     }
-
 }
