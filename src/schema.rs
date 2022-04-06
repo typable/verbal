@@ -30,3 +30,21 @@ table! {
         state -> Nullable<Text>,
     }
 }
+
+table! {
+    favorite (id) {
+        id -> Integer,
+        account_id -> Integer,
+        station_id -> Integer,
+    }
+}
+
+joinable!(device -> account (account_id));
+joinable!(favorite -> account (account_id));
+joinable!(favorite -> station (station_id));
+
+allow_tables_to_appear_in_same_query!(
+    account,
+    device,
+    favorite,
+);

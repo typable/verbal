@@ -1,9 +1,7 @@
 #[macro_use]
 extern crate diesel;
 
-use diesel::prelude::*;
 use tide_diesel::DieselMiddleware;
-use tide_diesel::DieselRequestExt;
 use tide_compress::CompressMiddleware;
 
 mod utils;
@@ -14,12 +12,16 @@ mod models;
 mod adapter;
 mod response;
 mod middleware;
+mod api;
+mod state;
+mod service;
 
+use error::ErrorKind;
 use config::Config;
-use models::*;
-use schema::account::dsl::account;
+use state::State;
 use response::Response;
-use middleware::CorsMiddleware;
+use middleware::{CorsMiddleware, AuthMiddleware};
+use api::Search;
 
 #[async_std::main]
 async fn main() -> tide::Result<()> {
@@ -27,7 +29,7 @@ async fn main() -> tide::Result<()> {
     let config = Config::from_file("./config.ron")
         .expect("Unable to parse config!");
 
-    let mut app = tide::new();
+    let mut app = tide::with_state(State::new());
 
     /* bind database middleware */
     app.with(DieselMiddleware::new(&config.database.to_string()).unwrap());
@@ -35,11 +37,14 @@ async fn main() -> tide::Result<()> {
     /* bind cors middleware */
     app.with(CorsMiddleware::new(&config.options.origin));
 
+    /* bind auth middleware */
+    app.with(AuthMiddleware::new());
+
     /* bind compression middleware */
     app.with(CompressMiddleware::new());
 
     /* handle prefetch */
-    app.at("*").options(|_: tide::Request<()>| async move {
+    app.at("*").options(|_: tide::Request<State>| async move {
         Ok(tide::Response::new(200))
     });
 
@@ -52,10 +57,17 @@ async fn main() -> tide::Result<()> {
     /* provide app */
     app.at("/app").serve_dir("app/")?;
 
-    app.at("/api").get(|req: tide::Request<()>| async move {
-        let conn = req.pg_conn().await?;
-        let results = account.load::<Account>(&conn)?;
-        Response::with(results)
+    app.at("/api/search").get(|req: tide::Request<State>| async move {
+        let state = req.state();
+        let search = match req.query::<Search>() {
+            Ok(query) => query,
+            Err(err) => return Response::throw(ErrorKind::Arguments, &err.to_string()),
+        };
+        let result = match state.service.search(search).await {
+            Ok(result) => result,
+            Err(err) => return Response::throw(ErrorKind::Fetch, &err.to_string()),
+        };
+        Response::with(result)
     });
 
     app.listen(&config.server.to_string()).await?;

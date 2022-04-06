@@ -12,8 +12,7 @@ pub fn upgrade_to_https(url: String) -> String {
         .unwrap()
         .is_match(&url)
         {
-            /* TODO: include in config struct */
-            return format!("https://api.radio.typable.dev/pass?redirect={}", &url);
+            return format!("https://verbal.fm/api/upgrade?redirect={}", &url);
         }
     url
 }
