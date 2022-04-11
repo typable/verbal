@@ -1,8 +1,8 @@
 /* ########## account ########## */
 CREATE TABLE account (
     id serial PRIMARY KEY,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone NOT NULL DEFAULT current_timestamp,
+    updated_at timestamp without time zone NOT NULL DEFAULT current_timestamp,
     username text,
     language character(2) DEFAULT 'en',
     is_playback_history boolean DEFAULT true
@@ -11,8 +11,8 @@ CREATE TABLE account (
 /* ########## device ########## */
 CREATE TABLE device (
     id serial PRIMARY KEY,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone NOT NULL DEFAULT current_timestamp,
+    updated_at timestamp without time zone NOT NULL DEFAULT current_timestamp,
     token text UNIQUE NOT NULL,
     account_id integer
 );
@@ -25,8 +25,9 @@ ALTER TABLE device
 /* ########## station ########## */
 CREATE TABLE station (
     id serial PRIMARY KEY,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    uuid TEXT UNIQUE,
+    created_at timestamp without time zone NOT NULL DEFAULT current_timestamp,
+    updated_at timestamp without time zone NOT NULL DEFAULT current_timestamp,
     "name" text NOT NULL,
     stream_url text NOT NULL,
     votes integer DEFAULT 0,
@@ -38,24 +39,19 @@ CREATE TABLE station (
     "state" text
 );
 
-/* ########## favorite ########## */
-CREATE TABLE favorite (
+/* ########## like ########## */
+CREATE TABLE "like" (
     id serial PRIMARY KEY,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone NOT NULL DEFAULT current_timestamp,
+    updated_at timestamp without time zone NOT NULL DEFAULT current_timestamp,
     station_id text NOT NULL,
     account_id integer NOT NULL
 );
 
-ALTER TABLE favorite
-    ADD CONSTRAINT favorite_account_id
+ALTER TABLE "like"
+    ADD CONSTRAINT like_account_id
     FOREIGN KEY (account_id)
     REFERENCES account(id);
-
-ALTER TABLE favorite
-    ADD CONSTRAINT favorite_station_id
-    FOREIGN KEY (station_id)
-    REFERENCES station(id);
 
 /* ########## code ########## */
 CREATE TABLE code (
