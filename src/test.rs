@@ -4,15 +4,16 @@ extern crate diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 
-mod adapter;
 mod api;
+mod data;
 mod error;
-mod models;
+mod model;
+mod rest;
 mod schema;
 mod utils;
 
 use api::{RadioBrowserApi, Search};
-use models::*;
+use model::*;
 use schema::account::dsl::*;
 
 #[async_std::main]

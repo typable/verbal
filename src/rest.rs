@@ -1,10 +1,10 @@
 use serde::Deserialize;
 
-use crate::models::Station;
+use crate::data;
 use crate::utils::{to_array, upgrade_to_https};
 
-#[derive(Debug, Deserialize)]
-pub struct StationAdapter {
+#[derive(Debug, Clone, Deserialize)]
+pub struct Station {
     pub stationuuid: String,
     pub name: String,
     pub url: String,
@@ -17,11 +17,9 @@ pub struct StationAdapter {
     pub state: String,
 }
 
-impl Into<Station> for StationAdapter {
-    fn into(self) -> Station {
-        Station {
-            id: 0,
-            uuid: self.stationuuid,
+impl Into<data::Station> for Station {
+    fn into(self) -> data::Station {
+        data::Station {
             name: self.name,
             stream_url: upgrade_to_https(self.url),
             votes: self.votes,
@@ -31,6 +29,7 @@ impl Into<Station> for StationAdapter {
             country: Some(self.countrycode),
             languages: to_array(self.languagecodes),
             state: Some(self.state),
+            is_favorite: false,
         }
     }
 }

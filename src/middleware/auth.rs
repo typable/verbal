@@ -2,10 +2,9 @@ use diesel::prelude::*;
 use tide_diesel::DieselRequestExt;
 
 use crate::error::ErrorKind;
-use crate::models::*;
+use crate::model;
 use crate::response::Response;
-use crate::schema::account;
-use crate::schema::device;
+use crate::schema;
 
 pub struct AuthMiddleware {}
 
@@ -33,9 +32,9 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for AuthMiddl
                 }
             };
             let conn = req.pg_conn().await?;
-            let identity: Option<(Account, Device)> = account::table
-                .inner_join(device::table)
-                .filter(device::dsl::token.eq(token))
+            let identity: Option<(model::Account, model::Device)> = schema::account::table
+                .inner_join(schema::device::table)
+                .filter(schema::device::dsl::token.eq(token))
                 .first(&conn)
                 .optional()?;
             if identity.is_none() {

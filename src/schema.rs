@@ -32,15 +32,14 @@ table! {
 }
 
 table! {
-    favorite (id) {
+    like (id) {
         id -> Integer,
         account_id -> Integer,
-        station_id -> Integer,
+        station_id -> Text,
     }
 }
 
 joinable!(device -> account (account_id));
-joinable!(favorite -> account (account_id));
-joinable!(favorite -> station (station_id));
+joinable!(like -> account (account_id));
 
-allow_tables_to_appear_in_same_query!(account, device, favorite,);
+allow_tables_to_appear_in_same_query!(account, device, like,);

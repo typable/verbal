@@ -1,9 +1,8 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::fmt;
 
-use crate::adapter::StationAdapter;
 use crate::error::{Error, ErrorKind, Result};
-use crate::models::Station;
+use crate::rest;
 
 const API_URLS: [&str; 3] = [
     "https://de1.api.radio-browser.info",
@@ -11,7 +10,7 @@ const API_URLS: [&str; 3] = [
     "https://nl1.api.radio-browser.info",
 ];
 
-#[derive(Debug, Default, Deserialize, Serialize)]
+#[derive(Debug, Default, Deserialize)]
 pub struct Search {
     pub name: String,
     pub page: Option<i64>,
@@ -31,10 +30,34 @@ impl fmt::Display for Search {
 pub struct RadioBrowserApi;
 
 impl RadioBrowserApi {
-    pub async fn search(search: Search) -> Result<Vec<Station>> {
+    pub async fn search(search: Search) -> Result<Vec<rest::Station>> {
+        let uri = format!("/json/stations/search?{}", &search);
+        let mut response = match RadioBrowserApi::fetch(&uri).await {
+            Ok(response) => response,
+            Err(err) => return Err(err),
+        };
+        match response.body_json::<Vec<rest::Station>>().await {
+            Ok(data) => Ok(data),
+            Err(err) => Err(Error::new(ErrorKind::Parse, &err.to_string())),
+        }
+    }
+
+    pub async fn by_uuids(uuids: Vec<String>) -> Result<Vec<rest::Station>> {
+        let uri = format!("/json/stations/byuuid?uuids={}", &uuids.join(","));
+        let mut response = match RadioBrowserApi::fetch(&uri).await {
+            Ok(response) => response,
+            Err(err) => return Err(err),
+        };
+        match response.body_json::<Vec<rest::Station>>().await {
+            Ok(data) => Ok(data),
+            Err(err) => Err(Error::new(ErrorKind::Parse, &err.to_string())),
+        }
+    }
+
+    async fn fetch(uri: &str) -> Result<surf::Response> {
         let mut successful_response = None;
         for api_url in API_URLS {
-            let url = format!("{}/json/stations/search?{}", &api_url, &search,);
+            let url = format!("{}{}", &api_url, &uri,);
             match surf::get(&url).await {
                 Ok(response) => {
                     successful_response = Some(response);
@@ -43,18 +66,9 @@ impl RadioBrowserApi {
                 Err(err) => println!("{}", Error::new(ErrorKind::Fetch, &err.to_string())),
             }
         }
-        let mut response = match successful_response {
-            Some(response) => response,
+        match successful_response {
+            Some(response) => Ok(response),
             None => return Err(Error::new(ErrorKind::Fetch, "All request attempts failed!")),
-        };
-        let adapters = match response.body_json::<Vec<StationAdapter>>().await {
-            Ok(adapters) => adapters,
-            Err(err) => return Err(Error::new(ErrorKind::Parse, &err.to_string())),
-        };
-        let mut stations = vec![];
-        for adapter in adapters {
-            stations.push(adapter.into());
         }
-        Ok(stations)
     }
 }

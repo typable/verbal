@@ -1,7 +1,8 @@
-use diesel::Queryable;
-use serde::Serialize;
+use diesel::{Insertable, Queryable};
 
-#[derive(Debug, Serialize, Queryable)]
+use crate::schema::station;
+
+#[derive(Debug, Queryable)]
 pub struct Account {
     pub id: i32,
     pub username: Option<String>,
@@ -9,14 +10,15 @@ pub struct Account {
     pub is_playback_history: bool,
 }
 
-#[derive(Debug, Serialize, Queryable)]
+#[derive(Debug, Queryable)]
 pub struct Device {
     pub id: i32,
     pub token: String,
     pub account_id: i32,
 }
 
-#[derive(Debug, Serialize, Queryable)]
+#[derive(Debug, Clone, Queryable, Insertable)]
+#[table_name = "station"]
 pub struct Station {
     pub id: i32,
     pub uuid: String,
@@ -31,11 +33,11 @@ pub struct Station {
     pub state: Option<String>,
 }
 
-#[derive(Debug, Serialize, Queryable)]
-pub struct Favorite {
+#[derive(Debug, Queryable)]
+pub struct Like {
     pub id: i32,
     pub account_id: i32,
-    pub station_id: i32,
+    pub station_id: String,
 }
 
 // use rand::{distributions::Alphanumeric, Rng};

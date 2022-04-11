@@ -8,7 +8,6 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum ErrorKind {
     Identity,
     Arguments,
-    Query,
     Fetch,
     Parse,
 }
