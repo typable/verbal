@@ -55,8 +55,6 @@ export function http(parts, ...values) {
     };
 }
 
-const locale = await http`get::/asset/json/locale.json`();
-
 export function $lang(id) {
-    return locale[state.account?.language ?? 'en'][id];
+    return state.locale[state.account?.language ?? 'en'][id];
 }

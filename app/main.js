@@ -1,3 +1,4 @@
+import {http} from './utils.js';
 import VMenu from './component/menu.js';
 import VSearch from './page/search.js';
 import VFavorites from './page/favorites.js';
@@ -16,26 +17,30 @@ export const state = {
     }
 };
 
-new Vue({
-    el: '#app',
-    data: {
-        state
-    },
-    components: {
-        VMenu,
-        VSearch,
-        VFavorites,
-        VAccount
-    },
-    mounted() {
-        document.body.style.display = '';
-    },
-    template: `
-        <div class="px-4 sm:px-10 pb-8 sm:pb-[100px] max-w-[800px] mx-auto flex flex-col">
-            <v-menu :state="state"></v-menu>
-            <v-search :state="state"></v-search>
-            <v-favorites :state="state"></v-favorites>
-            <v-account :state="state"></v-account>
-        </div>
-    `
-});
+(async () => {
+    state.locale = await http`get::/asset/json/locale.json`();
+
+    new Vue({
+        el: '#app',
+        data: {
+            state
+        },
+        components: {
+            VMenu,
+            VSearch,
+            VFavorites,
+            VAccount
+        },
+        mounted() {
+            document.body.style.display = '';
+        },
+        template: `
+            <div class="px-4 sm:px-10 pb-8 sm:pb-[100px] max-w-[800px] mx-auto flex flex-col">
+                <v-menu :state="state"></v-menu>
+                <v-search :state="state"></v-search>
+                <v-favorites :state="state"></v-favorites>
+                <v-account :state="state"></v-account>
+            </div>
+        `
+    });
+})();
