@@ -1,8 +1,6 @@
-use diesel::{Insertable, Queryable};
+use sqlx::FromRow;
 
-use crate::schema::station;
-
-#[derive(Debug, Queryable)]
+#[derive(Debug, FromRow)]
 pub struct Account {
     pub id: i32,
     pub username: Option<String>,
@@ -10,15 +8,14 @@ pub struct Account {
     pub is_playback_history: bool,
 }
 
-#[derive(Debug, Queryable)]
+#[derive(Debug, FromRow)]
 pub struct Device {
     pub id: i32,
     pub token: String,
     pub account_id: i32,
 }
 
-#[derive(Debug, Clone, Queryable, Insertable)]
-#[table_name = "station"]
+#[derive(Debug, Clone, FromRow)]
 pub struct Station {
     pub id: i32,
     pub uuid: String,
@@ -33,7 +30,7 @@ pub struct Station {
     pub state: Option<String>,
 }
 
-#[derive(Debug, Queryable)]
+#[derive(Debug, FromRow)]
 pub struct Like {
     pub id: i32,
     pub account_id: i32,

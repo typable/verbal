@@ -1,8 +1,6 @@
-#[macro_use]
-extern crate diesel;
-
+use sqlx::postgres::Postgres;
 use tide_compress::CompressMiddleware;
-use tide_diesel::DieselMiddleware;
+use tide_sqlx::SQLxMiddleware;
 
 mod api;
 mod config;
@@ -12,7 +10,6 @@ mod middleware;
 mod model;
 mod response;
 mod rest;
-mod schema;
 mod service;
 mod utils;
 
@@ -30,7 +27,11 @@ async fn main() -> tide::Result<()> {
     let mut app = tide::new();
 
     /* bind database middleware */
-    app.with(DieselMiddleware::new(&config.database.to_string()).unwrap());
+    app.with(
+        SQLxMiddleware::<Postgres>::new(&config.database.to_string())
+            .await
+            .unwrap(),
+    );
 
     /* bind cors middleware */
     app.with(CorsMiddleware::new(&config.options.origin));
@@ -69,6 +70,14 @@ async fn main() -> tide::Result<()> {
     app.at("/api/favorite")
         .get(|req: tide::Request<()>| async move {
             match Service::get_favorites(req).await {
+                Ok(data) => Response::with(data),
+                Err(err) => Response::throw(ErrorKind::Fetch, &err.to_string()),
+            }
+        });
+
+    app.at("/api/favorite")
+        .post(|req: tide::Request<()>| async move {
+            match Service::add_favorite(req).await {
                 Ok(data) => Response::with(data),
                 Err(err) => Response::throw(ErrorKind::Fetch, &err.to_string()),
             }

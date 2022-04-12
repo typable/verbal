@@ -55,6 +55,10 @@ export function http(parts, ...values) {
     };
 }
 
+export async function update() {
+
+}
+
 export function $lang(id) {
     return state.locale[state.account?.language ?? 'en'][id];
 }

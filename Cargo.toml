@@ -9,9 +9,8 @@ tide = "*"
 rand = "*"
 surf = "*"
 regex = "*"
-diesel = { version = "*", features = ["postgres"] }
+tide-sqlx = "*"
 serde_json = "*"
-tide-diesel = "*"
 tide-compress = "*"
 serde = { version = "*", features = ["derive"] }
 async-std = { version = "*", features = ["attributes", "tokio1"] }
