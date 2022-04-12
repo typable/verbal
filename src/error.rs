@@ -10,6 +10,7 @@ pub enum ErrorKind {
     Arguments,
     Fetch,
     Parse,
+    Query,
 }
 
 impl fmt::Display for ErrorKind {

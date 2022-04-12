@@ -20,6 +20,7 @@ pub struct Station {
 impl Into<data::Station> for Station {
     fn into(self) -> data::Station {
         data::Station {
+            uuid: self.stationuuid,
             name: self.name,
             stream_url: upgrade_to_https(self.url),
             votes: self.votes,

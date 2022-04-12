@@ -1,4 +1,4 @@
-import {$lang} from '../utils.js';
+import {$lang, http} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
 
@@ -9,7 +9,16 @@ export default {
         VIcon
     },
     methods: {
-        $lang
+        $lang,
+        async setLike(is_favorite) {
+            try {
+                await http`post::/api/favorite`(this.station.uuid);
+                this.station.is_favorite = is_favorite;
+            }
+            catch(error) {
+                console.log(error);
+            }
+        }
     },
     template: `
         <div class="w-full gap-4 group flex items-center">
@@ -73,6 +82,7 @@ export default {
                     :icon="[ station.is_favorite ? 'heart-solid' : 'heart' ]"
                     :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"
                     :active="station.is_favorite"
+                    @click="() => setLike(!station.is_favorite)"
                     class="bg-zinc-900 hover:bg-white"
                 ></v-button>
                 <v-button

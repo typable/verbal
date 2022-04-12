@@ -5,6 +5,7 @@ use crate::utils::upgrade_to_https;
 
 #[derive(Debug, Serialize)]
 pub struct Station {
+    pub uuid: String,
     pub name: String,
     pub stream_url: String,
     pub votes: i32,
@@ -20,6 +21,7 @@ pub struct Station {
 impl Into<Station> for model::Station {
     fn into(self) -> Station {
         Station {
+            uuid: self.uuid,
             name: self.name,
             stream_url: upgrade_to_https(self.stream_url),
             votes: self.votes,
