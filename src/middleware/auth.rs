@@ -32,18 +32,28 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for AuthMiddl
                 }
             };
             let query = format!(
-                "SELECT * FROM account INNER JOIN device ON account.id = device.account_id WHERE device.token = '{}'",
+                "
+                    SELECT account.*
+                        FROM account
+                        INNER JOIN device
+                        ON account.id = device.account_id
+                        WHERE device.token = '{}'
+                ",
                 &token,
             );
-            let mut conn = req.sqlx_conn::<Postgres>().await;
-            match sqlx::query_as::<_, model::Account>(&query)
-                .fetch_one(conn.acquire().await.unwrap())
-                .await
+            let option_account;
             {
-                Ok(account) => {
+                let mut conn = req.sqlx_conn::<Postgres>().await;
+                option_account = sqlx::query_as::<_, model::Account>(&query)
+                    .fetch_optional(conn.acquire().await.unwrap())
+                    .await
+                    .unwrap()
+            }
+            match option_account {
+                Some(account) => {
                     req.set_ext(account);
                 }
-                Err(_) => {
+                None => {
                     return Response::throw(
                         ErrorKind::Identity,
                         "No account found for provided header 'verbal-token'!",
