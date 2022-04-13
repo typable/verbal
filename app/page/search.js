@@ -26,6 +26,7 @@ export default {
     methods: {
         $lang,
         async doSearch() {
+            this.results = [];
             this.loading = true;
             const result = await http`get::/api/search`(this.query);
             this.loading = false;
@@ -36,7 +37,7 @@ export default {
         this.doSearch();
     },
     template: `
-        <v-tab id="search" :tab="state.tab">
+        <v-tab id="search" :tab="state.tab" @show="doSearch">
             <v-player :station="state.station"></v-player>
             <input
                 v-model="query.name"

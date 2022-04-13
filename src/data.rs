@@ -4,6 +4,23 @@ use crate::model;
 use crate::utils::upgrade_to_https;
 
 #[derive(Debug, Serialize)]
+pub struct Account {
+    pub username: Option<String>,
+    pub language: String,
+    pub is_playback_history: bool,
+}
+
+impl Into<Account> for model::Account {
+    fn into(self) -> Account {
+        Account {
+            username: self.username,
+            language: self.language,
+            is_playback_history: self.is_playback_history,
+        }
+    }
+}
+
+#[derive(Debug, Serialize)]
 pub struct Station {
     pub uuid: String,
     pub name: String,

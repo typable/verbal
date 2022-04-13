@@ -41,13 +41,14 @@ impl Service {
         Ok(data)
     }
 
-    pub async fn get_favorites(req: tide::Request<()>) -> Result<Vec<data::Station>> {
+    pub async fn get_likes(req: tide::Request<()>) -> Result<Vec<data::Station>> {
         let account = req.ext::<model::Account>().unwrap();
         let query = format!(
             "
                 SELECT *
                     FROM \"like\"
-                    WHERE \"like\".account_id = '{}'
+                    WHERE account_id = '{}'
+                    ORDER BY created_at DESC
             ",
             &account.id,
         );
@@ -61,23 +62,25 @@ impl Service {
             .map(|like| &like.station_id)
             .cloned()
             .collect::<Vec<String>>();
-        let rest = match RadioBrowserApi::by_uuids(uuids).await {
+        let rests = match RadioBrowserApi::by_uuids(uuids).await {
             Ok(rest) => rest,
             Err(err) => return Err(err),
         };
-        let data = rest
-            .iter()
-            .cloned()
-            .map(|item| {
-                let mut data: data::Station = item.clone().into();
-                data.is_favorite = true;
-                data
-            })
-            .collect::<Vec<data::Station>>();
+        let mut data = vec![];
+        for like in likes {
+            for rest in &rests {
+                if like.station_id.eq(&rest.stationuuid) {
+                    let mut item: data::Station = rest.clone().into();
+                    item.is_favorite = true;
+                    data.push(item);
+                    break;
+                }
+            }
+        }
         Ok(data)
     }
 
-    pub async fn add_favorite(mut req: tide::Request<()>) -> Result<()> {
+    pub async fn add_like(mut req: tide::Request<()>) -> Result<()> {
         let uuid = match req.body_json::<String>().await {
             Ok(body) => body,
             Err(_) => {
@@ -94,6 +97,35 @@ impl Service {
                     (account_id, station_id)
                     VALUES
                     ({}, '{}')
+            ",
+            &account.id, &uuid,
+        );
+        let mut conn = req.sqlx_conn::<Postgres>().await;
+        match sqlx::query(&query)
+            .execute(conn.acquire().await.unwrap())
+            .await
+        {
+            Ok(_) => Ok(()),
+            Err(err) => Err(Error::new(ErrorKind::Query, &err.to_string())),
+        }
+    }
+
+    pub async fn remove_like(mut req: tide::Request<()>) -> Result<()> {
+        let uuid = match req.body_json::<String>().await {
+            Ok(body) => body,
+            Err(_) => {
+                return Err(Error::new(
+                    ErrorKind::Arguments,
+                    "No station uuid provided!",
+                ))
+            }
+        };
+        let account = req.ext::<model::Account>().unwrap();
+        let query = format!(
+            "
+                DELETE FROM \"like\"
+                    WHERE account_id = {}
+                    AND station_id = '{}'
             ",
             &account.id, &uuid,
         );

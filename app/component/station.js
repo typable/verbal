@@ -1,3 +1,4 @@
+import {state} from '../main.js';
 import {$lang, http} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
@@ -12,12 +13,16 @@ export default {
         $lang,
         async setLike(is_favorite) {
             try {
-                await http`post::/api/favorite`(this.station.uuid);
+                await http`${is_favorite ? 'post' : 'delete'}::/api/like`(this.station.uuid);
                 this.station.is_favorite = is_favorite;
+                state.app.$refs.favorites.doFetch();
             }
             catch(error) {
                 console.log(error);
             }
+        },
+        setStation(station) {
+            state.station = station;
         }
     },
     template: `
@@ -89,6 +94,7 @@ export default {
                     icon="player-play"
                     class="bg-zinc-900 hover:bg-white"
                     :title="$lang('global.play')"
+                    @click="() => setStation(station)"
                 ></v-button>
             </div>
         </div>

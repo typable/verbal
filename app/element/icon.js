@@ -3,7 +3,7 @@ export default {
     computed: {
         styles() {
             return {
-                '-webkit-mask': `url(https://cdn.typable.dev/tabler/${this.id})`,
+                'mask-image': `url(https://cdn.typable.dev/tabler/${this.id})`,
                 'mask-repeat': 'no-repeat',
                 'mask-position': 'center',
                 'mask-size': this.size ?? ''

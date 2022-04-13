@@ -5,6 +5,7 @@ import VFavorites from './page/favorites.js';
 import VAccount from './page/account.js';
 
 export const state = {
+    app: null,
     tab: 'search',
     account: {
         username: 'typable',
@@ -33,12 +34,13 @@ export const state = {
         },
         mounted() {
             document.body.style.display = '';
+            state.app = this;
         },
         template: `
             <div class="px-4 sm:px-10 pb-8 sm:pb-[100px] max-w-[800px] mx-auto flex flex-col">
                 <v-menu :state="state"></v-menu>
                 <v-search :state="state"></v-search>
-                <v-favorites :state="state"></v-favorites>
+                <v-favorites ref="favorites" :state="state"></v-favorites>
                 <v-account :state="state"></v-account>
             </div>
         `

@@ -21,8 +21,9 @@ export default {
     methods: {
         $lang,
         async doFetch() {
+            this.results = [];
             this.loading = true;
-            const result = await http`get::/api/favorite`();
+            const result = await http`get::/api/like`();
             this.loading = false;
             this.results = result;
         }

@@ -67,17 +67,25 @@ async fn main() -> tide::Result<()> {
             }
         });
 
-    app.at("/api/favorite")
+    app.at("/api/like")
         .get(|req: tide::Request<()>| async move {
-            match Service::get_favorites(req).await {
+            match Service::get_likes(req).await {
                 Ok(data) => Response::with(data),
                 Err(err) => Response::throw(ErrorKind::Fetch, &err.to_string()),
             }
         });
 
-    app.at("/api/favorite")
+    app.at("/api/like")
         .post(|req: tide::Request<()>| async move {
-            match Service::add_favorite(req).await {
+            match Service::add_like(req).await {
+                Ok(data) => Response::with(data),
+                Err(err) => Response::throw(ErrorKind::Fetch, &err.to_string()),
+            }
+        });
+
+    app.at("/api/like")
+        .delete(|req: tide::Request<()>| async move {
+            match Service::remove_like(req).await {
                 Ok(data) => Response::with(data),
                 Err(err) => Response::throw(ErrorKind::Fetch, &err.to_string()),
             }
