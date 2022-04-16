@@ -1,4 +1,5 @@
-import {$lang} from '../utils.js';
+import {state} from '../main.js';
+import {http, $lang} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
 
@@ -17,7 +18,17 @@ export default {
         VIcon
     },
     methods: {
-        $lang
+        $lang,
+        async setLike(is_favorite) {
+            try {
+                await http`${is_favorite ? 'post' : 'delete'}::/api/like`(this.station.uuid);
+                this.station.is_favorite = is_favorite;
+                state.app.$refs.favorites.doFetch();
+            }
+            catch(error) {
+                console.log(error);
+            }
+        },
     },
     template: `
         <div class="sticky top-[98px] z-30 -mb-6 sm:-mb-10">
@@ -63,7 +74,7 @@ export default {
                             :title="$lang('global.favorites')"
                             :active="station.is_favorite"
                             class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10"
-                            @click="doToggleFavorite(station, !station.is_favorite)"
+                            @click="setLike(!station.is_favorite)"
                         ></v-button>
                         <v-button
                             :icon="[ loading ? 'rotate-clockwise' : (playing ? 'player-pause' : 'player-play') ]"
