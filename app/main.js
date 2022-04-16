@@ -8,14 +8,10 @@ export const state = {
     app: null,
     tab: 'search',
     account: {
-        username: 'typable',
+        username: '',
         language: 'en'
     },
-    station: {
-        name: 'Liquid Trap',
-        favicon: 'https://cdn-images.audioaddict.com/6/b/5/b/d/6/6b5bd66a99e46fa1258cb565d988ea7c.jpg',
-        is_favorite: true
-    }
+    station: null
 };
 
 (async () => {
@@ -35,6 +31,12 @@ export const state = {
         mounted() {
             document.body.style.display = '';
             state.app = this;
+            this.init();
+        },
+        methods: {
+            async init() {
+                state.account = await http`get::/api/account`();
+            }
         },
         template: `
             <div class="px-4 sm:px-10 pb-8 sm:pb-[100px] max-w-[800px] mx-auto flex flex-col">

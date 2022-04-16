@@ -1,6 +1,6 @@
 use sqlx::FromRow;
 
-#[derive(Debug, FromRow)]
+#[derive(Debug, Clone, FromRow)]
 pub struct Account {
     pub id: i32,
     pub username: Option<String>,
@@ -8,7 +8,7 @@ pub struct Account {
     pub is_playback_history: bool,
 }
 
-#[derive(Debug, FromRow)]
+#[derive(Debug, Clone, FromRow)]
 pub struct Device {
     pub id: i32,
     pub token: String,

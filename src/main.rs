@@ -55,6 +55,13 @@ async fn main() -> tide::Result<()> {
     /* provide app */
     app.at("/app").serve_dir("app/")?;
 
+    app.at("/api/account")
+        .get(|req: tide::Request<()>| async move {
+            let account = req.ext::<model::Account>().unwrap();
+            let data: data::Account = (*account).clone().into();
+            Response::with(data)
+        });
+
     app.at("/api/search")
         .get(|req: tide::Request<()>| async move {
             let search = match req.query::<Search>() {
