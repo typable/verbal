@@ -1,6 +1,5 @@
 import {$lang, http} from '../utils.js';
 import VIcon from '../element/icon.js';
-import VPlayer from '../component/player.js';
 import VTab from '../component/tab.js';
 import VStation from '../component/station.js';
 
@@ -20,7 +19,6 @@ export default {
     components: {
         VIcon,
         VTab,
-        VPlayer,
         VStation
     },
     methods: {
@@ -28,9 +26,23 @@ export default {
         async doSearch() {
             this.results = [];
             this.loading = true;
+            this.more = true;
+            this.query.page = 0;
             const result = await http`get::/api/search`(this.query);
             this.loading = false;
             this.results = result;
+        },
+        async doSearchMore() {
+            if(this.loading) return;
+            if(!this.more) return;
+            this.query.page++;
+            this.loading = true;
+            const result = await http`get::/api/search`(this.query);
+            this.loading = false;
+            if(result.length == 0) {
+                this.more = false;
+            }
+            this.results.push(...result);
         }
     },
     mounted() {
@@ -38,7 +50,6 @@ export default {
     },
     template: `
         <v-tab id="search" :tab="state.tab" @show="doSearch">
-            <v-player :station="state.station"></v-player>
             <input
                 v-model="query.name"
                 @keyup.enter="doSearch"
@@ -73,6 +84,12 @@ export default {
                 class="text-zinc-400 text-md mx-auto pb-6"
             >
                 {{$lang('search.list.end')}}
+            </div>
+            <div
+                v-if="results.length == 0"
+                class="text-zinc-400 text-md mx-auto pb-6"
+            >
+                {{$lang('search.list.empty')}}
             </div>
         </v-tab>
     `

@@ -32,10 +32,7 @@ pub struct RadioBrowserApi;
 impl RadioBrowserApi {
     pub async fn search(search: Search) -> Result<Vec<rest::Station>> {
         let uri = format!("/json/stations/search?{}", &search);
-        let mut response = match RadioBrowserApi::fetch(&uri).await {
-            Ok(response) => response,
-            Err(err) => return Err(err),
-        };
+        let mut response = RadioBrowserApi::fetch(&uri).await?;
         match response.body_json::<Vec<rest::Station>>().await {
             Ok(data) => Ok(data),
             Err(err) => Err(Error::new(ErrorKind::Parse, &err.to_string())),
@@ -44,10 +41,7 @@ impl RadioBrowserApi {
 
     pub async fn by_uuids(uuids: Vec<String>) -> Result<Vec<rest::Station>> {
         let uri = format!("/json/stations/byuuid?uuids={}", &uuids.join(","));
-        let mut response = match RadioBrowserApi::fetch(&uri).await {
-            Ok(response) => response,
-            Err(err) => return Err(err),
-        };
+        let mut response = RadioBrowserApi::fetch(&uri).await?;
         match response.body_json::<Vec<rest::Station>>().await {
             Ok(data) => Ok(data),
             Err(err) => Err(Error::new(ErrorKind::Parse, &err.to_string())),

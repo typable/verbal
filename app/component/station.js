@@ -43,7 +43,7 @@ export default {
                 ></v-icon>
             </div>
             <div class="flex flex-col flex-1 min-w-0">
-                <p class="text-lg font-medium text-gray-100 pb-0 overflow-hidden text-ellipsis whitespace-nowrap">{{station.name}}</p>
+                <p :title="station.name" class="text-lg font-medium text-gray-100 pb-0 overflow-hidden text-ellipsis whitespace-nowrap">{{station.name}}</p>
                 <span class="text-md text-gray-400 overflow-hidden flex gap-2 sm:gap-3">
                     <span
                         v-if="station.country" 

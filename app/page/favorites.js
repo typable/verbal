@@ -1,6 +1,5 @@
 import {$lang, http} from '../utils.js';
 import VIcon from '../element/icon.js';
-import VPlayer from '../component/player.js';
 import VTab from '../component/tab.js';
 import VStation from '../component/station.js';
 
@@ -15,7 +14,6 @@ export default {
     components: {
         VIcon,
         VTab,
-        VPlayer,
         VStation
     },
     methods: {
@@ -33,7 +31,6 @@ export default {
     },
     template: `
         <v-tab id="favorites" :tab="state.tab">
-            <v-player :station="state.station"></v-player>
             <ul class="flex flex-col">
                 <li
                     :key="station.id"

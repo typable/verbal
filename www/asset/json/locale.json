@@ -21,8 +21,9 @@
         "player.loading": "Loading...",
         "player.no-song-title": "- No song title available -",
 
-        "search.input.placeholder": "Search for station",
+        "search.input.placeholder": "Search for stations",
         "search.list.end": "You've reached the end",
+        "search.list.empty": "No results found",
 
         "account.settings": "Settings",
         "account.username": "Username",
@@ -59,6 +60,7 @@
 
         "search.input.placeholder": "Suche nach Sender",
         "search.list.end": "Du hast das Ende erreicht",
+        "search.list.empty": "Keine Ergebnisse gefunden",
 
         "account.settings": "Einstellungen",
         "account.username": "Nutzername",
