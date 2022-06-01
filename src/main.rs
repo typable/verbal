@@ -22,7 +22,7 @@ use service::Service;
 
 #[async_std::main]
 async fn main() -> tide::Result<()> {
-    let config = Config::from_file("./config.ron").expect("Unable to parse config!");
+    let config = Config::from_file("./config.toml").expect("Unable to parse config!");
 
     let mut app = tide::new();
 
@@ -34,7 +34,7 @@ async fn main() -> tide::Result<()> {
     );
 
     /* bind cors middleware */
-    app.with(CorsMiddleware::new(&config.options.origin));
+    app.with(CorsMiddleware::new(&config.server.options.origin));
 
     /* bind auth middleware */
     app.with(AuthMiddleware::new());

@@ -4,7 +4,7 @@ version = "0.0.3-dev"
 edition = "2018"
 
 [dependencies]
-ron = "*"
+toml = "*"
 tide = "*"
 rand = "*"
 surf = "*"
