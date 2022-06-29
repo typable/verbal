@@ -20,7 +20,7 @@ use middleware::{AuthMiddleware, CorsMiddleware};
 use response::Response;
 use service::Service;
 
-#[async_std::main]
+#[tokio::main]
 async fn main() -> tide::Result<()> {
     let config = Config::from_file("./config.toml").expect("Unable to parse config!");
 
