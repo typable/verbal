@@ -1,6 +1,8 @@
 use serde::Serialize;
 
 use crate::model;
+use crate::rest;
+use crate::utils::to_array;
 use crate::utils::upgrade_to_https;
 
 #[derive(Debug, Serialize)]
@@ -10,12 +12,12 @@ pub struct Account {
     pub is_playback_history: bool,
 }
 
-impl Into<Account> for model::Account {
-    fn into(self) -> Account {
-        Account {
-            username: self.username,
-            language: self.language,
-            is_playback_history: self.is_playback_history,
+impl From<model::Account> for Account {
+    fn from(model: model::Account) -> Self {
+        Self {
+            username: model.username,
+            language: model.language,
+            is_playback_history: model.is_playback_history,
         }
     }
 }
@@ -35,19 +37,37 @@ pub struct Station {
     pub is_favorite: bool,
 }
 
-impl Into<Station> for model::Station {
-    fn into(self) -> Station {
-        Station {
-            uuid: self.uuid,
-            name: self.name,
-            stream_url: upgrade_to_https(self.stream_url),
-            votes: self.votes,
-            favicon: self.favicon,
-            homepage: self.homepage,
-            tags: self.tags,
-            country: self.country,
-            languages: self.languages,
-            state: self.state,
+impl From<model::Station> for Station {
+    fn from(model: model::Station) -> Self {
+        Self {
+            uuid: model.uuid,
+            name: model.name,
+            stream_url: upgrade_to_https(model.stream_url),
+            votes: model.votes,
+            favicon: model.favicon,
+            homepage: model.homepage,
+            tags: model.tags,
+            country: model.country,
+            languages: model.languages,
+            state: model.state,
+            is_favorite: false,
+        }
+    }
+}
+
+impl From<rest::Station> for Station {
+    fn from(rest: rest::Station) -> Self {
+        Self {
+            uuid: rest.stationuuid,
+            name: rest.name,
+            stream_url: upgrade_to_https(rest.url),
+            votes: rest.votes,
+            favicon: Some(rest.favicon),
+            homepage: Some(rest.homepage),
+            tags: to_array(rest.tags),
+            country: Some(rest.countrycode),
+            languages: to_array(rest.languagecodes),
+            state: Some(rest.state),
             is_favorite: false,
         }
     }

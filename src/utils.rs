@@ -2,9 +2,9 @@ use regex::Regex;
 
 pub fn to_array(value: String) -> Vec<String> {
     value
-        .split(",")
+        .split(',')
         .map(str::to_string)
-        .filter(|tag| tag.trim().len() > 0)
+        .filter(|tag| !tag.trim().is_empty())
         .collect::<Vec<String>>()
 }
 

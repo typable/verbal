@@ -62,7 +62,7 @@ impl RadioBrowserApi {
         }
         match successful_response {
             Some(response) => Ok(response),
-            None => return Err(Error::new(ErrorKind::Fetch, "All request attempts failed!")),
+            None => Err(Error::new(ErrorKind::Fetch, "All request attempts failed!")),
         }
     }
 }
