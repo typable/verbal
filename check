@@ -6,7 +6,7 @@ config=(
   ["uri"]="/api"
   ["method"]="GET"
   ["args"]=""
-  ["token"]="8989604f-1d14-4b96-a547-6be2f484a49b"
+  ["token"]="test-token"
 )
 
 while read argument; do

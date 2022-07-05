@@ -47,7 +47,7 @@ pub struct Config {
 
 impl Config {
     pub fn from_file(path: &str) -> Result<Self, toml::de::Error> {
-        let raw = fs::read_to_string(path).expect("Unable to locate config.ron file!");
+        let raw = fs::read_to_string(path).expect("Unable to locate config file!");
         toml::from_str(&raw)
     }
 }

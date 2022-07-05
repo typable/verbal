@@ -36,7 +36,11 @@ export default {
                 v-if="station"
                 class="flex flex-col bg-black pb-6"
             >
-                <audio controls autoplay :src="station.stream_url" class="select-none pointer-events-none w-0 h-0 opacity-0"></audio>
+                <audio controls autoplay :src="station.stream_url" class="select-none pointer-events-none w-0 h-0 opacity-0">
+                    <source :src="station.stream_url" type="audio/mpeg">
+                    <source :src="station.stream_url" type="audio/ogg">
+                    <source :src="station.stream_url" type="audio/aac">
+                </audio>
                 <div class="p-5 bg-zinc-800 rounded-xl flex gap-5 items-center relative overflow-hidden shadow-2xl z-30">
                     <img
                         v-if="station.favicon"
