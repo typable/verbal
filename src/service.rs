@@ -1,9 +1,11 @@
+use async_std::io::ReadExt;
+use regex::Regex;
 use sqlx::postgres::Postgres;
 use sqlx::prelude::*;
 use tide_sqlx::SQLxRequestExt;
 
 use crate::api::{RadioBrowserApi, Search};
-use crate::data;
+use crate::data::{self, Song};
 use crate::error::{Error, ErrorKind, Result};
 use crate::model;
 
@@ -38,6 +40,47 @@ impl Service {
                 data
             })
             .collect::<Vec<data::Station>>();
+        Ok(data)
+    }
+
+    pub async fn get_song(song: Song) -> Result<Option<String>> {
+        let mut response = match surf::get(&song.url).header("icy-metadata", "1").await {
+            Ok(response) => response,
+            Err(_) => return Err(Error::new(ErrorKind::Fetch, "Unable to fetch metadata!")),
+        };
+        let meta_int = match response.header("icy-metaint") {
+            Some(header) => header.as_str(),
+            None => return Err(Error::new(ErrorKind::Parse, "Invalid icy metadata!")),
+        };
+        let interval = match meta_int.parse::<usize>() {
+            Ok(value) => value * 2,
+            Err(_) => {
+                return Err(Error::new(
+                    ErrorKind::Parse,
+                    "Unable to parse icy metadata!",
+                ))
+            }
+        };
+        let mut count = 0;
+        let mut bytes = vec![];
+        let mut buf = [0; 10000];
+        let mut data = None;
+        loop {
+            let len = response.read(&mut buf).await.unwrap();
+            bytes.extend_from_slice(&buf);
+            if count + len > interval {
+                let metadata = String::from_utf8_lossy(&bytes);
+                for cap in Regex::new("StreamTitle='([^;]*)';")
+                    .unwrap()
+                    .captures_iter(&metadata)
+                {
+                    data = Some(cap[1].to_string());
+                    break;
+                }
+                break;
+            }
+            count += len;
+        }
         Ok(data)
     }
 

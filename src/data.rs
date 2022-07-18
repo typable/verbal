@@ -1,9 +1,15 @@
+use serde::Deserialize;
 use serde::Serialize;
 
 use crate::model;
 use crate::rest;
 use crate::utils::to_array;
 use crate::utils::upgrade_to_https;
+
+#[derive(Debug, Default, Deserialize)]
+pub struct Song {
+    pub url: String,
+}
 
 #[derive(Debug, Serialize)]
 pub struct Account {

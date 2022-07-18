@@ -1,3 +1,4 @@
+use data::Song;
 use sqlx::postgres::Postgres;
 use tide_compress::CompressMiddleware;
 use tide_sqlx::SQLxMiddleware;
@@ -69,6 +70,18 @@ async fn main() -> tide::Result<()> {
                 Err(err) => return Response::throw(ErrorKind::Arguments, &err.to_string()),
             };
             match Service::search(search, req).await {
+                Ok(data) => Response::with(data),
+                Err(err) => Response::throw(ErrorKind::Fetch, &err.to_string()),
+            }
+        });
+
+    app.at("/api/song")
+        .get(|req: tide::Request<()>| async move {
+            let song = match req.query::<Song>() {
+                Ok(song) => song,
+                Err(err) => return Response::throw(ErrorKind::Arguments, &err.to_string()),
+            };
+            match Service::get_song(song).await {
                 Ok(data) => Response::with(data),
                 Err(err) => Response::throw(ErrorKind::Fetch, &err.to_string()),
             }

@@ -9,13 +9,25 @@ export default {
         return {
             playing: false,
             loading: false,
+            error: false,
             title: '- No song title available -',
-            locale: 'en'
+            interval: null
         };
     },
     components: {
         VButton,
         VIcon
+    },
+    watch: {
+        station: function(station) {
+            this.playing = false;
+            this.error = false;
+            if(station !== null) {
+                this.loading = true;
+                this.title = '- No song title available -';
+                this.updateMediaSession();
+            }
+        }
     },
     methods: {
         $lang,
@@ -29,6 +41,66 @@ export default {
                 console.log(error);
             }
         },
+        setPlaying(playing, event = false) {
+            if(this.error) {
+                return;
+            }
+            this.playing = playing;
+            this.$refs.player[this.playing ? 'play' : 'pause']();
+            if(this.playing) {
+                this.error = false;
+                if(!event) {
+                    this.updateSong();
+                }
+            }
+        },
+        onLoad() {
+            this.loading = false;
+            this.playing = true;
+            this.updateSong();
+        },
+        onError(event) {
+            this.error = true;
+            this.loading = false;
+            this.playing = false;
+        },
+        updateMediaSession() {
+            if('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: this.title,
+                    artist: this.station.name,
+                    artwork: [
+                        { src: this.station.favicon, sizes: '96x96', type: 'image/jpg' },
+                        { src: this.station.favicon, sizes: '128x128', type: 'image/jpg' },
+                        { src: this.station.favicon, sizes: '192x192', type: 'image/jpg' },
+                        { src: this.station.favicon, sizes: '256x256', type: 'image/jpg' },
+                        { src: this.station.favicon, sizes: '384x384', type: 'image/jpg' },
+                        { src: this.station.favicon, sizes: '512x512', type: 'image/jpg' }
+                    ]
+                });
+            }
+        },
+        async fetchSong() {
+            try {
+                const song = await http`get::/api/song`({ url: this.station.stream_url });
+                this.title = song === '' ? '- No song title available -' : song;
+            }
+            catch(err) {
+                this.title = '- No song title available -';
+            }
+            this.updateMediaSession();
+        },
+        updateSong() {
+            this.fetchSong();
+            clearInterval(this.interval);
+            this.interval = setInterval(async () => {
+                if(!this.playing) {
+                    clearInterval(this.interval);
+                    return;
+                }
+                await this.fetchSong();
+            }, 10000);
+        }
     },
     template: `
         <div class="sticky top-[98px] z-30">
@@ -36,7 +108,16 @@ export default {
                 v-if="station"
                 class="flex flex-col bg-black pb-6"
             >
-                <audio controls autoplay :src="station.stream_url" class="select-none pointer-events-none w-0 h-0 opacity-0">
+                <audio
+                    ref="player"
+                    controls autoplay
+                    :src="station.stream_url"
+                    @loadeddata="onLoad"
+                    @play="setPlaying(true, true)"
+                    @pause="setPlaying(false, true)"
+                    @error="onError"
+                    class="select-none pointer-events-none w-0 h-0 opacity-0"
+                >
                     <source :src="station.stream_url" type="audio/mpeg">
                     <source :src="station.stream_url" type="audio/ogg">
                     <source :src="station.stream_url" type="audio/aac">
@@ -82,9 +163,9 @@ export default {
                             @click="setLike(!station.is_favorite)"
                         ></v-button>
                         <v-button
-                            :icon="[ loading ? 'rotate-clockwise' : (playing ? 'player-pause' : 'player-play') ]"
-                            :title="[ playing ? $lang('global.pause') : $lang('global.play') ]"
-                            :animation="[ loading ? 'animate-spin' : '' ]"
+                            :icon="[ error ? 'alert-circle' : (loading ? 'rotate-clockwise' : (playing ? 'player-pause' : 'player-play')) ]"
+                            :title="[ error ? $lang('global.error') : (playing ? $lang('global.pause') : $lang('global.play')) ]"
+                            :animation="[ error ? '' : (loading ? 'animate-spin' : '') ]"
                             class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10"
                             @click="setPlaying(!playing)"
                         ></v-button>
