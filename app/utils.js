@@ -13,22 +13,40 @@ export function http(parts, ...values) {
     const line = ltr(parts, values).trim();
     const regex = /^(\w+)::([\w\/.]*)$/;
     const [, method, path] = line.match(regex) ?? [];
-    return (body) => {
+    return (query) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const headers = {
                     'content-type': 'application/json',
                 }
-                const deviceToken = localStorage.getItem('verbal.device_token');
+                const deviceToken = localStorage.getItem('verbal-token');
                 if(deviceToken) {
-                    headers['verbal-device-token'] = deviceToken;
+                    headers['verbal-token'] = deviceToken;
                 }
-                const response = await fetch(window.location.origin + path, {
+                let body = null;
+                let params = '';
+                if(method === 'get' || method === 'head') {
+                    params = '?' + new URLSearchParams(query).toString();
+                }
+                else {
+                    body = JSON.stringify(query);
+                }
+                const response = await fetch(window.location.origin + path + params, {
                     method,
                     headers,
-                    body: JSON.stringify(body)
+                    body
                 });
-                resolve(await response.json());
+                const json = await response.json();
+                const {ok, data, error} = json;
+                if(ok === undefined) {
+                    resolve(json);
+                    return;
+                }
+                if(!ok) {
+                    reject(`[${error.kind}] ${error.message}`);
+                    return;
+                }
+                resolve(data);
             }
             catch(error) {
                 reject(error);
@@ -37,8 +55,10 @@ export function http(parts, ...values) {
     };
 }
 
-const locale = await http`get::/asset/json/locale.json`();
+export async function update() {
+
+}
 
 export function $lang(id) {
-    return locale[state.locale ?? 'en'][id];
+    return state.locale[state.account?.language ?? 'en'][id];
 }

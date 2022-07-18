@@ -1,0 +1,41 @@
+#!/bin/bash
+
+declare -A config
+config=(
+  ["port"]=4200
+  ["uri"]="/api"
+  ["method"]="GET"
+  ["args"]=""
+  ["token"]="test-token"
+)
+
+while read argument; do
+  key=$(echo "$argument" | awk '{split($0, a, "="); print a[1]}')
+  if [ -z "$key" ]; then
+    continue
+  fi
+  value=$(echo "$argument" | awk '{st = index($0, "="); print substr($0, st + 1)}')
+  config["$key"]=$value
+done <<< $(echo "$@" | tr " " "\n")
+
+# while read key; do
+#   echo "$key: ${config[$key]}"
+# done <<< $(echo "${!config[@]}" | tr " " "\n")
+
+# echo ""
+
+url="http://localhost:${config["port"]}${config["uri"]}?${config["args"]}"
+
+echo "Request"
+echo "------------------------------------------------------------"
+
+echo "${config["method"]} $url"
+echo "verbal-token: ${config["token"]}"
+echo ""
+
+echo "Response"
+echo "------------------------------------------------------------"
+
+curl $url -I
+
+curl $url -s -X "${config["method"]}" -H "verbal-token: ${config["token"]}" | jq -r "."

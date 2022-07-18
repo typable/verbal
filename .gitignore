@@ -3,7 +3,6 @@ target/
 _/
 www/asset/font/
 
-config.ron
+config.toml
 package-lock.json
 Cargo.lock
-www/asset/css/style.css

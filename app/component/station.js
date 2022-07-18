@@ -1,4 +1,5 @@
-import {$lang} from '../utils.js';
+import {state} from '../main.js';
+import {$lang, http} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
 
@@ -9,38 +10,92 @@ export default {
         VIcon
     },
     methods: {
-        $lang
+        $lang,
+        async setLike(is_favorite) {
+            try {
+                await http`${is_favorite ? 'post' : 'delete'}::/api/like`(this.station.uuid);
+                this.station.is_favorite = is_favorite;
+                state.app.$refs.favorites.doFetch();
+            }
+            catch(error) {
+                console.log(error);
+            }
+        },
+        setStation(station) {
+            state.station = station;
+        }
     },
     template: `
-        <div class="w-full py-5 gap-4 group flex items-center border-t sm:border-t-2 first:border-none border-zinc-900">
+        <div class="w-full gap-4 group flex items-center">
             <div class="w-[54px] h-[54px] min-w-[54px] bg-zinc-900 rounded-lg overflow-hidden">
-                <img v-if="station.favicon" :alt="station.name" :src="station.favicon" v-on:error="doHideFavicon(station)" class="w-full h-full object-contain">
-                <div v-else class="w-full h-full bg-gray-400 [mask:url('https://cdn.typable.dev/tabler/access-point')]" style="-webkit-mask-repeat: no-repeat; -webkit-mask-position: center; -webkit-mask-size: 65%;"></div>
+                <img
+                    v-if="station.favicon"
+                    :alt="station.name"
+                    :src="station.favicon"
+                    @error="() => station.favicon = null"
+                    class="w-full h-full object-contain"
+                >
+                <v-icon
+                    v-else
+                    id="access-point"
+                    size="65%"
+                    class="bg-gray-400"
+                ></v-icon>
             </div>
             <div class="flex flex-col flex-1 min-w-0">
-                <p class="text-lg font-medium text-gray-100 pb-0 overflow-hidden text-ellipsis whitespace-nowrap">{{station.name}}</p>
+                <p :title="station.name" class="text-lg font-medium text-gray-100 pb-0 overflow-hidden text-ellipsis whitespace-nowrap">{{station.name}}</p>
                 <span class="text-md text-gray-400 overflow-hidden flex gap-2 sm:gap-3">
-                    <span v-if="station.country" class="text-gray-400 inline-flex items-center gap-[5px]" v-bind:title="$('global.country')">
-                        <div class="w-[18px] h-[18px] min-w-[18px] inline-flex bg-gray-400 [mask:url(https://cdn.typable.dev/tabler/world)]" style="-webkit-mask-repeat: no-repeat; -webkit-mask-position: center; -webkit-mask-size: 100%;"></div>
+                    <span
+                        v-if="station.country" 
+                        class="text-gray-400 inline-flex items-center gap-[5px]"
+                        :title="$lang('global.country')"
+                    >
+                        <v-icon
+                            id="world"
+                            class="w-[18px] h-[18px] !min-w-[18px] inline-flex bg-gray-400"
+                            size="100%"
+                        ></v-icon>
                         <p>{{station.country}}</p>
                     </span>
-                    <span v-if="station.votes" class="text-gray-400 inline-flex items-center gap-[5px]" v-bind:title="$('global.votes')">
-                        <div class="w-[18px] h-[18px] inline-flex bg-gray-400 [mask:url(https://cdn.typable.dev/tabler/thumb-up)]" style="-webkit-mask-repeat: no-repeat; -webkit-mask-position: center; -webkit-mask-size: 100%;"></div>
+                    <span
+                        v-if="station.votes"
+                        class="text-gray-400 inline-flex items-center gap-[5px]"
+                        :title="$lang('global.votes')"
+                    >
+                        <v-icon
+                            id="thumb-up"
+                            class="w-[18px] h-[18px] !min-w-[18px] inline-flex bg-gray-400"
+                            size="100%"
+                        ></v-icon>
                         <p>{{station.votes}}</p>
                     </span>
-                    <span v-if="station.click_trend" class="text-gray-400 hidden sm:inline-flex items-center gap-[5px]" v-bind:title="$('global.trend')">
-                        <div class="w-[16px] h-[16px] inline-flex bg-gray-400" v-bind:class="[ station.click_trend >= 0 ? '[mask:url(https://cdn.typable.dev/tabler/arrow-up-right)]' : '[mask:url(https://cdn.typable.dev/tabler/arrow-down-right)]' ]" style="-webkit-mask-repeat: no-repeat; -webkit-mask-position: center;"></div>
+                    <span
+                        v-if="station.click_trend"
+                        class="text-gray-400 hidden sm:inline-flex items-center gap-[5px]"
+                        :title="$lang('global.trend')"
+                    >
+                        <v-icon
+                            :id="[ station.click_trend >= 0 ? 'arrow-up-right' : 'arrow-down-right' ]"
+                            class="w-[18px] h-[18px] !min-w-[18px] inline-flex bg-gray-400"
+                        ></v-icon>
                         <p>{{Math.abs(station.click_trend) ?? 'None'}}</p>
                     </span>
                 </span>
             </div>
-            <div class="inline-flex gap-4">
-                <button v-on:click="doToggleFavorite(station, !station.is_favorite)" v-bind:title="[ station.is_favorite ? $('global.unlike') : $('global.like') ]" class="w-[46px] h-[46px] bg-zinc-900 hover:bg-white rounded-full inline-flex justify-center items-center cursor-pointer transition-colors">
-                    <div class="w-full h-full bg-gray-400 hover:bg-red-600 transition-colors" v-bind:class="[ station.is_favorite ? '[mask:url(https://cdn.typable.dev/tabler/heart-solid)]' : '[mask:url(https://cdn.typable.dev/tabler/heart)]' ]" style="-webkit-mask-repeat: no-repeat; -webkit-mask-position: center;"></div>
-                </button>
-                <button v-on:click="doPlay(station)" v-bind:title="$('global.play')" class="w-[46px] h-[46px] bg-zinc-900 hover:bg-white rounded-full inline-flex justify-center items-center cursor-pointer transition-colors">
-                    <div class="w-full h-full bg-gray-400 hover:bg-gray-700 transition-colors [mask:url('https://cdn.typable.dev/tabler/player-play')]" style="-webkit-mask-repeat: no-repeat; -webkit-mask-position: center;"></div>
-                </button>
+            <div class="inline-flex gap-3 sm:gap-4">
+                <v-button
+                    :icon="[ station.is_favorite ? 'heart-solid' : 'heart' ]"
+                    :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"
+                    :active="station.is_favorite"
+                    @click="() => setLike(!station.is_favorite)"
+                    class="bg-zinc-900 hover:bg-white"
+                ></v-button>
+                <v-button
+                    icon="player-play"
+                    class="bg-zinc-900 hover:bg-white"
+                    :title="$lang('global.play')"
+                    @click="() => setStation(station)"
+                ></v-button>
             </div>
         </div>
     `

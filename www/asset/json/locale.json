@@ -10,6 +10,7 @@
         "global.unlike": "Unlike",
         "global.play": "Play",
         "global.pause": "Pause",
+        "global.error": "Not reachable",
         "global.country": "Country",
         "global.votes": "Votes",
         "global.trend": "Trend",
@@ -21,8 +22,9 @@
         "player.loading": "Loading...",
         "player.no-song-title": "- No song title available -",
 
-        "search.input.placeholder": "Search for station",
+        "search.input.placeholder": "Search for stations",
         "search.list.end": "You've reached the end",
+        "search.list.empty": "No results found",
 
         "account.settings": "Settings",
         "account.username": "Username",
@@ -46,6 +48,7 @@
         "global.unlike": "Mag ich nicht",
         "global.play": "Abspielen",
         "global.pause": "Pausieren",
+        "global.error": "Nicht erreichbar",
         "global.country": "Land",
         "global.votes": "Bewertung",
         "global.trend": "Trend",
@@ -59,6 +62,7 @@
 
         "search.input.placeholder": "Suche nach Sender",
         "search.list.end": "Du hast das Ende erreicht",
+        "search.list.empty": "Keine Ergebnisse gefunden",
 
         "account.settings": "Einstellungen",
         "account.username": "Nutzername",
