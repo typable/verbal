@@ -11,7 +11,8 @@ export default {
             loading: false,
             error: false,
             title: '- No song title available -',
-            interval: null
+            interval: null,
+            resume: false
         };
     },
     components: {
@@ -41,22 +42,33 @@ export default {
                 console.log(error);
             }
         },
-        setPlaying(playing, event = false) {
-            if(this.error) {
+        setPlaying(playing) {
+            if(this.error || this.loading) {
                 return;
             }
             this.playing = playing;
             this.$refs.player[this.playing ? 'play' : 'pause']();
             if(this.playing) {
-                this.error = false;
-                if(!event) {
-                    this.updateSong();
-                }
+                this.playing = false;
+                this.loading = true;
+                this.$refs.player.load();
             }
+        },
+        onPlay() {
+            if(this.resume) {
+                this.playing = false;
+                this.loading = true;
+                this.$refs.player.load();
+            }
+        },
+        onPause() {
+            this.playing = false;
+            this.resume = true;
         },
         onLoad() {
             this.loading = false;
             this.playing = true;
+            this.resume = false;
             this.updateSong();
         },
         onError(event) {
@@ -113,8 +125,8 @@ export default {
                     controls autoplay
                     :src="station.stream_url"
                     @loadeddata="onLoad"
-                    @play="setPlaying(true, true)"
-                    @pause="setPlaying(false, true)"
+                    @play="onPlay"
+                    @pause="onPause"
                     @error="onError"
                     class="select-none pointer-events-none w-0 h-0 opacity-0"
                 >
