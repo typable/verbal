@@ -169,7 +169,7 @@ export default {
                     <div class="inline-flex gap-4 z-10 pr-2">
                         <v-button
                             :icon="[ station.is_favorite ? 'heart-solid' : 'heart' ]"
-                            :title="$lang('global.favorites')"
+                            :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"
                             :active="station.is_favorite"
                             class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10"
                             @click="setLike(!station.is_favorite)"
