@@ -1,0 +1,3 @@
+#!/bin/bash
+
+tailwindcss -c tailwind.config.js -i www/asset/css/input.css -o www/asset/css/output.css --minify

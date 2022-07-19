@@ -40,7 +40,7 @@ body {
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/asset/font/inter/Inter-Regular.ttf') format('truetype');
+  src: url('/asset/font/Inter-Regular.ttf') format('truetype');
 }
 
 @font-face {
@@ -48,7 +48,7 @@ body {
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/asset/font/inter/Inter-Medium.ttf') format('truetype');
+  src: url('/asset/font/Inter-Medium.ttf') format('truetype');
 }
 
 @font-face {
@@ -56,5 +56,5 @@ body {
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('/asset/font/inter/Inter-SemiBold.ttf') format('truetype');
+  src: url('/asset/font/Inter-SemiBold.ttf') format('truetype');
 }
