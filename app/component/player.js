@@ -152,8 +152,8 @@ export default {
                         <v-icon
                             v-else
                             id="access-point"
-                            size="65%"
-                            class="bg-gray-400"
+                            size="38px"
+                            class="text-gray-400"
                         ></v-icon>
                     </div>
                     <div
@@ -168,7 +168,7 @@ export default {
                     </div>
                     <div class="inline-flex gap-4 z-10 pr-2">
                         <v-button
-                            :icon="[ station.is_favorite ? 'heart-solid' : 'heart' ]"
+                            :icon="[ station.is_favorite ? 'heart-off' : 'heart' ]"
                             :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"
                             :active="station.is_favorite"
                             class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10"

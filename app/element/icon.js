@@ -1,20 +1,22 @@
 export default {
-    props: ['id', 'size', 'classes'],
+    props: ['id', 'size'],
     computed: {
+        classes() {
+            return [
+                `ti-${this.id}`,
+            ];
+        },
         styles() {
             return {
-                'mask-image': `url(https://cdn.typable.dev/tabler/${this.id})`,
-                'mask-repeat': 'no-repeat',
-                'mask-position': 'center',
-                'mask-size': this.size ?? ''
+                'font-size': `${this.size ?? '24px'}`
             };
         }
     },
     template: `
         <div
-            :style="styles"
-            class="min-w-[50px] h-full transition-colors"
+            class="ti min-w-[50px] h-full transition-colors relative before:absolute before:top-[50%] before:left-[50%] before:-translate-x-1/2 before:-translate-y-[55%]"
             :class="classes"
+            :style="styles"
         ></div>
     `
 }

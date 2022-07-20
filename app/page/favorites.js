@@ -46,9 +46,9 @@ export default {
             >
                 <v-icon
                     id="loader"
-                    class="bg-gray-400 animate-spin"
+                    class="text-gray-400 animate-spin"
                     style="animation-duration: 2s;"
-                    size="80%"
+                    size="44px"
                 ></v-icon>
             </div>
         </v-tab>

@@ -38,8 +38,8 @@ export default {
                 <v-icon
                     v-else
                     id="access-point"
-                    size="65%"
-                    class="bg-gray-400"
+                    size="32px"
+                    class="text-gray-400"
                 ></v-icon>
             </div>
             <div class="flex flex-col flex-1 min-w-0">
@@ -52,7 +52,7 @@ export default {
                     >
                         <v-icon
                             id="world"
-                            class="w-[18px] h-[18px] !min-w-[18px] inline-flex bg-gray-400"
+                            class="w-[18px] h-[18px] !min-w-[18px] inline-flex text-gray-400"
                             size="100%"
                         ></v-icon>
                         <p>{{station.country}}</p>
@@ -64,7 +64,7 @@ export default {
                     >
                         <v-icon
                             id="thumb-up"
-                            class="w-[18px] h-[18px] !min-w-[18px] inline-flex bg-gray-400"
+                            class="w-[18px] h-[18px] !min-w-[18px] inline-flex text-gray-400"
                             size="100%"
                         ></v-icon>
                         <p>{{station.votes}}</p>
@@ -76,7 +76,7 @@ export default {
                     >
                         <v-icon
                             :id="[ station.click_trend >= 0 ? 'arrow-up-right' : 'arrow-down-right' ]"
-                            class="w-[18px] h-[18px] !min-w-[18px] inline-flex bg-gray-400"
+                            class="w-[18px] h-[18px] !min-w-[18px] inline-flex text-gray-400"
                         ></v-icon>
                         <p>{{Math.abs(station.click_trend) ?? 'None'}}</p>
                     </span>
@@ -84,7 +84,7 @@ export default {
             </div>
             <div class="inline-flex gap-3 sm:gap-4">
                 <v-button
-                    :icon="[ station.is_favorite ? 'heart-solid' : 'heart' ]"
+                    :icon="[ station.is_favorite ? 'heart-off' : 'heart' ]"
                     :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"
                     :active="station.is_favorite"
                     @click="() => setLike(!station.is_favorite)"
