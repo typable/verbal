@@ -28,10 +28,10 @@ pub struct Station {
     pub url: String,
     pub icon: Option<String>,
     pub homepage: Option<String>,
-    pub tags: Vec<String>,
+    pub tags: Option<Vec<String>>,
     pub country: Option<String>,
     pub state: Option<String>,
-    pub languages: Vec<String>,
+    pub languages: Option<Vec<String>>,
     pub score: i32,
     pub is_favorite: Option<bool>,
 }
