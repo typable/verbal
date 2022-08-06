@@ -1,6 +1,4 @@
-use regex::Regex;
-
-pub fn to_array(value: String) -> Vec<String> {
+pub fn to_array(value: &str) -> Vec<String> {
     value
         .split(',')
         .map(str::to_string)
@@ -8,9 +6,9 @@ pub fn to_array(value: String) -> Vec<String> {
         .collect::<Vec<String>>()
 }
 
-pub fn upgrade_to_https(url: String) -> String {
-    if Regex::new("^http://").unwrap().is_match(&url) {
+pub fn upgrade_to_https(url: &str) -> String {
+    if url.starts_with("http://") {
         return format!("https://verbal.fm/api/upgrade?redirect={}", &url);
     }
-    url
+    url.to_string()
 }

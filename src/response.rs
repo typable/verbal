@@ -1,4 +1,4 @@
-use crate::error::{Error, ErrorKind};
+use crate::error::Error;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -28,11 +28,11 @@ where
 }
 
 impl Response<(), Error> {
-    pub fn throw(error_kind: ErrorKind, message: &str) -> tide::Result {
+    pub fn throw(message: &str) -> tide::Result {
         Response::respond(tide::Body::from_json(&Self {
             ok: false,
             data: None,
-            error: Some(Error::new(error_kind, message)),
+            error: Some(Error::new(message)),
         }))
     }
 }

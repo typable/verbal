@@ -1,5 +1,5 @@
 mod auth;
 mod cors;
 
-pub use auth::AuthMiddleware;
-pub use cors::CorsMiddleware;
+pub use auth::Auth;
+pub use cors::Cors;

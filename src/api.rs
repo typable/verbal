@@ -1,8 +1,9 @@
 use serde::Deserialize;
 use std::fmt;
 
-use crate::error::{Error, ErrorKind, Result};
+use crate::error::Error;
 use crate::rest;
+use crate::Result;
 
 const API_URLS: [&str; 3] = [
     "https://de1.api.radio-browser.info",
@@ -35,7 +36,7 @@ impl RadioBrowserApi {
         let mut response = RadioBrowserApi::fetch(&uri).await?;
         match response.body_json::<Vec<rest::Station>>().await {
             Ok(data) => Ok(data),
-            Err(err) => Err(Error::new(ErrorKind::Parse, &err.to_string())),
+            Err(err) => Err(Error::new(&err.to_string())),
         }
     }
 
@@ -44,7 +45,7 @@ impl RadioBrowserApi {
         let mut response = RadioBrowserApi::fetch(&uri).await?;
         match response.body_json::<Vec<rest::Station>>().await {
             Ok(data) => Ok(data),
-            Err(err) => Err(Error::new(ErrorKind::Parse, &err.to_string())),
+            Err(err) => Err(Error::new(&err.to_string())),
         }
     }
 
@@ -57,12 +58,12 @@ impl RadioBrowserApi {
                     successful_response = Some(response);
                     break;
                 }
-                Err(err) => println!("{}", Error::new(ErrorKind::Fetch, &err.to_string())),
+                Err(err) => println!("{}", Error::new(&err.to_string())),
             }
         }
         match successful_response {
             Some(response) => Ok(response),
-            None => Err(Error::new(ErrorKind::Fetch, "All request attempts failed!")),
+            None => Err(Error::new("All request attempts failed!")),
         }
     }
 }

@@ -2,6 +2,10 @@ use serde::Deserialize;
 use std::fmt;
 use std::fs;
 
+use crate::error::Error;
+use crate::Result;
+use crate::APP_NAME;
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct Server {
     pub hostname: String,
@@ -46,8 +50,15 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn from_file(path: &str) -> Result<Self, toml::de::Error> {
-        let raw = fs::read_to_string(path).expect("Unable to locate config file!");
-        toml::from_str(&raw)
+    pub fn acquire() -> Result<Self> {
+        let mut config_path = match dirs::config_dir() {
+            Some(config_path) => config_path,
+            None => return Err(Error::new("unable to determine config path!")),
+        };
+        config_path.push(APP_NAME);
+        config_path.push("config.toml");
+        let raw = fs::read_to_string(&config_path)?;
+        let config: Self = toml::from_str(&raw)?;
+        Ok(config)
     }
 }

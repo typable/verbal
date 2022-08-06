@@ -2,20 +2,14 @@ use sqlx::postgres::Postgres;
 use sqlx::Acquire;
 use tide_sqlx::SQLxRequestExt;
 
-use crate::error::ErrorKind;
 use crate::model;
 use crate::response::Response;
 
-pub struct AuthMiddleware {}
-
-impl AuthMiddleware {
-    pub fn new() -> Self {
-        Self {}
-    }
-}
+#[derive(Default)]
+pub struct Auth;
 
 #[tide::utils::async_trait]
-impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for AuthMiddleware {
+impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for Auth {
     async fn handle(
         &self,
         mut req: tide::Request<State>,
@@ -24,12 +18,7 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for AuthMiddl
         if req.url().path().starts_with("/api") {
             let token = match req.header("verbal-token") {
                 Some(header) => header.as_str(),
-                None => {
-                    return Response::throw(
-                        ErrorKind::Identity,
-                        "No request header 'verbal-token' provided!",
-                    )
-                }
+                None => return Response::throw("No request header 'verbal-token' provided!"),
             };
             let query = format!(
                 "
@@ -47,17 +36,14 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for AuthMiddl
                 option_account = sqlx::query_as::<_, model::Account>(&query)
                     .fetch_optional(conn.acquire().await.unwrap())
                     .await
-                    .unwrap()
+                    .unwrap();
             }
             match option_account {
                 Some(account) => {
                     req.set_ext(account);
                 }
                 None => {
-                    return Response::throw(
-                        ErrorKind::Identity,
-                        "No account found for provided header 'verbal-token'!",
-                    );
+                    return Response::throw("No account found for provided header 'verbal-token'!");
                 }
             }
         }

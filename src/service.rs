@@ -6,8 +6,9 @@ use tide_sqlx::SQLxRequestExt;
 
 use crate::api::{RadioBrowserApi, Search};
 use crate::data::{self, Song};
-use crate::error::{Error, ErrorKind, Result};
+use crate::error::Error;
 use crate::model;
+use crate::Result;
 
 pub struct Service {}
 
@@ -46,20 +47,15 @@ impl Service {
     pub async fn get_song(song: Song) -> Result<Option<String>> {
         let mut response = match surf::get(&song.url).header("icy-metadata", "1").await {
             Ok(response) => response,
-            Err(_) => return Err(Error::new(ErrorKind::Fetch, "Unable to fetch metadata!")),
+            Err(_) => return Err(Error::new("Unable to fetch metadata!")),
         };
         let meta_int = match response.header("icy-metaint") {
             Some(header) => header.as_str(),
-            None => return Err(Error::new(ErrorKind::Parse, "Invalid icy metadata!")),
+            None => return Err(Error::new("Invalid icy metadata!")),
         };
         let interval = match meta_int.parse::<usize>() {
             Ok(value) => value * 2,
-            Err(_) => {
-                return Err(Error::new(
-                    ErrorKind::Parse,
-                    "Unable to parse icy metadata!",
-                ))
-            }
+            Err(_) => return Err(Error::new("Unable to parse icy metadata!")),
         };
         let mut count = 0;
         let mut bytes = vec![];
@@ -70,12 +66,12 @@ impl Service {
             bytes.extend_from_slice(&buf);
             if count + len > interval {
                 let metadata = String::from_utf8_lossy(&bytes);
-                for cap in Regex::new("StreamTitle='([^;]*)';")
+                if let Some(cap) = Regex::new("StreamTitle='([^;]*)';")
                     .unwrap()
                     .captures_iter(&metadata)
+                    .next()
                 {
                     data = Some(cap[1].to_string());
-                    break;
                 }
                 break;
             }
@@ -126,12 +122,7 @@ impl Service {
     pub async fn add_like(mut req: tide::Request<()>) -> Result<()> {
         let uuid = match req.body_json::<String>().await {
             Ok(body) => body,
-            Err(_) => {
-                return Err(Error::new(
-                    ErrorKind::Arguments,
-                    "No station uuid provided!",
-                ))
-            }
+            Err(_) => return Err(Error::new("No station uuid provided!")),
         };
         let account = req.ext::<model::Account>().unwrap();
         let query = format!(
@@ -149,19 +140,14 @@ impl Service {
             .await
         {
             Ok(_) => Ok(()),
-            Err(err) => Err(Error::new(ErrorKind::Query, &err.to_string())),
+            Err(err) => Err(Error::new(&err.to_string())),
         }
     }
 
     pub async fn remove_like(mut req: tide::Request<()>) -> Result<()> {
         let uuid = match req.body_json::<String>().await {
             Ok(body) => body,
-            Err(_) => {
-                return Err(Error::new(
-                    ErrorKind::Arguments,
-                    "No station uuid provided!",
-                ))
-            }
+            Err(_) => return Err(Error::new("No station uuid provided!")),
         };
         let account = req.ext::<model::Account>().unwrap();
         let query = format!(
@@ -178,7 +164,7 @@ impl Service {
             .await
         {
             Ok(_) => Ok(()),
-            Err(err) => Err(Error::new(ErrorKind::Query, &err.to_string())),
+            Err(err) => Err(Error::new(&err.to_string())),
         }
     }
 }

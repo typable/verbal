@@ -48,7 +48,7 @@ impl From<model::Station> for Station {
         Self {
             uuid: model.uuid,
             name: model.name,
-            stream_url: upgrade_to_https(model.stream_url),
+            stream_url: upgrade_to_https(&model.stream_url),
             votes: model.votes,
             favicon: model.favicon,
             homepage: model.homepage,
@@ -66,13 +66,13 @@ impl From<rest::Station> for Station {
         Self {
             uuid: rest.stationuuid,
             name: rest.name,
-            stream_url: upgrade_to_https(rest.url),
+            stream_url: upgrade_to_https(&rest.url),
             votes: rest.votes,
             favicon: Some(rest.favicon),
             homepage: Some(rest.homepage),
-            tags: to_array(rest.tags),
+            tags: to_array(&rest.tags),
             country: Some(rest.countrycode),
-            languages: to_array(rest.languagecodes),
+            languages: to_array(&rest.languagecodes),
             state: Some(rest.state),
             is_favorite: false,
         }
