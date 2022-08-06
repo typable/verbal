@@ -7,7 +7,7 @@ import VAccount from './page/account.js';
 
 export const state = {
     app: null,
-    tab: 'search',
+    tab: 'account',
     account: {
         username: '',
         language: 'en'

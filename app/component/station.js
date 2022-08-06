@@ -84,7 +84,7 @@ export default {
             </div>
             <div class="inline-flex gap-3 sm:gap-4">
                 <v-button
-                    :icon="[ station.is_favorite ? 'heart-off' : 'heart' ]"
+                    :icon="[ station.is_favorite ? 'bookmark-off' : 'bookmark' ]"
                     :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"
                     :active="station.is_favorite"
                     @click="() => setLike(!station.is_favorite)"

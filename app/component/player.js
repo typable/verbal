@@ -169,7 +169,7 @@ export default {
                     </div>
                     <div class="inline-flex gap-4 z-10 pr-2">
                         <v-button
-                            :icon="[ station.is_favorite ? 'heart-off' : 'heart' ]"
+                            :icon="[ station.is_favorite ? 'bookmark-off' : 'bookmark' ]"
                             :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"
                             :active="station.is_favorite"
                             class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10"
