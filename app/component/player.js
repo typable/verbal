@@ -158,7 +158,7 @@ export default {
                         ></v-icon>
                     </div>
                     <div
-                        class="flex flex-col flex-1 z-10 min-w-0 cursor-pointer"
+                        class="flex flex-col flex-1 z-10 min-w-0"
                     >
                         <p class="text-xl font-semibold text-white pb-1 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none">
                             {{station.name}}
