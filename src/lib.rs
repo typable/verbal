@@ -3,23 +3,19 @@ use env_logger::Target;
 use log::LevelFilter;
 use std::process;
 
-pub mod api;
-pub mod data;
 pub mod error;
 pub mod middleware;
 pub mod model;
-pub mod rest;
+pub mod route;
 pub mod utils;
 
 mod config;
 mod response;
 mod server;
-mod service;
 
 pub use config::Config;
 pub use response::Response;
 pub use server::Server;
-pub use service::Service;
 
 use error::Error;
 
@@ -29,6 +25,10 @@ extern crate log;
 pub const APP_NAME: &str = "verbal";
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+pub trait IntoSql {
+    fn into_sql(self) -> Result<String>;
+}
 
 pub fn init_logger() {
     Builder::new()

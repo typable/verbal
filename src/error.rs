@@ -27,6 +27,12 @@ impl From<std::io::Error> for Error {
     }
 }
 
+impl From<std::fmt::Error> for Error {
+    fn from(err: std::fmt::Error) -> Self {
+        Self::new(&err.to_string())
+    }
+}
+
 impl From<toml::de::Error> for Error {
     fn from(err: toml::de::Error) -> Self {
         Self::new(&err.to_string())

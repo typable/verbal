@@ -26,7 +26,19 @@ export function http(parts, ...values) {
                 let body = null;
                 let params = '';
                 if(method === 'get' || method === 'head') {
+                    if(query !== undefined && query !== null) {
+                        for(const [key, value] of Object.entries(query)) {
+                            if(Array.isArray(value)) {
+                                delete query[key];
+                                for(let i = 0; i < value.length; i++) {
+                                    query[`${key}[${i}]`] = value[i];
+                                }
+                            }
+                        }
+                    }
                     params = '?' + new URLSearchParams(query).toString();
+                    params = params.replaceAll(/%5B/g, '[');
+                    params = params.replaceAll(/%5D/g, ']');
                 }
                 else {
                     body = JSON.stringify(query);
@@ -43,7 +55,7 @@ export function http(parts, ...values) {
                     return;
                 }
                 if(!ok) {
-                    reject(`[${error.kind}] ${error.message}`);
+                    reject(error.message);
                     return;
                 }
                 resolve(data);

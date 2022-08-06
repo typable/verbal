@@ -34,7 +34,7 @@ export default {
         $lang,
         async setLike(is_favorite) {
             try {
-                await http`${is_favorite ? 'post' : 'delete'}::/api/like`(this.station.uuid);
+                await http`${is_favorite ? 'post' : 'delete'}::/api/favorite`(this.station.id);
                 this.station.is_favorite = is_favorite;
                 state.app.$refs.favorites.doFetch();
             }
@@ -82,22 +82,23 @@ export default {
                     title: this.title,
                     artist: this.station.name,
                     artwork: [
-                        { src: this.station.favicon, sizes: '96x96', type: 'image/jpg' },
-                        { src: this.station.favicon, sizes: '128x128', type: 'image/jpg' },
-                        { src: this.station.favicon, sizes: '192x192', type: 'image/jpg' },
-                        { src: this.station.favicon, sizes: '256x256', type: 'image/jpg' },
-                        { src: this.station.favicon, sizes: '384x384', type: 'image/jpg' },
-                        { src: this.station.favicon, sizes: '512x512', type: 'image/jpg' }
+                        { src: this.station.icon, sizes: '96x96', type: 'image/jpg' },
+                        { src: this.station.icon, sizes: '128x128', type: 'image/jpg' },
+                        { src: this.station.icon, sizes: '192x192', type: 'image/jpg' },
+                        { src: this.station.icon, sizes: '256x256', type: 'image/jpg' },
+                        { src: this.station.icon, sizes: '384x384', type: 'image/jpg' },
+                        { src: this.station.icon, sizes: '512x512', type: 'image/jpg' }
                     ]
                 });
             }
         },
         async fetchSong() {
             try {
-                const song = await http`get::/api/song`({ url: this.station.stream_url });
+                const song = await http`get::/api/song`(this.station);
                 this.title = song === '' ? '- No song title available -' : song;
             }
             catch(err) {
+                console.error(err);
                 this.title = '- No song title available -';
             }
             this.updateMediaSession();
@@ -123,29 +124,29 @@ export default {
                 <audio
                     ref="player"
                     controls autoplay
-                    :src="station.stream_url"
+                    :src="station.url"
                     @loadeddata="onLoad"
                     @play="onPlay"
                     @pause="onPause"
                     @error="onError"
                     class="select-none pointer-events-none w-0 h-0 opacity-0"
                 >
-                    <source :src="station.stream_url" type="audio/mpeg">
-                    <source :src="station.stream_url" type="audio/ogg">
-                    <source :src="station.stream_url" type="audio/aac">
+                    <source :src="station.url" type="audio/mpeg">
+                    <source :src="station.url" type="audio/ogg">
+                    <source :src="station.url" type="audio/aac">
                 </audio>
                 <div class="p-5 bg-zinc-800 rounded-xl flex gap-5 items-center relative overflow-hidden shadow-2xl z-30">
                     <img
-                        v-if="station.favicon"
-                        :src="station.favicon"
+                        v-if="station.icon"
+                        :src="station.icon"
                         :alt="station.name"
                         :class="{ 'animate-pulse': playing }"
                         class="w-full h-full object-cover absolute top-0 left-0 right-0 bottom-0 blur-2xl opacity-30 z-0 pointer-events-none select-none"
                     >
                     <div class="w-[64px] h-[64px] min-w-[64px] bg-zinc-900 rounded-lg overflow-hidden z-10">
                         <img
-                            v-if="station.favicon"
-                            :src="station.favicon"
+                            v-if="station.icon"
+                            :src="station.icon"
                             :alt="station.name"
                             class="w-full h-full object-contain select-none"
                         >

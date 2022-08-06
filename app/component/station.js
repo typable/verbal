@@ -13,7 +13,7 @@ export default {
         $lang,
         async setLike(is_favorite) {
             try {
-                await http`${is_favorite ? 'post' : 'delete'}::/api/like`(this.station.uuid);
+                await http`${is_favorite ? 'post' : 'delete'}::/api/favorite`(this.station.id);
                 this.station.is_favorite = is_favorite;
                 state.app.$refs.favorites.doFetch();
             }
@@ -29,10 +29,10 @@ export default {
         <div class="w-full gap-4 group flex items-center">
             <div class="w-[54px] h-[54px] min-w-[54px] bg-zinc-900 rounded-lg overflow-hidden">
                 <img
-                    v-if="station.favicon"
+                    v-if="station.icon"
                     :alt="station.name"
-                    :src="station.favicon"
-                    @error="() => station.favicon = null"
+                    :src="station.icon"
+                    @error="() => station.icon = null"
                     class="w-full h-full object-contain"
                 >
                 <v-icon

@@ -26,7 +26,7 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for Auth {
                         FROM account
                         INNER JOIN device
                         ON account.id = device.account_id
-                        WHERE device.token = '{}'
+                        WHERE device.uid = '{}'
                 ",
                 &token,
             );
