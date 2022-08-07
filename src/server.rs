@@ -55,23 +55,22 @@ impl Server {
         let address =
             unwrap_result_or_abort!(config.server.to_url(), "cannot parse server address!");
         info!("starting server on {}", address);
-        let listener = match config.server.is_tls() {
-            true => {
-                app.listen(
-                    TlsListener::build()
-                        .addrs(&address)
-                        .cert(unwrap_option_or_abort!(
-                            config.server.cert_path,
-                            "no certificate for TLS found!"
-                        ))
-                        .key(unwrap_option_or_abort!(
-                            config.server.key_path,
-                            "no key for TLS found!"
-                        )),
-                )
-                .await
-            }
-            false => app.listen(address).await,
+        let listener = if config.server.is_tls() {
+            app.listen(
+                TlsListener::build()
+                    .addrs(&address)
+                    .cert(unwrap_option_or_abort!(
+                        config.server.cert_path,
+                        "no certificate for TLS found!"
+                    ))
+                    .key(unwrap_option_or_abort!(
+                        config.server.key_path,
+                        "no key for TLS found!"
+                    )),
+            )
+            .await
+        } else {
+            app.listen(address).await
         };
         unwrap_result_or_abort!(listener, "cannot start server!");
         Ok(())

@@ -51,7 +51,10 @@ macro_rules! unwrap_result_or_throw {
     ($target:expr, $message:expr) => {{
         match $target {
             Ok(target) => target,
-            Err(_) => return $crate::Response::throw($message),
+            Err(_) => {
+                error!("{}", $message);
+                return $crate::Response::throw($message);
+            }
         }
     }};
 }
@@ -61,7 +64,10 @@ macro_rules! unwrap_option_or_throw {
     ($target:expr, $message:expr) => {{
         match $target {
             Some(target) => target,
-            None => return $crate::Response::throw($message),
+            None => {
+                error!("{}", $message);
+                return $crate::Response::throw($message);
+            }
         }
     }};
 }

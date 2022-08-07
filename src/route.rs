@@ -5,6 +5,8 @@ use sqlx::Postgres;
 use tide_sqlx::SQLxRequestExt;
 
 use crate::model;
+use crate::unwrap_option_or_throw;
+use crate::unwrap_result_or_throw;
 use crate::Response;
 use crate::ToSql;
 
@@ -13,13 +15,15 @@ pub async fn do_prefetch(_: tide::Request<()>) -> tide::Result {
 }
 
 pub async fn get_account(req: tide::Request<()>) -> tide::Result {
-    let account = req.ext::<model::Account>().unwrap();
+    let account =
+        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     Response::with(account)
 }
 
 pub async fn do_search(req: tide::Request<()>) -> tide::Result {
     let query = req.query::<model::Query>()?;
-    let account = req.ext::<model::Account>().unwrap();
+    let account =
+        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
         r#"
             SELECT
@@ -38,7 +42,7 @@ pub async fn do_search(req: tide::Request<()>) -> tide::Result {
         "#,
         account_id = account.id,
         offset = query.page.unwrap_or_default() * 10,
-        conditions = query.to_sql().unwrap(),
+        conditions = unwrap_result_or_throw!(query.to_sql(), "cannot parse sql statement!"),
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let result = sqlx::query_as::<_, model::Station>(&sql)
@@ -63,14 +67,15 @@ pub async fn get_song(req: tide::Request<()>) -> tide::Result {
     let mut buf = [0; 10000];
     let mut title = None;
     loop {
-        let len = response.read(&mut buf).await.unwrap();
+        let len =
+            unwrap_result_or_throw!(response.read(&mut buf).await, "cannot read stream data!");
         bytes.extend_from_slice(&buf);
         if total + len > interval {
             let metadata = String::from_utf8_lossy(&bytes);
-            if let Some(cap) = Regex::new("StreamTitle='([^;]*)';")
-                .unwrap()
-                .captures_iter(&metadata)
-                .next()
+            if let Some(cap) =
+                unwrap_result_or_throw!(Regex::new("StreamTitle='([^;]*)';"), "cannot parse regex!")
+                    .captures_iter(&metadata)
+                    .next()
             {
                 title = Some(cap[1].to_string());
             }
@@ -86,7 +91,8 @@ pub async fn get_song(req: tide::Request<()>) -> tide::Result {
 }
 
 pub async fn get_favorites(req: tide::Request<()>) -> tide::Result {
-    let account = req.ext::<model::Account>().unwrap();
+    let account =
+        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
         r#"
             SELECT
@@ -108,7 +114,8 @@ pub async fn get_favorites(req: tide::Request<()>) -> tide::Result {
 
 pub async fn add_favorite(mut req: tide::Request<()>) -> tide::Result {
     let station_id = req.body_json::<i32>().await?;
-    let account = req.ext::<model::Account>().unwrap();
+    let account =
+        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
         r#"
             INSERT INTO
@@ -127,7 +134,8 @@ pub async fn add_favorite(mut req: tide::Request<()>) -> tide::Result {
 
 pub async fn delete_favorite(mut req: tide::Request<()>) -> tide::Result {
     let station_id = req.body_json::<i32>().await?;
-    let account = req.ext::<model::Account>().unwrap();
+    let account =
+        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
         r#"
             DELETE FROM

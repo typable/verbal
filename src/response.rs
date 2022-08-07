@@ -1,4 +1,5 @@
 use crate::error::Error;
+use crate::unwrap_result_or_throw;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -10,7 +11,12 @@ pub struct Response<T, E> {
 
 impl Response<(), ()> {
     pub fn respond(body: Result<tide::Body, tide::Error>) -> tide::Result {
-        Ok(tide::Response::builder(200).body(body.unwrap()).build())
+        Ok(tide::Response::builder(200)
+            .body(unwrap_result_or_throw!(
+                body,
+                "cannot acquire response body!"
+            ))
+            .build())
     }
 }
 
