@@ -3,8 +3,8 @@ use serde::Serialize;
 use sqlx::FromRow;
 use std::fmt::Write;
 
-use crate::IntoSql;
 use crate::Result;
+use crate::ToSql;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Account {
@@ -52,8 +52,8 @@ pub struct Query {
     pub page: Option<i32>,
 }
 
-impl IntoSql for Query {
-    fn into_sql(self) -> Result<String> {
+impl ToSql for Query {
+    fn to_sql(&self) -> Result<String> {
         let mut sql = String::new();
         writeln!(
             sql,

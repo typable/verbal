@@ -5,8 +5,8 @@ use sqlx::Postgres;
 use tide_sqlx::SQLxRequestExt;
 
 use crate::model;
-use crate::IntoSql;
 use crate::Response;
+use crate::ToSql;
 
 pub async fn do_prefetch(_: tide::Request<()>) -> tide::Result {
     Ok(tide::Response::new(200))
@@ -38,7 +38,7 @@ pub async fn do_search(req: tide::Request<()>) -> tide::Result {
         "#,
         account_id = account.id,
         offset = query.page.unwrap_or_default() * 10,
-        conditions = query.into_sql().unwrap(),
+        conditions = query.to_sql().unwrap(),
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let result = sqlx::query_as::<_, model::Station>(&sql)

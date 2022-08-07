@@ -1,7 +1,6 @@
 use env_logger::Builder;
 use env_logger::Target;
 use log::LevelFilter;
-use std::process;
 
 pub mod error;
 pub mod middleware;
@@ -21,12 +20,62 @@ use error::Error;
 #[macro_use]
 extern crate log;
 
+#[macro_export]
+macro_rules! abort {
+    ($message:expr) => {{
+        error!("{}", $message);
+        std::process::exit(1)
+    }};
+    ($message:expr, $err:expr) => {{
+        error!("{} Reason: {}", $message, $err);
+        std::process::exit(1)
+    }};
+}
+
+#[macro_export]
+macro_rules! unwrap_result_or_abort {
+    ($target:expr, $message:expr) => {{
+        $target.unwrap_or_else(|err| abort!($message, &err))
+    }};
+}
+
+#[macro_export]
+macro_rules! unwrap_option_or_abort {
+    ($target:expr, $message:expr) => {{
+        $target.unwrap_or_else(|| abort!($message))
+    }};
+}
+
+#[macro_export]
+macro_rules! unwrap_result_or_throw {
+    ($target:expr, $message:expr) => {{
+        match $target {
+            Ok(target) => target,
+            Err(_) => return $crate::Response::throw($message),
+        }
+    }};
+}
+
+#[macro_export]
+macro_rules! unwrap_option_or_throw {
+    ($target:expr, $message:expr) => {{
+        match $target {
+            Some(target) => target,
+            None => return $crate::Response::throw($message),
+        }
+    }};
+}
+
 pub const APP_NAME: &str = "verbal";
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-pub trait IntoSql {
-    fn into_sql(self) -> Result<String>;
+pub trait ToSql {
+    fn to_sql(&self) -> Result<String>;
+}
+
+pub trait ToUrl {
+    fn to_url(&self) -> Result<String>;
 }
 
 pub fn init_logger() {
@@ -35,9 +84,4 @@ pub fn init_logger() {
         .filter_module(APP_NAME, LevelFilter::Info)
         .target(Target::Stdout)
         .init();
-}
-
-pub fn abort(err: &Error) -> ! {
-    error!("{}", err);
-    process::exit(1)
 }

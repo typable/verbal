@@ -1,5 +1,6 @@
 use sqlx::postgres::Postgres;
 use tide_compress::CompressMiddleware;
+use tide_rustls::TlsListener;
 use tide_sqlx::SQLxMiddleware;
 
 use crate::abort;
@@ -7,24 +8,30 @@ use crate::middleware::Auth;
 use crate::middleware::Cors;
 use crate::middleware::Error;
 use crate::route;
+use crate::unwrap_option_or_abort;
+use crate::unwrap_result_or_abort;
 use crate::Config;
 use crate::Result;
+use crate::ToUrl;
 
 #[derive(Default)]
 pub struct Server;
 
 impl Server {
     pub async fn run(&self) -> Result<()> {
-        let config = Config::acquire().unwrap_or_else(|err| abort(&err));
+        let config = unwrap_result_or_abort!(Config::acquire(), "cannot acquire config!");
         let mut app = tide::new();
 
         /* bind middleware */
         app.with(Error::default());
-        app.with(
-            SQLxMiddleware::<Postgres>::new(&config.database.to_string())
-                .await
-                .unwrap(),
-        );
+        app.with(unwrap_result_or_abort!(
+            SQLxMiddleware::<Postgres>::new(&unwrap_result_or_abort!(
+                config.database.to_url(),
+                "cannot parse database address!"
+            ))
+            .await,
+            "cannot connect to database!"
+        ));
         app.with(Auth::default());
         app.with(Cors::new(&config.server.options.origin));
         app.with(CompressMiddleware::new());
@@ -45,7 +52,28 @@ impl Server {
         app.at("/api/favorite").post(route::add_favorite);
         app.at("/api/favorite").delete(route::delete_favorite);
 
-        app.listen(&config.server.to_string()).await?;
+        let address =
+            unwrap_result_or_abort!(config.server.to_url(), "cannot parse server address!");
+        info!("starting server on {}", address);
+        let listener = match config.server.is_tls() {
+            true => {
+                app.listen(
+                    TlsListener::build()
+                        .addrs(&address)
+                        .cert(unwrap_option_or_abort!(
+                            config.server.cert_path,
+                            "no certificate for TLS found!"
+                        ))
+                        .key(unwrap_option_or_abort!(
+                            config.server.key_path,
+                            "no key for TLS found!"
+                        )),
+                )
+                .await
+            }
+            false => app.listen(address).await,
+        };
+        unwrap_result_or_abort!(listener, "cannot start server!");
         Ok(())
     }
 }
