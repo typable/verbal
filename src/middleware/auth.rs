@@ -2,64 +2,51 @@ use sqlx::postgres::Postgres;
 use sqlx::Acquire;
 use tide_sqlx::SQLxRequestExt;
 
-use crate::error::ErrorKind;
 use crate::model;
-use crate::response::Response;
+use crate::unwrap_option_or_throw;
+use crate::unwrap_result_or_throw;
 
-pub struct AuthMiddleware {}
-
-impl AuthMiddleware {
-    pub fn new() -> Self {
-        Self {}
-    }
-}
+#[derive(Default)]
+pub struct Auth;
 
 #[tide::utils::async_trait]
-impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for AuthMiddleware {
+impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for Auth {
     async fn handle(
         &self,
         mut req: tide::Request<State>,
         next: tide::Next<'_, State>,
     ) -> tide::Result {
         if req.url().path().starts_with("/api") {
-            let token = match req.header("verbal-token") {
-                Some(header) => header.as_str(),
-                None => {
-                    return Response::throw(
-                        ErrorKind::Identity,
-                        "No request header 'verbal-token' provided!",
-                    )
-                }
-            };
+            let token =
+                unwrap_option_or_throw!(req.header("verbal-token"), "no token was provided!")
+                    .as_str();
             let query = format!(
                 "
                     SELECT account.*
                         FROM account
                         INNER JOIN device
                         ON account.id = device.account_id
-                        WHERE device.token = '{}'
+                        WHERE device.uid = '{}'
                 ",
                 &token,
             );
             let option_account;
             {
                 let mut conn = req.sqlx_conn::<Postgres>().await;
-                option_account = sqlx::query_as::<_, model::Account>(&query)
-                    .fetch_optional(conn.acquire().await.unwrap())
-                    .await
-                    .unwrap()
+                option_account = unwrap_result_or_throw!(
+                    sqlx::query_as::<_, model::Account>(&query)
+                        .fetch_optional(unwrap_result_or_throw!(
+                            conn.acquire().await,
+                            "cannot acquire connection to database!"
+                        ))
+                        .await,
+                    "cannot acquire account for given device!"
+                );
             }
-            match option_account {
-                Some(account) => {
-                    req.set_ext(account);
-                }
-                None => {
-                    return Response::throw(
-                        ErrorKind::Identity,
-                        "No account found for provided header 'verbal-token'!",
-                    );
-                }
-            }
+            req.set_ext(unwrap_option_or_throw!(
+                option_account,
+                "no account found for given token!"
+            ));
         }
         let res = next.run(req).await;
         Ok(res)

@@ -21,7 +21,7 @@ export default {
         async doFetch() {
             this.results = [];
             this.loading = true;
-            const result = await http`get::/api/like`();
+            const result = await http`get::/api/favorite`();
             this.loading = false;
             this.results = result;
         }

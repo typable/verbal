@@ -36,6 +36,6 @@ echo ""
 echo "Response"
 echo "------------------------------------------------------------"
 
-curl $url -I
+curl "$url" -I -g
 
-curl $url -s -X "${config["method"]}" -H "verbal-token: ${config["token"]}" | jq -r "."
+curl "$url" -s -g -X "${config["method"]}" -H "verbal-token: ${config["token"]}" | jq -r "."
