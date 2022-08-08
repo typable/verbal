@@ -39,18 +39,9 @@ export const state = {
             async init() {
                 window.app = this;
                 state.account = await http`get::/api/account`();
-                // document.addEventListener('keyup', this.onKey);
                 document.addEventListener('scroll', this.onScroll);
                 document.addEventListener('wheel', this.onScroll);
             },
-            // onKey(event) {
-            //     const {code, ctrlKey, shiftKey, altKey} = event;
-            //     if(!ctrlKey && !shiftKey && !altKey) {
-            //         if(code === 'KeyS') state.tab = 'search';
-            //         if(code === 'KeyF') state.tab = 'favorites';
-            //         if(code === 'KeyA') state.tab = 'account';
-            //     }
-            // },
             onScroll() {
                 if(window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 200) {
                     this.$refs.search.doSearchMore();
