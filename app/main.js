@@ -7,7 +7,7 @@ import VAccount from './page/account.js';
 
 export const state = {
     app: null,
-    tab: 'account',
+    tab: 'favorites',
     account: {
         username: '',
         language: 'en'
@@ -43,8 +43,10 @@ export const state = {
                 document.addEventListener('wheel', this.onScroll);
             },
             onScroll() {
-                if(window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 200) {
-                    this.$refs.search.doSearchMore();
+                if(state.tab === 'search') {
+                    if(window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 200) {
+                        this.$refs.search.doSearchMore();
+                    }
                 }
             }
         },
