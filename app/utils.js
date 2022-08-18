@@ -14,6 +14,7 @@ export function http(parts, ...values) {
     const regex = /^(\w+)::([\w\/.]*)$/;
     const [, method, path] = line.match(regex) ?? [];
     return (query) => {
+        query = {...query};
         return new Promise(async (resolve, reject) => {
             try {
                 const headers = {
@@ -33,6 +34,9 @@ export function http(parts, ...values) {
                                 for(let i = 0; i < value.length; i++) {
                                     query[`${key}[${i}]`] = value[i];
                                 }
+                            }
+                            else if(value === null) {
+                                delete query[key];
                             }
                         }
                     }

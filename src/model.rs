@@ -34,6 +34,9 @@ pub struct Station {
     pub languages: Option<Vec<String>>,
     pub score: i32,
     pub is_favorite: Option<bool>,
+    pub is_restricted: Option<bool>,
+    pub is_broken: Option<bool>,
+    pub is_no_track_info: Option<bool>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]

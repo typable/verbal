@@ -28,6 +28,9 @@ pub async fn do_search(req: tide::Request<()>) -> tide::Result {
         r#"
             SELECT
                 station.*,
+                station_status.is_restricted,
+                station_status.is_broken,
+                station_status.is_no_track_info,
                 CASE
                     WHEN favorite.id IS NULL OR favorite.account_id != {account_id}
                     THEN false
@@ -36,6 +39,8 @@ pub async fn do_search(req: tide::Request<()>) -> tide::Result {
                 FROM station
                 LEFT JOIN favorite
                     ON station.id = favorite.station_id
+                LEFT JOIN station_status
+                    ON station.id = station_status.station_id
                 {conditions}
                 OFFSET {offset}
                 LIMIT 10
@@ -97,10 +102,15 @@ pub async fn get_favorites(req: tide::Request<()>) -> tide::Result {
         r#"
             SELECT
                 station.*,
+                station_status.is_restricted,
+                station_status.is_broken,
+                station_status.is_no_track_info,
                 true as is_favorite
                 FROM station
                 LEFT JOIN favorite
                     ON station.id = favorite.station_id
+                LEFT JOIN station_status
+                    ON station.id = station_status.station_id
                 WHERE favorite.account_id = {account_id}
         "#,
         account_id = account.id,
