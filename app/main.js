@@ -41,6 +41,13 @@ export const state = {
                 state.account = await http`get::/api/account`();
                 document.addEventListener('scroll', this.onScroll);
                 document.addEventListener('wheel', this.onScroll);
+                if('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/worker.js');
+                    navigator.serviceWorker.addEventListener('controllerchange', this.updated);
+                }
+            },
+            updated() {
+                // TODO: show update popup
             },
             onScroll() {
                 if(state.tab === 'search') {

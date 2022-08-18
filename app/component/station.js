@@ -27,7 +27,10 @@ export default {
     },
     template: `
         <div class="w-full gap-4 group flex items-center">
-            <div class="w-[54px] h-[54px] min-w-[54px] bg-zinc-900 rounded-lg overflow-hidden">
+            <div
+                class="w-[54px] h-[54px] min-w-[54px] bg-zinc-900 rounded-lg overflow-hidden cursor-pointer"
+                @click="() => setStation(station)"
+            >
                 <img
                     v-if="station.icon"
                     :alt="station.name"
@@ -42,8 +45,13 @@ export default {
                     class="text-gray-400"
                 ></v-icon>
             </div>
-            <div class="flex flex-col flex-1 min-w-0">
-                <p :title="station.name" class="text-lg font-medium text-gray-100 pb-0 overflow-hidden text-ellipsis whitespace-nowrap">{{station.name}}</p>
+            <div class="flex flex-col flex-1 min-w-0 cursor-pointer">
+                <p
+                    :title="station.name"
+                    class="text-lg font-medium text-gray-100 pb-0 overflow-hidden text-ellipsis whitespace-nowrap"
+                >
+                    {{station.name}}
+                </p>
                 <span class="text-md text-gray-400 overflow-hidden flex gap-2 sm:gap-3">
                     <span
                         v-if="station.country" 
@@ -89,12 +97,6 @@ export default {
                     :active="station.is_favorite"
                     @click="() => setLike(!station.is_favorite)"
                     class="bg-zinc-900 hover:bg-white"
-                ></v-button>
-                <v-button
-                    icon="player-play"
-                    class="bg-zinc-900 hover:bg-white"
-                    :title="$lang('global.play')"
-                    @click="() => setStation(station)"
                 ></v-button>
             </div>
         </div>
