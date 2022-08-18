@@ -13,7 +13,21 @@ export default {
             },
             results: [],
             loading: false,
-            more: true
+            more: true,
+            countries: [
+                { name: 'All', value: '' },
+                { name: 'US', value: 'US' },
+                { name: 'GB', value: 'GB' },
+                { name: 'DE', value: 'DE' },
+                { name: 'CA', value: 'CA' }
+            ],
+            languages: [
+                { name: 'All', value: '' },
+                { name: 'EN', value: 'EN' },
+                { name: 'DE', value: 'DE' },
+                { name: 'FR', value: 'FR' },
+                { name: 'ES', value: 'ES' }
+            ]
         };
     },
     components: {
@@ -43,6 +57,13 @@ export default {
                 this.more = false;
             }
             this.results.push(...result);
+        },
+        reset() {
+            this.query = {
+                name : '',
+                page: 0
+            };
+            this.doSearch();
         }
     },
     mounted() {
@@ -59,6 +80,22 @@ export default {
                 spellcheck="false"
                 autocomplete="off"
             >
+            <div class="flex gap-5">
+                <select
+                    v-model="query.country"
+                    @change="doSearch"
+                    class="w-full h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer"
+                >
+                    <option v-for="country in countries" :value="country.value">{{country.name}}</option>
+                </select>
+                <select
+                    v-model="query.language"
+                    @change="doSearch"
+                    class="w-full h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer"
+                >
+                    <option v-for="language in languages" :value="language.value">{{language.name}}</option>
+                </select>
+            </div>
             <ul class="flex flex-col">
                 <li
                     :key="station.id"

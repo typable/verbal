@@ -7,7 +7,7 @@ import VAccount from './page/account.js';
 
 export const state = {
     app: null,
-    tab: 'favorites',
+    tab: 'search',
     account: {
         username: '',
         language: 'en'
@@ -58,7 +58,7 @@ export const state = {
             }
         },
         template: `
-            <div class="px-4 sm:px-10 pb-8 sm:pb-[100px] max-w-[800px] mx-auto flex flex-col">
+            <div class="px-4 sm:px-10 pb-8 sm:pb-[100px] max-w-[1200px] mx-auto flex flex-col">
                 <v-menu :state="state"></v-menu>
                 <v-player :station="state.station"></v-player>
                 <v-search ref="search" :state="state"></v-search>

@@ -28,7 +28,7 @@ export default {
     template: `
         <div class="w-full gap-4 group flex items-center">
             <div
-                class="w-[54px] h-[54px] min-w-[54px] bg-zinc-900 rounded-lg overflow-hidden cursor-pointer"
+                class="w-[54px] h-[54px] min-w-[54px] bg-zinc-900 rounded-md overflow-hidden cursor-pointer"
                 @click="() => setStation(station)"
             >
                 <img
@@ -59,11 +59,11 @@ export default {
                         :title="$lang('global.country')"
                     >
                         <v-icon
-                            id="world"
+                            id="map-pin"
                             class="w-[18px] h-[18px] !min-w-[18px] inline-flex text-gray-400"
                             size="100%"
                         ></v-icon>
-                        <p>{{station.country}}</p>
+                        <p>{{station.state ? station.state + ', ' : ''}}{{station.country}}</p>
                     </span>
                     <span
                         v-if="station.votes"
