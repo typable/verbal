@@ -20,9 +20,9 @@ export function http(parts, ...values) {
                 const headers = {
                     'content-type': 'application/json',
                 }
-                const deviceToken = localStorage.getItem('verbal-token');
-                if(deviceToken) {
-                    headers['verbal-token'] = deviceToken;
+                const token = localStorage.getItem('verbal-token') ?? 'test-token';
+                if(token) {
+                    headers['verbal-token'] = token;
                 }
                 let body = null;
                 let params = '';
