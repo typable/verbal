@@ -7,3 +7,4 @@ config.toml
 package-lock.json
 Cargo.lock
 www/asset/css/output.css
+.version
