@@ -67,19 +67,19 @@ export default {
                     </span>
                     <span
                         v-if="station.is_restricted"
-                        class="text-white/90 inline-flex items-center gap-[5px] bg-blue-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:block"
+                        class="text-white/90 items-center gap-[5px] bg-blue-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:inline-flex"
                     >
                         <p class="-mt-[1px]">Restricted</p>
                     </span>
                     <span
                         v-if="station.is_broken"
-                        class="text-white/90 inline-flex items-center gap-[5px] bg-red-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:block"
+                        class="text-white/90 items-center gap-[5px] bg-red-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:inline-flex"
                     >
                         <p class="-mt-[1px]">Broken</p>
                     </span>
                     <span
                         v-if="station.is_no_track_info"
-                        class="text-white/90 inline-flex items-center gap-[5px] bg-green-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:block"
+                        class="text-white/90 items-center gap-[5px] bg-green-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:inline-flex"
                     >
                         <p class="-mt-[1px]">No track info</p>
                     </span>
