@@ -14,7 +14,9 @@ export function http(parts, ...values) {
     const regex = /^(\w+)::([\w\/.]*)$/;
     const [, method, path] = line.match(regex) ?? [];
     return (query) => {
-        query = {...query};
+        if(query !== undefined) {
+            query = JSON.parse(JSON.stringify(query));
+        }
         return new Promise(async (resolve, reject) => {
             try {
                 const headers = {
