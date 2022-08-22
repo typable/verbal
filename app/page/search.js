@@ -13,13 +13,15 @@ export default {
             },
             results: [],
             loading: false,
+            searching: false,
             more: true,
             countries: [
                 { name: 'All', value: '' },
                 { name: 'US', value: 'US' },
                 { name: 'GB', value: 'GB' },
                 { name: 'DE', value: 'DE' },
-                { name: 'CA', value: 'CA' }
+                { name: 'CA', value: 'CA' },
+                { name: 'JP', value: 'JP' }
             ],
             languages: [
                 { name: 'All', value: '' },
@@ -27,6 +29,15 @@ export default {
                 { name: 'DE', value: 'DE' },
                 { name: 'FR', value: 'FR' },
                 { name: 'ES', value: 'ES' }
+            ],
+            recommended: [],
+            popular: [
+                45761,
+                44366,
+                37156,
+                33977,
+                56254,
+                30615
             ]
         };
     },
@@ -41,6 +52,7 @@ export default {
             this.results = [];
             this.loading = true;
             this.more = true;
+            this.searching = true;
             this.query.page = 0;
             const result = await http`get::/api/search`(this.query);
             this.loading = false;
@@ -58,16 +70,25 @@ export default {
             }
             this.results.push(...result);
         },
+        async loadRecommended() {
+            for(const id of this.popular) {
+                this.recommended.push(await http`get::/api/station`({ id }));
+            }
+        },
         reset() {
             this.query = {
                 name : '',
                 page: 0
             };
-            this.doSearch();
+            this.searching = false;
+            this.results = [];
+            // this.doSearch();
+            this.loadRecommended();
         }
     },
     mounted() {
-        this.doSearch();
+        // this.doSearch();
+        this.loadRecommended();
     },
     template: `
         <v-tab id="search" :tab="state.tab" @show="doSearch">
@@ -96,7 +117,7 @@ export default {
                     <option v-for="language in languages" :value="language.value">{{language.name}}</option>
                 </select>
             </div>
-            <ul class="flex flex-col">
+            <ul v-if="searching" class="flex flex-col">
                 <li
                     :key="station.id"
                     v-for="station in results"
@@ -105,6 +126,18 @@ export default {
                     <v-station :station="station"></v-station>
                 </li>
             </ul>
+            <div v-else>
+                <h3 class="text-white text-[24px] font-bold pb-8 pt-4 sm:pt-0">{{$lang('search.recommended')}}</h3>
+                <ul class="flex flex-col">
+                    <li
+                        :key="station.id"
+                        v-for="station in recommended"
+                        class="border-t sm:border-t-2 first:border-none border-zinc-900 py-5 first:pt-0"
+                    >
+                        <v-station :station="station"></v-station>
+                    </li>
+                </ul>
+            </div>
             <div
                 v-show="loading"
                 class="w-[60px] h-[60px] select-none pointer-events-none mx-auto"
@@ -117,13 +150,13 @@ export default {
                 ></v-icon>
             </div>
             <div
-                v-if="!more && results.length > 0"
+                v-if="searching && !more && results.length > 0"
                 class="text-zinc-400 text-md mx-auto pb-6"
             >
                 {{$lang('search.list.end')}}
             </div>
             <div
-                v-if="results.length == 0"
+                v-if="searching && results.length == 0"
                 class="text-zinc-400 text-md mx-auto pb-6"
             >
                 {{$lang('search.list.empty')}}

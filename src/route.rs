@@ -5,6 +5,7 @@ use sqlx::Postgres;
 use tide_sqlx::SQLxRequestExt;
 
 use crate::model;
+use crate::model::StationId;
 use crate::unwrap_option_or_throw;
 use crate::unwrap_result_or_throw;
 use crate::Response;
@@ -163,4 +164,39 @@ pub async fn delete_favorite(mut req: tide::Request<()>) -> tide::Result {
     let mut conn = req.sqlx_conn::<Postgres>().await;
     sqlx::query(&sql).execute(conn.acquire().await?).await?;
     Response::with(())
+}
+
+pub async fn get_station(req: tide::Request<()>) -> tide::Result {
+    let station_id = req.query::<StationId>()?;
+    let account =
+        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    let sql = format!(
+        r#"
+            SELECT
+                station.*,
+                station_status.is_restricted,
+                station_status.is_broken,
+                station_status.is_no_track_info,
+                station_status.is_hidden,
+                CASE
+                    WHEN favorite.id IS NULL OR favorite.account_id != {account_id}
+                    THEN false
+                    ELSE true
+                END AS is_favorite
+                FROM station
+                LEFT JOIN favorite
+                    ON station.id = favorite.station_id
+                LEFT JOIN station_status
+                    ON station.id = station_status.station_id
+                WHERE station.id = {station_id}
+                AND station_status.is_hidden IS NOT true
+        "#,
+        account_id = account.id,
+        station_id = station_id.id,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let result = sqlx::query_as::<_, model::Station>(&sql)
+        .fetch_optional(conn.acquire().await?)
+        .await?;
+    Response::with(result)
 }

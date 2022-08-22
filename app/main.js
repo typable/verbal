@@ -52,7 +52,9 @@ export const state = {
             onScroll() {
                 if(state.tab === 'search') {
                     if(window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 200) {
-                        this.$refs.search.doSearchMore();
+                        if(this.$refs.search.searching) {
+                            this.$refs.search.doSearchMore();
+                        }
                     }
                 }
             }

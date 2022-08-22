@@ -83,3 +83,8 @@ impl ToSql for Query {
         Ok(sql)
     }
 }
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct StationId {
+    pub id: i32,
+}
