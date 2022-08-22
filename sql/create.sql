@@ -18,10 +18,11 @@ CREATE TABLE station (
 
 CREATE TABLE station_status (
     id SERIAL PRIMARY KEY,
-    station_id INTEGER,
+    station_id INTEGER UNIQUE,
     is_restricted BOOLEAN DEFAULT false,
     is_broken BOOLEAN DEFAULT false,
-    is_no_track_info BOOLEAN DEFAULT false
+    is_no_track_info BOOLEAN DEFAULT false,
+    is_hidden BOOLEAN DEFAULT false
 );
 
 ALTER TABLE station_status
