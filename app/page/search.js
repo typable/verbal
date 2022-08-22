@@ -82,16 +82,14 @@ export default {
             };
             this.searching = false;
             this.results = [];
-            // this.doSearch();
             this.loadRecommended();
         }
     },
     mounted() {
-        // this.doSearch();
         this.loadRecommended();
     },
     template: `
-        <v-tab id="search" :tab="state.tab" @show="doSearch">
+        <v-tab id="search" :tab="state.tab">
             <input
                 v-model="query.name"
                 @keyup.enter="doSearch"
