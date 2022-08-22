@@ -92,7 +92,7 @@ export default {
         <v-tab id="search" :tab="state.tab">
             <input
                 v-model="query.name"
-                @keyup.enter="doSearch"
+                @change="doSearch"
                 type="text"
                 :placeholder="$lang('search.input.placeholder')"
                 class="w-full h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none"
