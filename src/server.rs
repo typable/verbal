@@ -54,6 +54,8 @@ impl Server {
         app.at("/api/favorite").post(route::add_favorite);
         app.at("/api/favorite").delete(route::delete_favorite);
         app.at("/api/station").get(route::get_station);
+        app.at("/api/countries").get(route::get_countries);
+        app.at("/api/languages").get(route::get_languages);
 
         let address =
             unwrap_result_or_abort!(config.server.to_url(), "cannot parse server address!");

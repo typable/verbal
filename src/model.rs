@@ -84,6 +84,16 @@ impl ToSql for Query {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct StationCountry {
+    pub country: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct StationLanguage {
+    pub language: String,
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct StationId {
     pub id: i32,

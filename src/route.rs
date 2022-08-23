@@ -5,7 +5,9 @@ use sqlx::Postgres;
 use tide_sqlx::SQLxRequestExt;
 
 use crate::model;
+use crate::model::StationCountry;
 use crate::model::StationId;
+use crate::model::StationLanguage;
 use crate::unwrap_option_or_throw;
 use crate::unwrap_result_or_throw;
 use crate::Response;
@@ -197,6 +199,41 @@ pub async fn get_station(req: tide::Request<()>) -> tide::Result {
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let result = sqlx::query_as::<_, model::Station>(&sql)
         .fetch_optional(conn.acquire().await?)
+        .await?;
+    Response::with(result)
+}
+
+pub async fn get_countries(req: tide::Request<()>) -> tide::Result {
+    let sql = format!(
+        r#"
+            SELECT
+                country
+                FROM station
+                WHERE country != ''
+                GROUP BY country
+                ORDER BY COUNT(*) DESC;
+        "#,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let result = sqlx::query_as::<_, StationCountry>(&sql)
+        .fetch_all(conn.acquire().await?)
+        .await?;
+    Response::with(result)
+}
+
+pub async fn get_languages(req: tide::Request<()>) -> tide::Result {
+    let sql = format!(
+        r#"
+            SELECT
+                UNNEST(languages) AS language
+                FROM station
+                GROUP BY UNNEST(languages)
+                ORDER BY COUNT(*) DESC;
+        "#,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let result = sqlx::query_as::<_, StationLanguage>(&sql)
+        .fetch_all(conn.acquire().await?)
         .await?;
     Response::with(result)
 }

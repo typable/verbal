@@ -9,27 +9,16 @@ export default {
         return {
             query: {
                 name: '',
+                country: '',
+                language: '',
                 page: 0
             },
             results: [],
             loading: false,
             searching: false,
             more: true,
-            countries: [
-                { name: 'All', value: '' },
-                { name: 'US', value: 'US' },
-                { name: 'GB', value: 'GB' },
-                { name: 'DE', value: 'DE' },
-                { name: 'CA', value: 'CA' },
-                { name: 'JP', value: 'JP' }
-            ],
-            languages: [
-                { name: 'All', value: '' },
-                { name: 'EN', value: 'EN' },
-                { name: 'DE', value: 'DE' },
-                { name: 'FR', value: 'FR' },
-                { name: 'ES', value: 'ES' }
-            ],
+            countries: [],
+            languages: [],
             recommended: [],
             popular: [
                 45761,
@@ -75,6 +64,16 @@ export default {
                 this.recommended.push(await http`get::/api/station`({ id }));
             }
         },
+        async loadFilters() {
+            const countries = await http`get::/api/countries`();
+            for(const {country} of countries) {
+                this.countries.push(country);
+            }
+            const languages = await http`get::/api/languages`();
+            for(const {language} of languages) {
+                this.languages.push(language.toUpperCase());
+            }
+        },
         reset() {
             this.query = {
                 name : '',
@@ -87,33 +86,38 @@ export default {
     },
     mounted() {
         this.loadRecommended();
+        this.loadFilters();
     },
     template: `
         <v-tab id="search" :tab="state.tab">
-            <input
-                v-model="query.name"
-                @change="doSearch"
-                type="text"
-                :placeholder="$lang('search.input.placeholder')"
-                class="w-full h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none"
-                spellcheck="false"
-                autocomplete="off"
-            >
-            <div class="flex gap-5">
-                <select
-                    v-model="query.country"
+            <div class="flex flex-wrap gap-4">
+                <input
+                    v-model="query.name"
                     @change="doSearch"
-                    class="w-full h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer"
+                    type="text"
+                    :placeholder="$lang('search.input.placeholder')"
+                    class="flex-1 h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none"
+                    spellcheck="false"
+                    autocomplete="off"
                 >
-                    <option v-for="country in countries" :value="country.value">{{country.name}}</option>
-                </select>
-                <select
-                    v-model="query.language"
-                    @change="doSearch"
-                    class="w-full h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer"
-                >
-                    <option v-for="language in languages" :value="language.value">{{language.name}}</option>
-                </select>
+                <div class="flex gap-4 w-full md:w-[300px]">
+                    <select
+                        v-model="query.country"
+                        @change="doSearch"
+                        class="w-6/12 h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer appearance-none"
+                    >
+                        <option value="" selected>All</option>
+                        <option v-for="country in countries" :value="country">{{country}}</option>
+                    </select>
+                    <select
+                        v-model="query.language"
+                        @change="doSearch"
+                        class="w-6/12 h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer appearance-none"
+                    >
+                        <option value="">All</option>
+                        <option v-for="language in languages" :value="language">{{language}}</option>
+                    </select>
+                </div>
             </div>
             <ul v-if="searching" class="flex flex-col">
                 <li
@@ -154,7 +158,7 @@ export default {
                 {{$lang('search.list.end')}}
             </div>
             <div
-                v-if="searching && results.length == 0"
+                v-if="searching && !loading && results.length == 0"
                 class="text-zinc-400 text-md mx-auto pb-6"
             >
                 {{$lang('search.list.empty')}}
