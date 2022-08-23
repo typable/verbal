@@ -27,9 +27,9 @@ export default {
     },
     template: `
         <dialog ref="dialog" class="z-40 fixed w-full h-full bg-black/80">
-            <div class="flex flex-col fixed left-[50%] top-[50%] -translate-y-[50%] -translate-x-[50%] rounded-md bg-zinc-900 w-[500px] p-8">
-                <h3 class="text-white text-[24px] font-bold pb-4">{{title}}</h3>
-                <p class="text-md text-gray-400">{{description}}</p>
+            <div class="flex flex-col fixed left-[50%] top-[50%] -translate-y-[50%] -translate-x-[50%] rounded-lg sm:rounded-md bg-zinc-900 w-[500px] max-w-[85vw] p-6 sm:p-8 pt-10 sm:pt-8">
+                <h3 class="text-white text-[24px] font-bold pb-4 text-center sm:text-left">{{title}}</h3>
+                <p class="text-md text-gray-400 text-center sm:text-left">{{description}}</p>
                 <v-button
                     v-for="action in actions"
                     :icon="action.icon"
