@@ -90,33 +90,51 @@ export default {
     },
     template: `
         <v-tab id="search" :tab="state.tab">
-            <div class="flex flex-wrap gap-4">
-                <input
-                    v-model="query.name"
-                    @change="doSearch"
-                    type="text"
-                    :placeholder="$lang('search.input.placeholder')"
-                    class="flex-1 h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none"
-                    spellcheck="false"
-                    autocomplete="off"
-                >
-                <div class="flex gap-4 w-full md:w-[300px]">
-                    <select
-                        v-model="query.country"
+            <div class="flex flex-wrap rounded-md overflow-hidden bg-zinc-900">
+                <div class="relative before:absolute before:w-full before:bottom-0 before:border-b md:before:border-none before:border-zinc-800 flex-1">
+                    <input
+                        v-model="query.name"
                         @change="doSearch"
-                        class="w-6/12 h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer appearance-none"
+                        type="text"
+                        :placeholder="$lang('search.input.placeholder')"
+                        class="w-full h-[56px] px-5 text-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none"
+                        spellcheck="false"
+                        autocomplete="off"
                     >
-                        <option value="" selected>All</option>
-                        <option v-for="country in countries" :value="country">{{country}}</option>
-                    </select>
-                    <select
-                        v-model="query.language"
-                        @change="doSearch"
-                        class="w-6/12 h-[56px] px-5 text-lg rounded-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer appearance-none"
-                    >
-                        <option value="">All</option>
-                        <option v-for="language in languages" :value="language">{{language}}</option>
-                    </select>
+                </div>
+                <div class="flex w-full md:w-[300px]">
+                    <div class="flex relative before:absolute before:h-[36px] before:top-[10px] before:border-l-none md:before:border-l before:border-zinc-800 w-6/12">
+                        <v-icon
+                            id="map-pin"
+                            size="20px"
+                            class="text-gray-400 select-none pointer-events-none before:left-[24px] min-w-[0px]"
+                        >
+                        </v-icon>
+                        <select
+                            v-model="query.country"
+                            @change="doSearch"
+                            class="w-full h-[56px] px-5 pl-11 text-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer appearance-none"
+                        >
+                            <option value="" selected>All</option>
+                            <option v-for="country in countries" :value="country">{{country}}</option>
+                        </select>
+                    </div>
+                    <div class="flex relative before:absolute before:h-[36px] before:top-[10px] before:border-l before:border-zinc-800 w-6/12">
+                        <v-icon
+                            id="world"
+                            size="20px"
+                            class="text-gray-400 select-none pointer-events-none before:left-[24px] min-w-[0px]"
+                        >
+                        </v-icon>
+                        <select
+                            v-model="query.language"
+                            @change="doSearch"
+                            class="w-full h-[56px] px-5 pl-11 text-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer appearance-none"
+                        >
+                            <option value="">All</option>
+                            <option v-for="language in languages" :value="language">{{language}}</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <ul v-if="searching" class="flex flex-col">

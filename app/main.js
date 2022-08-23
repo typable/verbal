@@ -80,7 +80,7 @@ export const state = {
                     actions: [
                         {
                             title: $lang('global.continue'),
-                            icon: 'arrow-right',
+                            icon: 'check',
                             handle: () => window.location.reload()
                         }
                     ]
