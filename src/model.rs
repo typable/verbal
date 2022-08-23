@@ -34,6 +34,10 @@ pub struct Station {
     pub languages: Option<Vec<String>>,
     pub score: i32,
     pub is_favorite: Option<bool>,
+    pub is_restricted: Option<bool>,
+    pub is_broken: Option<bool>,
+    pub is_no_track_info: Option<bool>,
+    // pub is_hidden: Option<bool>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -78,4 +82,19 @@ impl ToSql for Query {
         }
         Ok(sql)
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct StationCountry {
+    pub country: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct StationLanguage {
+    pub language: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct StationId {
+    pub id: i32,
 }

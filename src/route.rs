@@ -5,6 +5,9 @@ use sqlx::Postgres;
 use tide_sqlx::SQLxRequestExt;
 
 use crate::model;
+use crate::model::StationCountry;
+use crate::model::StationId;
+use crate::model::StationLanguage;
 use crate::unwrap_option_or_throw;
 use crate::unwrap_result_or_throw;
 use crate::Response;
@@ -28,6 +31,10 @@ pub async fn do_search(req: tide::Request<()>) -> tide::Result {
         r#"
             SELECT
                 station.*,
+                station_status.is_restricted,
+                station_status.is_broken,
+                station_status.is_no_track_info,
+                station_status.is_hidden,
                 CASE
                     WHEN favorite.id IS NULL OR favorite.account_id != {account_id}
                     THEN false
@@ -36,7 +43,10 @@ pub async fn do_search(req: tide::Request<()>) -> tide::Result {
                 FROM station
                 LEFT JOIN favorite
                     ON station.id = favorite.station_id
+                LEFT JOIN station_status
+                    ON station.id = station_status.station_id
                 {conditions}
+                AND station_status.is_hidden IS NOT true
                 OFFSET {offset}
                 LIMIT 10
         "#,
@@ -97,11 +107,18 @@ pub async fn get_favorites(req: tide::Request<()>) -> tide::Result {
         r#"
             SELECT
                 station.*,
+                station_status.is_restricted,
+                station_status.is_broken,
+                station_status.is_no_track_info,
+                station_status.is_hidden,
                 true as is_favorite
                 FROM station
                 LEFT JOIN favorite
                     ON station.id = favorite.station_id
+                LEFT JOIN station_status
+                    ON station.id = station_status.station_id
                 WHERE favorite.account_id = {account_id}
+                AND station_status.is_hidden IS NOT true
         "#,
         account_id = account.id,
     );
@@ -149,4 +166,74 @@ pub async fn delete_favorite(mut req: tide::Request<()>) -> tide::Result {
     let mut conn = req.sqlx_conn::<Postgres>().await;
     sqlx::query(&sql).execute(conn.acquire().await?).await?;
     Response::with(())
+}
+
+pub async fn get_station(req: tide::Request<()>) -> tide::Result {
+    let station_id = req.query::<StationId>()?;
+    let account =
+        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    let sql = format!(
+        r#"
+            SELECT
+                station.*,
+                station_status.is_restricted,
+                station_status.is_broken,
+                station_status.is_no_track_info,
+                station_status.is_hidden,
+                CASE
+                    WHEN favorite.id IS NULL OR favorite.account_id != {account_id}
+                    THEN false
+                    ELSE true
+                END AS is_favorite
+                FROM station
+                LEFT JOIN favorite
+                    ON station.id = favorite.station_id
+                LEFT JOIN station_status
+                    ON station.id = station_status.station_id
+                WHERE station.id = {station_id}
+                AND station_status.is_hidden IS NOT true
+        "#,
+        account_id = account.id,
+        station_id = station_id.id,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let result = sqlx::query_as::<_, model::Station>(&sql)
+        .fetch_optional(conn.acquire().await?)
+        .await?;
+    Response::with(result)
+}
+
+pub async fn get_countries(req: tide::Request<()>) -> tide::Result {
+    let sql = format!(
+        r#"
+            SELECT
+                country
+                FROM station
+                WHERE country != ''
+                GROUP BY country
+                ORDER BY COUNT(*) DESC;
+        "#,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let result = sqlx::query_as::<_, StationCountry>(&sql)
+        .fetch_all(conn.acquire().await?)
+        .await?;
+    Response::with(result)
+}
+
+pub async fn get_languages(req: tide::Request<()>) -> tide::Result {
+    let sql = format!(
+        r#"
+            SELECT
+                UNNEST(languages) AS language
+                FROM station
+                GROUP BY UNNEST(languages)
+                ORDER BY COUNT(*) DESC;
+        "#,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let result = sqlx::query_as::<_, StationLanguage>(&sql)
+        .fetch_all(conn.acquire().await?)
+        .await?;
+    Response::with(result)
 }

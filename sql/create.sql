@@ -14,6 +14,22 @@ CREATE TABLE station (
     score INTEGER
 );
 
+/* ### station status ### */
+
+CREATE TABLE station_status (
+    id SERIAL PRIMARY KEY,
+    station_id INTEGER UNIQUE,
+    is_restricted BOOLEAN DEFAULT false,
+    is_broken BOOLEAN DEFAULT false,
+    is_no_track_info BOOLEAN DEFAULT false,
+    is_hidden BOOLEAN DEFAULT false
+);
+
+ALTER TABLE station_status
+    ADD CONSTRAINT station_status_station_id
+    FOREIGN KEY (station_id)
+    REFERENCES station(id);
+
 /* ### account ### */
 
 CREATE TABLE account (

@@ -54,6 +54,9 @@ export default {
                 this.$refs.player.load();
             }
         },
+        setVolume(event) {
+            this.$refs.player.volume = event.target.value;
+        },
         onPlay() {
             if(this.resume) {
                 this.playing = false;
@@ -135,7 +138,7 @@ export default {
                     <source :src="station.url" type="audio/ogg">
                     <source :src="station.url" type="audio/aac">
                 </audio>
-                <div class="p-5 bg-zinc-800 rounded-xl flex gap-5 items-center relative overflow-hidden shadow-2xl z-30">
+                <div class="p-5 bg-zinc-800 rounded-xl flex gap-5 items-center relative overflow-hidden shadow-2xl z-30 flex-col sm:flex-row">
                     <img
                         v-if="station.icon"
                         :src="station.icon"
@@ -168,6 +171,7 @@ export default {
                         </p>
                     </div>
                     <div class="inline-flex gap-4 z-10 pr-2">
+                        <input type="range" min="0" max="1" step="0.05" @change="setVolume">
                         <v-button
                             :icon="[ station.is_favorite ? 'bookmark-off' : 'bookmark' ]"
                             :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"

@@ -1,3 +1,6 @@
 #!/bin/bash
 
-tailwindcss -c tailwind.config.js -i www/asset/css/input.css -o www/asset/css/output.css --minify
+./tailwindcss -c tailwind.config.js -i www/asset/css/input.css -o www/asset/css/output.css --minify
+
+version=$(cat ./.version)
+sed -i -e "s/{{version}}/$version/g" www/worker.js

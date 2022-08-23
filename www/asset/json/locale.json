@@ -1,7 +1,5 @@
 {
-
     "en": {
-
         "global.none": "-",
         "global.search": "Search",
         "global.favorites": "Favorites",
@@ -18,14 +16,12 @@
         "global.languages": "Languages",
         "global.state": "State",
         "global.playback-history": "Playback History",
-
         "player.loading": "Loading...",
         "player.no-song-title": "- No song title available -",
-
         "search.input.placeholder": "Search for stations",
         "search.list.end": "You've reached the end",
         "search.list.empty": "No results found",
-
+        "search.recommended": "Recommended",
         "account.settings": "Settings",
         "account.username": "Username",
         "account.username.info": "This is your primary account name which is visible to everyone",
@@ -35,11 +31,8 @@
         "account.playback-history": "Show Playback History",
         "account.playback-history.info": "Displays the recently played songs for the current station",
         "account.devices": "Devices"
-
     },
-
     "de": {
-
         "global.none": "-",
         "global.search": "Suche",
         "global.favorites": "Favoriten",
@@ -56,14 +49,12 @@
         "global.languages": "Sprachen",
         "global.state": "Bundesland",
         "global.playback-history": "Wiedergabeverlauf",
-
         "player.loading": "Laden...",
         "player.no-song-title": "- Song Titel nicht verfügbar -",
-
         "search.input.placeholder": "Suche nach Sender",
         "search.list.end": "Du hast das Ende erreicht",
         "search.list.empty": "Keine Ergebnisse gefunden",
-
+        "search.recommended": "Empfohlen",
         "account.settings": "Einstellungen",
         "account.username": "Nutzername",
         "account.username.info": "Dies ist Ihr primärer Kontoname, der von allen gesehen werden kann",
@@ -73,7 +64,5 @@
         "account.playback-history": "Wiedergabeverlauf anzeigen",
         "account.playback-history.info": "Zeigt die zuletzt gespielten Songs für den aktuellen Sender an",
         "account.devices": "Geräte"
-
     }
-
 }

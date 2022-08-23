@@ -7,7 +7,7 @@ import VAccount from './page/account.js';
 
 export const state = {
     app: null,
-    tab: 'favorites',
+    tab: 'search',
     account: {
         username: '',
         language: 'en'
@@ -41,17 +41,26 @@ export const state = {
                 state.account = await http`get::/api/account`();
                 document.addEventListener('scroll', this.onScroll);
                 document.addEventListener('wheel', this.onScroll);
+                if('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/worker.js');
+                    navigator.serviceWorker.addEventListener('controllerchange', this.updated);
+                }
+            },
+            updated() {
+                // TODO: show update popup
             },
             onScroll() {
                 if(state.tab === 'search') {
                     if(window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 200) {
-                        this.$refs.search.doSearchMore();
+                        if(this.$refs.search.searching) {
+                            this.$refs.search.doSearchMore();
+                        }
                     }
                 }
             }
         },
         template: `
-            <div class="px-4 sm:px-10 pb-8 sm:pb-[100px] max-w-[800px] mx-auto flex flex-col">
+            <div class="px-4 sm:px-10 pb-8 sm:pb-[100px] max-w-[1200px] mx-auto flex flex-col">
                 <v-menu :state="state"></v-menu>
                 <v-player :station="state.station"></v-player>
                 <v-search ref="search" :state="state"></v-search>

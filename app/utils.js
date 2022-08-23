@@ -14,14 +14,17 @@ export function http(parts, ...values) {
     const regex = /^(\w+)::([\w\/.]*)$/;
     const [, method, path] = line.match(regex) ?? [];
     return (query) => {
+        if(query !== undefined) {
+            query = JSON.parse(JSON.stringify(query));
+        }
         return new Promise(async (resolve, reject) => {
             try {
                 const headers = {
                     'content-type': 'application/json',
                 }
-                const deviceToken = localStorage.getItem('verbal-token');
-                if(deviceToken) {
-                    headers['verbal-token'] = deviceToken;
+                const token = localStorage.getItem('verbal-token') ?? 'test-token';
+                if(token) {
+                    headers['verbal-token'] = token;
                 }
                 let body = null;
                 let params = '';
@@ -33,6 +36,9 @@ export function http(parts, ...values) {
                                 for(let i = 0; i < value.length; i++) {
                                     query[`${key}[${i}]`] = value[i];
                                 }
+                            }
+                            else if(value === null) {
+                                delete query[key];
                             }
                         }
                     }
