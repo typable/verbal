@@ -9,11 +9,9 @@ import VAccount from './page/account.js';
 export const state = {
     app: null,
     tab: 'search',
-    account: {
-        username: '',
-        language: 'en'
-    },
-    station: null
+    account: null,
+    station: null,
+    authenticated: false
 };
 
 (async () => {
@@ -39,14 +37,41 @@ export const state = {
         },
         methods: {
             async init() {
-                window.app = this;
-                state.account = await http`get::/api/account`();
+                try {
+                    state.account = await http`get::/api/account`();
+                }
+                catch(error) {
+                    // ignore
+                }
+                if(state.account === null) {
+                    // TODO: create account or authenticate
+                    return;
+                }
+                state.authenticated = true;
                 document.addEventListener('scroll', this.onScroll);
                 document.addEventListener('wheel', this.onScroll);
                 if('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('/worker.js');
                     navigator.serviceWorker.addEventListener('controllerchange', this.updated);
                 }
+            },
+            showError(error) {
+                this.$refs.popup.open({
+                    title: $lang('global.error'),
+                    description: $lang('global.error.message', error),
+                    actions: [
+                        {
+                            title: $lang('global.report'),
+                            icon: 'message-report',
+                            handle: () => window.open('https://github.com/typable/verbal/issues')
+                        },
+                        {
+                            title: $lang('global.continue'),
+                            icon: 'arrow-right',
+                            handle: () => this.$refs.popup.close()
+                        }
+                    ]
+                });
             },
             updated() {
                 this.$refs.popup.open({
@@ -74,10 +99,10 @@ export const state = {
         template: `
             <div class="px-4 sm:px-10 pb-8 sm:pb-[100px] max-w-[1200px] mx-auto flex flex-col">
                 <v-menu :state="state"></v-menu>
-                <v-player :station="state.station"></v-player>
-                <v-search ref="search" :state="state"></v-search>
-                <v-favorites ref="favorites" :state="state"></v-favorites>
-                <v-account :state="state"></v-account>
+                <v-player v-if="state.authenticated" :station="state.station"></v-player>
+                <v-search v-if="state.authenticated" ref="search" :state="state"></v-search>
+                <v-favorites v-if="state.authenticated" ref="favorites" :state="state"></v-favorites>
+                <v-account v-if"state.authenticated" :state="state"></v-account>
                 <v-popup ref="popup"></v-popup>
             </div>
         `

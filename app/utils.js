@@ -77,6 +77,10 @@ export async function update() {
 
 }
 
-export function $lang(id) {
-    return state.locale[state.account?.language ?? 'en'][id];
+export function $lang(id, ...args) {
+    let message = state.locale[state.account?.language ?? 'en'][id];
+    for(const i in args) {
+        message = message.replaceAll(`{${i}}`, args[i]);
+    }
+    return message;
 }
