@@ -35,7 +35,7 @@ export default {
                 <li
                     :key="station.id"
                     v-for="station in results"
-                    class="border-t sm:border-t-2 first:border-none border-zinc-900 py-5 first:pt-0"
+                    class="border-t sm:border-t-2 first:border-none border-zinc-900 py-4 first:pt-0"
                 >
                     <v-station :station="station"></v-station>
                 </li>

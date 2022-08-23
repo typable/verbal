@@ -1,6 +1,7 @@
-import {http} from './utils.js';
+import {http, $lang} from './utils.js';
 import VMenu from './component/menu.js';
 import VPlayer from './component/player.js';
+import VPopup from './component/popup.js';
 import VSearch from './page/search.js';
 import VFavorites from './page/favorites.js';
 import VAccount from './page/account.js';
@@ -28,7 +29,8 @@ export const state = {
             VSearch,
             VFavorites,
             VAccount,
-            VPlayer
+            VPlayer,
+            VPopup
         },
         mounted() {
             document.body.style.display = '';
@@ -47,7 +49,17 @@ export const state = {
                 }
             },
             updated() {
-                // TODO: show update popup
+                this.$refs.popup.open({
+                    title: $lang('global.update'),
+                    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.',
+                    actions: [
+                        {
+                            title: $lang('global.continue'),
+                            icon: 'arrow-right',
+                            handle: () => window.location.reload()
+                        }
+                    ]
+                });
             },
             onScroll() {
                 if(state.tab === 'search') {
@@ -66,6 +78,7 @@ export const state = {
                 <v-search ref="search" :state="state"></v-search>
                 <v-favorites ref="favorites" :state="state"></v-favorites>
                 <v-account :state="state"></v-account>
+                <v-popup ref="popup"></v-popup>
             </div>
         `
     });
