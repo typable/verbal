@@ -56,6 +56,7 @@ impl Server {
         app.at("/api/station").get(route::get_station);
         app.at("/api/countries").get(route::get_countries);
         app.at("/api/languages").get(route::get_languages);
+        app.at("/api/tags").get(route::get_tags);
 
         let address =
             unwrap_result_or_abort!(config.server.to_url(), "cannot parse server address!");

@@ -5,9 +5,10 @@ use sqlx::Postgres;
 use tide_sqlx::SQLxRequestExt;
 
 use crate::model;
-use crate::model::StationCountry;
-use crate::model::StationId;
-use crate::model::StationLanguage;
+use crate::model::Country;
+use crate::model::Id;
+use crate::model::Language;
+use crate::model::Tag;
 use crate::unwrap_option_or_throw;
 use crate::unwrap_result_or_throw;
 use crate::Response;
@@ -169,7 +170,7 @@ pub async fn delete_favorite(mut req: tide::Request<()>) -> tide::Result {
 }
 
 pub async fn get_station(req: tide::Request<()>) -> tide::Result {
-    let station_id = req.query::<StationId>()?;
+    let station_id = req.query::<Id>()?;
     let account =
         unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
@@ -194,7 +195,7 @@ pub async fn get_station(req: tide::Request<()>) -> tide::Result {
                 AND station_status.is_hidden IS NOT true
         "#,
         account_id = account.id,
-        station_id = station_id.id,
+        station_id = station_id.0,
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let result = sqlx::query_as::<_, model::Station>(&sql)
@@ -215,7 +216,7 @@ pub async fn get_countries(req: tide::Request<()>) -> tide::Result {
         "#,
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
-    let result = sqlx::query_as::<_, StationCountry>(&sql)
+    let result = sqlx::query_as::<_, Country>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
     Response::with(result)
@@ -232,7 +233,24 @@ pub async fn get_languages(req: tide::Request<()>) -> tide::Result {
         "#,
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
-    let result = sqlx::query_as::<_, StationLanguage>(&sql)
+    let result = sqlx::query_as::<_, Language>(&sql)
+        .fetch_all(conn.acquire().await?)
+        .await?;
+    Response::with(result)
+}
+
+pub async fn get_tags(req: tide::Request<()>) -> tide::Result {
+    let sql = format!(
+        r#"
+            SELECT
+                UNNEST(tags) AS tag
+                FROM station
+                GROUP BY UNNEST(tags)
+                ORDER BY COUNT(*) DESC;
+        "#,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let result = sqlx::query_as::<_, Tag>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
     Response::with(result)

@@ -61,18 +61,13 @@ export default {
         },
         async loadRecommended() {
             for(const id of this.popular) {
-                this.recommended.push(await http`get::/api/station`({ id }));
+                this.recommended.push(await http`get::/api/station`(id));
             }
         },
         async loadFilters() {
-            const countries = await http`get::/api/countries`();
-            for(const {country} of countries) {
-                this.countries.push(country);
-            }
+            this.countries = await http`get::/api/countries`();
             const languages = await http`get::/api/languages`();
-            for(const {language} of languages) {
-                this.languages.push(language.toUpperCase());
-            }
+            this.languages = languages.map(language => language.toUpperCase());
         },
         reset() {
             this.query = {
