@@ -9,6 +9,7 @@ import VAccount from './page/account.js';
 export const state = {
     app: null,
     tab: 'search',
+    tabs: ['search', 'favorites', 'account'],
     account: null,
     station: null,
     authenticated: false
@@ -20,7 +21,8 @@ export const state = {
     new Vue({
         el: '#app',
         data: {
-            state
+            state,
+            touch: null
         },
         components: {
             VMenu,
@@ -94,15 +96,52 @@ export const state = {
                         }
                     }
                 }
+            },
+            onTouchStart(event) {
+                this.touch = event.changedTouches[0];
+            },
+            onTouchEnd(event) {
+                const touch = event.changedTouches[0];
+                const diff = {
+                    x: touch.pageX - this.touch.pageX,
+                    y: touch.pageY - this.touch.pageY
+                };
+                const angle = Math.atan(diff.x / diff.y) * (180 / Math.PI);
+                const index = state.tabs.indexOf(state.tab);
+                if(Math.abs(diff.x) > window.innerWidth / 4) {
+                    if(diff.x > 0 && index > 0 && (angle <= -60 || angle >= 60)) {
+                        state.tab = state.tabs[index - 1];
+                    }
+                    if(diff.x < 0 && index < state.tabs.length - 1 && (angle <= -60 || angle >= 60)) {
+                        state.tab = state.tabs[index + 1];
+                    }
+                }
+            }
+        },
+        computed: {
+            styles() {
+                const index = state.tabs.indexOf(state.tab);
+                const offset = window.innerWidth <= 640
+                    ? `${index * -100}vw`
+                    : `${index * -1200}px`;
+                return {
+                    'transform': `translate(${offset}, 0)`
+                };
             }
         },
         template: `
-            <div class="px-4 sm:px-10 pb-8 sm:pb-[100px] max-w-[1200px] mx-auto flex flex-col">
+            <div
+                @touchstart="onTouchStart"
+                @touchend="onTouchEnd"
+                class="px-4 sm:px-10 max-w-[1200px] mx-auto flex flex-col min-h-[100vh] max-h-[100vh] overflow-hidden"
+            >
                 <v-menu :state="state"></v-menu>
                 <v-player v-if="state.authenticated" :station="state.station"></v-player>
-                <v-search v-if="state.authenticated" ref="search" :state="state"></v-search>
-                <v-favorites v-if="state.authenticated" ref="favorites" :state="state"></v-favorites>
-                <v-account v-if"state.authenticated" :state="state"></v-account>
+                <div class="flex flex-1 gap-[32px] sm:gap-[5rem] overflow-y-clip transition-transform" :style="styles">
+                    <v-search v-if="state.authenticated" ref="search" :state="state"></v-search>
+                    <v-favorites v-if="state.authenticated" ref="favorites" :state="state"></v-favorites>
+                    <v-account v-if="state.authenticated" :state="state"></v-account>
+                </div>
                 <v-popup ref="popup"></v-popup>
             </div>
         `

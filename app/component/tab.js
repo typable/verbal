@@ -1,3 +1,5 @@
+import {state} from '../main.js';
+
 export default {
     props: ['id', 'tab'],
     watch: {
@@ -6,7 +8,7 @@ export default {
         }
     },
     template: `
-        <div v-if="id === tab" class="flex flex-col gap-6 sm:gap-12">
+        <div class="flex flex-col gap-6 sm:gap-12 min-w-full overflow-y-auto">
             <slot></slot>
         </div>
     `

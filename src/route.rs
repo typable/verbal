@@ -242,7 +242,8 @@ pub async fn get_tags(req: tide::Request<()>) -> tide::Result {
                 UNNEST(tags) AS tag
                 FROM station
                 GROUP BY UNNEST(tags)
-                ORDER BY COUNT(*) DESC;
+                ORDER BY COUNT(*) DESC
+                LIMIT 100;
         "#
     .to_string();
     let mut conn = req.sqlx_conn::<Postgres>().await;
