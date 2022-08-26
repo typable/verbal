@@ -85,7 +85,7 @@ export default {
     },
     template: `
         <v-tab id="search" :tab="state.tab">
-            <div class="flex flex-col flex-1 gap-[32px] pb-8 sm:pb-[100px]">
+            <div class="flex flex-col flex-1 gap-[32px] pb-8 sm:pb-[100px] pt-2">
                 <div class="flex flex-wrap rounded-md overflow-hidden bg-zinc-900">
                     <div class="relative before:absolute before:w-full before:bottom-0 before:border-b md:before:border-none before:border-zinc-800 flex-1">
                         <input

@@ -108,7 +108,7 @@ export const state = {
                 };
                 const angle = Math.atan(diff.x / diff.y) * (180 / Math.PI);
                 const index = state.tabs.indexOf(state.tab);
-                if(Math.abs(diff.x) > window.innerWidth / 4) {
+                if(Math.abs(diff.x) > window.innerWidth / 6) {
                     if(diff.x > 0 && index > 0 && (angle <= -60 || angle >= 60)) {
                         state.tab = state.tabs[index - 1];
                     }
@@ -121,7 +121,7 @@ export const state = {
         computed: {
             styles() {
                 const index = state.tabs.indexOf(state.tab);
-                const offset = window.innerWidth <= 640
+                const offset = window.innerWidth < 1200
                     ? `${index * -100}vw`
                     : `${index * -1200}px`;
                 return {
@@ -137,7 +137,7 @@ export const state = {
             >
                 <v-menu :state="state"></v-menu>
                 <v-player v-if="state.authenticated" :station="state.station"></v-player>
-                <div class="flex flex-1 gap-[32px] sm:gap-[5rem] overflow-y-clip transition-transform" :style="styles">
+                <div class="flex flex-1 gap-[32px] sm:gap-[5rem] overflow-y-clip transition-transform md:transition-none" :style="styles">
                     <v-search v-if="state.authenticated" ref="search" :state="state"></v-search>
                     <v-favorites v-if="state.authenticated" ref="favorites" :state="state"></v-favorites>
                     <v-account v-if="state.authenticated" :state="state"></v-account>

@@ -119,7 +119,7 @@ export default {
         }
     },
     template: `
-        <div class="sticky top-[98px] z-30">
+        <div class="sticky top-[98px] z-30 -mb-2">
             <div
                 v-if="station"
                 class="flex flex-col bg-black pb-6"

@@ -31,7 +31,7 @@ export default {
     },
     template: `
         <v-tab id="favorites" :tab="state.tab">
-            <div class="pb-8 sm:pb-[100px]">
+            <div class="pb-8 sm:pb-[100px] pt-2">
                 <ul class="flex flex-col">
                     <li
                         :key="station.id"
