@@ -61,7 +61,7 @@ export default {
         },
         async loadRecommended() {
             for(const id of this.popular) {
-                this.recommended.push(await http`get::/api/station`(id));
+                this.recommended.push(await http`get::/api/station/${id}`());
             }
         },
         async loadFilters() {

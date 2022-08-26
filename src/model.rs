@@ -84,14 +84,11 @@ impl ToSql for Query {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
-pub struct Id(pub i32);
-
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, FromRow)]
 pub struct Country(pub String);
 
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, FromRow)]
 pub struct Language(pub String);
 
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, FromRow)]
 pub struct Tag(pub String);

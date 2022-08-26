@@ -53,14 +53,14 @@ impl Server {
         app.at("/api/favorite").get(route::get_favorites);
         app.at("/api/favorite").post(route::add_favorite);
         app.at("/api/favorite").delete(route::delete_favorite);
-        app.at("/api/station").get(route::get_station);
+        app.at("/api/station/:id").get(route::get_station);
         app.at("/api/countries").get(route::get_countries);
         app.at("/api/languages").get(route::get_languages);
         app.at("/api/tags").get(route::get_tags);
 
         let address =
             unwrap_result_or_abort!(config.server.to_url(), "cannot parse server address!");
-        info!("starting server on {}", address);
+        info!("starting server on http://{}", address);
         let listener = if config.server.is_tls() {
             app.listen(
                 TlsListener::build()
