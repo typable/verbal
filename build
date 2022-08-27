@@ -4,4 +4,4 @@
 
 version=$(cat ./.version)
 sed -i -e "s/{{version}}/$version/g" www/worker.js
-sed -i -e "s/{{version}}/$version/g" app/page/account.js
+sed -i -e "s/{{version}}/$version/g" app/main.js
