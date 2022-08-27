@@ -22,7 +22,7 @@ export function http(parts, ...values) {
                 const headers = {
                     'content-type': 'application/json',
                 }
-                const token = localStorage.getItem('verbal-token') ?? 'test-token';
+                const token = localStorage.getItem('verbal-token');
                 if(token) {
                     headers['verbal-token'] = token;
                 }

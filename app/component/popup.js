@@ -48,7 +48,7 @@ export default {
             >
             </div>
             <div
-                class="z-50 flex flex-col fixed left-[50%] top-[50%] -translate-y-[50%] -translate-x-[50%] rounded-lg sm:rounded-md bg-zinc-900 w-[500px] max-w-[85vw] p-6 sm:p-8 pt-10 sm:pt-8 transition-all duration-500 ease-in-out"
+                class="z-50 flex flex-col fixed left-[50%] top-[50%] -translate-y-[50%] -translate-x-[50%] rounded-lg sm:rounded-md bg-zinc-900 w-[500px] max-w-[85vw] p-6 sm:p-8 pt-10 sm:pt-8 transition-all duration-300 ease-in-out"
                 :style="transform"
             >
                 <h3 class="text-white text-[24px] font-bold pb-4 text-center sm:text-left">{{title}}</h3>

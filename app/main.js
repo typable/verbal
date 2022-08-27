@@ -52,7 +52,20 @@ export const state = {
                     // ignore
                 }
                 if(state.account === null) {
-                    // TODO: create account or authenticate
+                    this.$refs.popup.open({
+                        title: $lang('global.welcome'),
+                        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
+                        actions: [
+                            {
+                                icon: 'check',
+                                title: $lang('global.continue'),
+                                handle: () => {
+                                    localStorage.setItem('verbal-token', 'test-token');
+                                    window.location.reload();
+                                }
+                            }
+                        ]
+                    });
                     return;
                 }
                 state.authenticated = true;
