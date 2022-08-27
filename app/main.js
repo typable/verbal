@@ -6,6 +6,9 @@ import VSearch from './page/search.js';
 import VFavorites from './page/favorites.js';
 import VAccount from './page/account.js';
 
+const VERSION = 'dev-{{version}}';
+const SWIPE_THRESHOLD = 70;
+
 export const state = {
     app: null,
     tab: 'search',
@@ -13,10 +16,9 @@ export const state = {
     account: null,
     station: null,
     authenticated: false,
-    open: false
+    open: false,
+    version: VERSION
 };
-
-const SWIPE_THRESHOLD = 70;
 
 (async () => {
     state.locale = await http`get::/asset/json/locale.json`();

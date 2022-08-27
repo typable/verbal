@@ -144,7 +144,7 @@ export default {
             <div
                 v-if="station"
                 ref="button"
-                class="fixed w-[60px] h-[60px] bg-white rounded-full bottom-4 right-4 z-40 cursor-pointer shadow-xl"
+                class="fixed w-[64px] h-[64px] bg-white rounded-full bottom-4 right-4 z-40 cursor-pointer shadow-xl"
                 @click="state.open = !state.open"
             >
                 <v-icon
@@ -189,7 +189,7 @@ export default {
                         ></v-icon>
                     </div>
                     <div
-                        class="flex flex-col flex-1 z-10 min-w-0"
+                        class="flex flex-col flex-1 z-10 min-w-0 max-w-full"
                     >
                         <p class="text-xl font-semibold text-white pb-1 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none text-center sm:text-left">
                             {{station.name}}
