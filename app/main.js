@@ -12,8 +12,11 @@ export const state = {
     tabs: ['search', 'favorites', 'account'],
     account: null,
     station: null,
-    authenticated: false
+    authenticated: false,
+    open: false
 };
+
+const SWIPE_THRESHOLD = 70;
 
 (async () => {
     state.locale = await http`get::/asset/json/locale.json`();
@@ -22,7 +25,8 @@ export const state = {
         el: '#app',
         data: {
             state,
-            touch: null
+            touch: null,
+            target: null
         },
         components: {
             VMenu,
@@ -99,6 +103,7 @@ export const state = {
             },
             onTouchStart(event) {
                 this.touch = event.changedTouches[0];
+                this.target = event.target;
             },
             onTouchEnd(event) {
                 const touch = event.changedTouches[0];
@@ -108,12 +113,29 @@ export const state = {
                 };
                 const angle = Math.atan(diff.x / diff.y) * (180 / Math.PI);
                 const index = state.tabs.indexOf(state.tab);
-                if(Math.abs(diff.x) > window.innerWidth / 6) {
+                if(state.open) {
+                    if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
+                        if(diff.y > 0 && angle >= -30 && angle <= 30) {
+                            state.open = false;
+                        }
+                    }
+                    return;
+                }
+                if(Math.abs(diff.x) >= SWIPE_THRESHOLD) {
                     if(diff.x > 0 && index > 0 && (angle <= -60 || angle >= 60)) {
                         state.tab = state.tabs[index - 1];
                     }
                     if(diff.x < 0 && index < state.tabs.length - 1 && (angle <= -60 || angle >= 60)) {
                         state.tab = state.tabs[index + 1];
+                    }
+                }
+                if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
+                    if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
+                        if(!state.open && this.target === this.$refs.player.$refs.button) {
+                            if(diff.y < 0 && angle >= -30 && angle <= 30) {
+                                state.open = true;
+                            }
+                        }
                     }
                 }
             }
@@ -136,12 +158,12 @@ export const state = {
                 class="px-4 sm:px-10 max-w-[1200px] mx-auto flex flex-col min-h-[100vh] max-h-[100vh] overflow-hidden"
             >
                 <v-menu :state="state"></v-menu>
-                <v-player v-if="state.authenticated" :station="state.station"></v-player>
                 <div class="flex flex-1 gap-[32px] sm:gap-[5rem] overflow-y-clip transition-transform md:transition-none" :style="styles">
                     <v-search v-if="state.authenticated" ref="search" :state="state"></v-search>
                     <v-favorites v-if="state.authenticated" ref="favorites" :state="state"></v-favorites>
                     <v-account v-if="state.authenticated" :state="state"></v-account>
                 </div>
+                <v-player ref="player" v-if="state.authenticated" :station="state.station"></v-player>
                 <v-popup ref="popup"></v-popup>
             </div>
         `
