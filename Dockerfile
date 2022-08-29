@@ -7,12 +7,12 @@ RUN mv tailwindcss-linux-x64 tailwindcss
 
 RUN cargo init
 
-COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
 
 RUN cargo build --release
 RUN rm ./src/*.rs
 
+COPY ./Cargo.lock ./Cargo.lock
 COPY ./src ./src
 
 RUN rm ./target/release/deps/verbal*
