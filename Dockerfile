@@ -12,7 +12,6 @@ COPY ./Cargo.toml ./Cargo.toml
 RUN cargo build --release
 RUN rm ./src/*.rs
 
-COPY ./Cargo.lock ./Cargo.lock
 COPY ./src ./src
 
 RUN rm ./target/release/deps/verbal*
@@ -27,6 +26,5 @@ COPY ./www/worker.js ./www/worker.js
 COPY ./.version ./.version
 
 RUN ./build
-# RUN ./tailwindcss -c tailwind.config.js -i www/asset/css/input.css -o www/asset/css/output.css --minify
 
 CMD ["./target/release/verbal"]
