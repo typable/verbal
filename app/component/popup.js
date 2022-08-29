@@ -14,7 +14,6 @@ export default {
     methods: {
         $lang,
         open(info) {
-            console.log(info);
             const {title, description, actions} = info;
             this.title = title;
             this.description = description;
