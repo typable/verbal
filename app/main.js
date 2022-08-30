@@ -1,3 +1,4 @@
+import Vue from '/asset/lib/vue.min.js';
 import {http, $lang} from './utils.js';
 import VMenu from './component/menu.js';
 import VPlayer from './component/player.js';
