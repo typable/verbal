@@ -1,3 +1,4 @@
+import Vue from '/asset/lib/vue.min.js';
 import {http, $lang} from './utils.js';
 import VMenu from './component/menu.js';
 import VPlayer from './component/player.js';
@@ -6,7 +7,7 @@ import VSearch from './page/search.js';
 import VFavorites from './page/favorites.js';
 import VAccount from './page/account.js';
 
-const VERSION = 'dev-{{version}}';
+const VERSION = '{{version}}';
 const SWIPE_THRESHOLD = 70;
 
 export const state = {
