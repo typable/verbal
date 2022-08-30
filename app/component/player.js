@@ -12,7 +12,8 @@ export default {
             error: false,
             title: '- No song title available -',
             interval: null,
-            resume: false
+            resume: false,
+            state
         };
     },
     components: {
@@ -27,6 +28,7 @@ export default {
                 this.loading = true;
                 this.title = '- No song title available -';
                 this.updateMediaSession();
+                state.open = true;
             }
         }
     },
@@ -74,7 +76,7 @@ export default {
             this.resume = false;
             this.updateSong();
         },
-        onError(event) {
+        onError() {
             this.error = true;
             this.loading = false;
             this.playing = false;
@@ -118,13 +120,46 @@ export default {
             }, 10000);
         }
     },
+    computed: {
+        transform() {
+            return {
+                'transform': `translate(0, ${state.open ? 0 : 100}vh)`
+            };
+        },
+        opacity() {
+            return {
+                'opacity': `${state.open ? 1 : 0}`,
+                'pointer-events': `${state.open ? 'all' : 'none'}`
+            };
+        }
+    },
     template: `
-        <div class="sticky top-[98px] z-30 -mb-2">
+        <div class="z-30">
+            <div
+                @click="state.open = false"
+                class="fixed top-0 bottom-0 left-0 right-0 bg-black/60 transition-opacity duration-300 ease-in-out"
+                :style="opacity"
+            >
+            </div>
             <div
                 v-if="station"
-                class="flex flex-col bg-black pb-6"
+                ref="button"
+                class="fixed w-[64px] h-[64px] bg-white rounded-full bottom-4 right-4 z-40 cursor-pointer shadow-xl"
+                @click="state.open = !state.open"
             >
+                <v-icon
+                    id="playlist"
+                    class="pointer-events-none"
+                >
+                </v-icon>
+            </div>
+            <div
+                class="w-full flex flex-col bg-zinc-800 pb-6 rounded-t-2xl fixed left-0 right-0 bottom-0 px-4 pt-4 h-[70vh] transition-transform duration-300 ease-in-out"
+                :style="transform"
+            >
+                <div class="w-[40px] h-[8px] bg-zinc-500 rounded-[4px] mx-auto mb-12"></div>
                 <audio
+                    v-if="station"
                     ref="player"
                     controls autoplay
                     :src="station.url"
@@ -138,15 +173,8 @@ export default {
                     <source :src="station.url" type="audio/ogg">
                     <source :src="station.url" type="audio/aac">
                 </audio>
-                <div class="p-5 bg-zinc-800 rounded-xl flex gap-5 items-center relative overflow-hidden shadow-2xl z-30 flex-col sm:flex-row">
-                    <img
-                        v-if="station.icon"
-                        :src="station.icon"
-                        :alt="station.name"
-                        :class="{ 'animate-pulse': playing }"
-                        class="w-full h-full object-cover absolute top-0 left-0 right-0 bottom-0 blur-2xl opacity-30 z-0 pointer-events-none select-none"
-                    >
-                    <div class="w-[64px] h-[64px] min-w-[64px] bg-zinc-900 rounded-lg overflow-hidden z-10">
+                <div v-if="station" class="flex gap-5 items-center relative flex-col sm:flex-row">
+                    <div class="w-[140px] h-[140px] min-w-[140px] bg-zinc-900 rounded-lg overflow-hidden z-10">
                         <img
                             v-if="station.icon"
                             :src="station.icon"
@@ -161,24 +189,17 @@ export default {
                         ></v-icon>
                     </div>
                     <div
-                        class="flex flex-col flex-1 z-10 min-w-0"
+                        class="flex flex-col flex-1 z-10 min-w-0 max-w-full"
                     >
-                        <p class="text-xl font-semibold text-white pb-1 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none">
+                        <p class="text-xl font-semibold text-white pb-1 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none text-center sm:text-left">
                             {{station.name}}
                         </p>
-                        <p class="text-md text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none">
+                        <p class="text-md text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none text-center sm:text-left">
                             {{title ?? $lang('player.loading')}}
                         </p>
                     </div>
                     <div class="inline-flex gap-4 z-10 pr-2">
                         <input type="range" min="0" max="1" step="0.05" @change="setVolume">
-                        <v-button
-                            :icon="[ station.is_favorite ? 'bookmark-off' : 'bookmark' ]"
-                            :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"
-                            :active="station.is_favorite"
-                            class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10"
-                            @click="setLike(!station.is_favorite)"
-                        ></v-button>
                         <v-button
                             :icon="[ error ? 'alert-circle' : (loading ? 'rotate-clockwise' : (playing ? 'player-pause' : 'player-play')) ]"
                             :title="[ error ? $lang('global.error') : (playing ? $lang('global.pause') : $lang('global.play')) ]"
@@ -189,7 +210,6 @@ export default {
                     </div>
                 </div>
             </div>
-            <div class="bg-gradient-to-b from-black h-2 sm:h-4"></div>
         </div>
     `
 }
