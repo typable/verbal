@@ -7,7 +7,7 @@ import VSearch from './page/search.js';
 import VFavorites from './page/favorites.js';
 import VAccount from './page/account.js';
 
-const VERSION = 'dev-{{version}}';
+const VERSION = '{{version}}';
 const SWIPE_THRESHOLD = 70;
 
 export const state = {

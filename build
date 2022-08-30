@@ -1,7 +1,59 @@
 #!/bin/bash
 
-./tailwindcss -c tailwind.config.js -i www/asset/css/input.css -o www/asset/css/output.css --minify
+echo "version $VERSION"
 
-version=$(cat ./.version)
-sed -i -e "s/{{version}}/$version/g" www/worker.js
-sed -i -e "s/{{version}}/$version/g" app/main.js
+DIST_DIR="./dist"
+
+echo "create $DIST_DIR/"
+mkdir -p "$DIST_DIR"
+echo "copy app/"
+cp -rf app "$DIST_DIR/app"
+echo "copy www/"
+cp -rf www "$DIST_DIR/www"
+
+echo "inject version"
+sed -i -e "s/{{version}}/$VERSION/g" "$DIST_DIR/www/worker.js"
+sed -i -e "s/{{version}}/$VERSION/g" "$DIST_DIR/app/main.js"
+
+LIB_DIR="$DIST_DIR/www/asset/lib"
+FONT_DIR="$DIST_DIR/www/asset/font"
+
+echo "create $LIB_DIR/"
+mkdir -p "$LIB_DIR"
+echo "create $FONT_DIR/"
+mkdir -p "$FONT_DIR"
+
+# tailwindcss
+echo "download tailwindcss"
+curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o "$DIST_DIR/tailwindcss"
+chmod +x "$DIST_DIR/tailwindcss"
+
+# vue
+echo "download vue"
+curl -sL https://cdn.jsdelivr.net/npm/vue@2/dist/vue.esm.browser.min.js -o "$LIB_DIR/vue.min.js"
+# curl -L https://unpkg.com/vue@latest/dist/vue.esm-browser.prod.js -o ./www/asset/lib/vue.min.js -s
+
+# tabler-icons
+echo "download tabler-icons"
+curl -sL https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css -o "$LIB_DIR/tabler-icons.min.css"
+sed -i -e "s/fonts\/tabler-icons/..\/font\/tabler-icons/g" "$LIB_DIR/tabler-icons.min.css"
+echo "download tabler-icons font"
+curl -sL https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/fonts/tabler-icons.eot -o "$FONT_DIR/tabler-icons.eot"
+curl -sL https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/fonts/tabler-icons.ttf -o "$FONT_DIR/tabler-icons.ttf"
+curl -sL https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/fonts/tabler-icons.woff -o "$FONT_DIR/tabler-icons.woff"
+curl -sL https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/fonts/tabler-icons.woff2 -o "$FONT_DIR/tabler-icons.woff2"
+
+# inter
+echo "download inter font"
+curl -sL https://fonts.google.com/download?family=Inter -o "$FONT_DIR/inter.zip"
+unzip -qq "$FONT_DIR/inter.zip" -d "$FONT_DIR/inter"
+mv "$FONT_DIR/inter/static/Inter-Regular.ttf" "$FONT_DIR/"
+mv "$FONT_DIR/inter/static/Inter-Medium.ttf" "$FONT_DIR/"
+mv "$FONT_DIR/inter/static/Inter-SemiBold.ttf" "$FONT_DIR/"
+rm -rf "$FONT_DIR/inter"
+rm -rf "$FONT_DIR/inter.zip"
+
+echo "build css"
+"$DIST_DIR/tailwindcss" -c tailwind.config.js -i "$DIST_DIR/www/asset/css/input.css" -o "$DIST_DIR/www/asset/css/output.css" --minify
+
+echo "done"

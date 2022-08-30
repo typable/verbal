@@ -1,4 +1,4 @@
-const VERSION = 'dev-{{version}}';
+const VERSION = '{{version}}';
 
 self.addEventListener('install', self.skipWaiting);
 

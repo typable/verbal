@@ -1,13 +1,8 @@
 #!/bin/bash
 
-LIB_DIR="./www/asset/lib"
-FONT_DIR="./www/asset/font"
+DIST_DIR="./dist"
 
-echo "remove $LIB_DIR"
-rm -rf "$LIB_DIR"
-echo "remove $FONT_DIR"
-rm -rf "$FONT_DIR"
-echo "remove tailwindcss"
-rm -rf "./tailwindcss"
+echo "remove $DIST_DIR"
+rm -rf "$DIST_DIR"
 
 echo "done"
