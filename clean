@@ -1,8 +1,8 @@
 #!/bin/bash
 
-DIST_DIR="./dist"
+DIST_DIR="dist"
 
-echo "remove $DIST_DIR"
+echo "remove $DIST_DIR/"
 rm -rf "$DIST_DIR"
 
-echo "done"
+echo "status success"

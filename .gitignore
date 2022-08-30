@@ -2,6 +2,7 @@ node_modules/
 target/
 www/asset/font/
 www/asset/lib/
+dist/
 
 config.toml
 Cargo.lock
