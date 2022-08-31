@@ -2,9 +2,9 @@
 
 declare -A config
 config=(
-  ["mode"]="dev"
-  ["twc-local"]=false
-  ["twc-watch"]=false
+  ["--mode"]="dev"
+  ["--tw-local"]=false
+  ["--tw-watch"]=false
 )
 
 while read argument; do
@@ -13,6 +13,9 @@ while read argument; do
     continue
   fi
   value=$(echo "$argument" | awk '{st = index($0, "="); print substr($0, st + 1)}')
+  if [[ "$value" == "$key" ]]; then
+    value="true"
+  fi
   config["$key"]=$value
 done <<< $(echo "$@" | tr " " "\n")
 
@@ -26,7 +29,7 @@ section() {
   printf "\n"
 }
 
-MODE="${config["mode"]}"
+MODE="${config["--mode"]}"
 
 if [[ "$MODE" != "dev" ]] && [[ "$MODE" != "prod" ]]; then
   echo "[ERROR] invalid mode '$MODE'!"
@@ -88,10 +91,10 @@ mkdir -p "$LIB_DIR"
 print "create" "$FONT_DIR/"
 mkdir -p "$FONT_DIR"
 
-TWC_LOCAL="${config["twc-local"]}"
+TW_LOCAL="${config["--tw-local"]}"
 
 # tailwindcss
-if [[ "$TWC_LOCAL" == "false" ]]; then
+if [[ "$TW_LOCAL" == "false" ]]; then
   print "download" "tailwindcss"
   curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o "$DIST_DIR/tailwindcss"
   chmod +x "$DIST_DIR/tailwindcss"
@@ -124,21 +127,21 @@ rm -rf "$FONT_DIR/inter.zip"
 
 section "BUILD"
 
-TWC_BIN="$DIST_DIR/tailwindcss"
-TWC_WATCH="${config["twc-watch"]}"
+TW_BIN="$DIST_DIR/tailwindcss"
+TW_WATCH="${config["--tw-watch"]}"
 
-if [[ "$TWC_LOCAL" == "true" ]] || [[ "$TWC_LOCAL" == "twc-local" ]]; then
-  TWC_BIN="tailwindcss"
+if [[ "$TW_LOCAL" == "true" ]]; then
+  TW_BIN="tailwindcss"
 fi
 
-if [[ "$TWC_WATCH" == "true" ]] || [[ "$TWC_WATCH" == "twc-watch" ]]; then
+if [[ "$TW_WATCH" == "true" ]]; then
   print "watch" "tailwindcss"
   WATCH_FLAG="--watch"
 else
   print "build" "tailwindcss"
 fi
 
-"$TWC_BIN" -c tailwind.config.js -i "$DIST_DIR/www/asset/css/input.css" -o "$DIST_DIR/www/asset/css/output.css" --minify "$WATCH_FLAG"
+"$TW_BIN" -c tailwind.config.js -i "$DIST_DIR/www/asset/css/input.css" -o "$DIST_DIR/www/asset/css/output.css" --minify "$WATCH_FLAG"
 
 STATUS="$?"
 

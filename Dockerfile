@@ -20,6 +20,6 @@ COPY ./tailwind.config.js ./tailwind.config.js
 ARG VERSION
 
 COPY ./build ./build
-RUN ./build mode=prod
+RUN ./build --mode=prod
 
 CMD ["./target/release/verbal"]
