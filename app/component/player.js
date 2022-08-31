@@ -10,7 +10,7 @@ export default {
             playing: false,
             loading: false,
             error: false,
-            title: '- No song title available -',
+            title: null,
             interval: null,
             resume: false,
             state
@@ -26,7 +26,7 @@ export default {
             this.error = false;
             if(station !== null) {
                 this.loading = true;
-                this.title = '- No song title available -';
+                this.title = null;
                 this.updateMediaSession();
                 state.open = true;
             }
@@ -34,16 +34,6 @@ export default {
     },
     methods: {
         $lang,
-        async setLike(is_favorite) {
-            try {
-                await http`${is_favorite ? 'post' : 'delete'}::/api/favorite`(this.station.id);
-                this.station.is_favorite = is_favorite;
-                state.app.$refs.favorites.doFetch();
-            }
-            catch(error) {
-                console.log(error);
-            }
-        },
         setPlaying(playing) {
             if(this.error || this.loading) {
                 return;
@@ -84,7 +74,7 @@ export default {
         updateMediaSession() {
             if('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
-                    title: this.title,
+                    title: this.title ?? $lang('player.no-song-title'),
                     artist: this.station.name,
                     artwork: [
                         { src: this.station.icon, sizes: '96x96', type: 'image/jpg' },
@@ -100,11 +90,12 @@ export default {
         async fetchSong() {
             try {
                 const song = await http`get::/api/song`(this.station);
-                this.title = song === '' ? '- No song title available -' : song;
+                this.title = song === '' ? null : song;
             }
             catch(err) {
                 console.error(err);
-                this.title = '- No song title available -';
+                clearInterval(this.interval);
+                this.title = null;
             }
             this.updateMediaSession();
         },
@@ -195,7 +186,7 @@ export default {
                             {{station.name}}
                         </p>
                         <p class="text-md text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none text-center sm:text-left">
-                            {{title ?? $lang('player.loading')}}
+                            {{title ?? $lang('player.no-song-title')}}
                         </p>
                     </div>
                     <div class="inline-flex gap-4 z-10 pr-2">
