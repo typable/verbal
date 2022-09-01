@@ -209,7 +209,7 @@ export default {
                             :icon="[ error ? 'alert-circle' : (loading ? 'rotate-clockwise' : (playing ? 'player-pause' : 'player-play')) ]"
                             :title="[ error ? $lang('global.error') : (playing ? $lang('global.pause') : $lang('global.play')) ]"
                             :animation="[ error ? '' : (loading ? 'animate-spin' : '') ]"
-                            class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10 min-w-[64px] min-h-[64px]"
+                            class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10 !min-w-[64px] !min-h-[64px]"
                             @click="setPlaying(!playing)"
                         ></v-button>
                         <input
