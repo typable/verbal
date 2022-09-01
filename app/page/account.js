@@ -46,7 +46,7 @@ export default {
                     <h3 class="text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('account.settings')}}</h3>
                     <div class="flex flex-col gap-8">
                         <div class="flex flex-col gap-2">
-                            <label for="username" class="text-white text-md">{{$lang('account.username')}}</label>
+                            <label for="username" class="text-white text-lg">{{$lang('account.username')}}</label>
                             <span class="text-gray-400 text-sm">{{$lang('account.username.info')}}</span>
                             <input
                                 v-model="name"
@@ -60,7 +60,7 @@ export default {
                             >
                         </div>
                         <div class="flex flex-col gap-2">
-                            <label for="language" class="text-white text-md">{{$lang('account.language')}}</label>
+                            <label for="language" class="text-white text-lg">{{$lang('account.language')}}</label>
                             <span class="text-gray-400 text-sm">{{$lang('account.language.info')}}</span>
                             <v-select
                                 id="language"
@@ -78,7 +78,7 @@ export default {
                     <h3 class="text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('account.devices')}}</h3>
                     <ul class="flex flex-col gap-4">
                         <li v-for="device in state.devices" class="w-full rounded-md bg-zinc-900 p-5 flex flex-col gap-1 cursor-pointer">
-                            <p class="text-md text-white flex justify-between items-center">
+                            <p class="text-lg text-white flex justify-between items-center">
                                 {{device.name ?? $lang('account.devices.unknown')}}
                                 <span
                                     v-if="isCurrentDevice(device)"

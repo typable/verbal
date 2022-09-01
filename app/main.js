@@ -59,18 +59,8 @@ export const state = {
                 }
                 if(state.account === null) {
                     this.$refs.popup.open({
-                        title: $lang('global.welcome'),
-                        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-                        actions: [
-                            {
-                                icon: 'check',
-                                title: $lang('global.continue'),
-                                handle: () => {
-                                    localStorage.setItem('verbal-token', 'test-token');
-                                    window.location.reload();
-                                }
-                            }
-                        ]
+                        title: $lang('global.brand'),
+                        description: $lang('global.slogan') + $lang('global.upcoming')
                     });
                     return;
                 }

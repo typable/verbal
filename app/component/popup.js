@@ -51,8 +51,8 @@ export default {
                 :style="transform"
             >
                 <h3 class="text-white text-[24px] font-bold pb-4 text-center sm:text-left">{{title}}</h3>
-                <p class="text-md text-gray-400 text-center sm:text-left" v-html="description"></p>
-                <div class="flex gap-2 w-full justify-end">
+                <p class="text-md text-gray-400 text-center sm:text-left mb-7" v-html="description"></p>
+                <div class="flex gap-2 w-full justify-end -mt-5">
                     <v-button
                         v-for="action in actions"
                         :icon="action.icon"
