@@ -17,6 +17,7 @@ pub struct Account {
 pub struct Device {
     pub id: i32,
     pub uid: String,
+    pub name: Option<String>,
     pub account_id: i32,
 }
 
@@ -85,10 +86,4 @@ impl ToSql for Query {
 }
 
 #[derive(Debug, Clone, Serialize, FromRow)]
-pub struct Country(pub String);
-
-#[derive(Debug, Clone, Serialize, FromRow)]
-pub struct Language(pub String);
-
-#[derive(Debug, Clone, Serialize, FromRow)]
-pub struct Tag(pub String);
+pub struct Value(pub String);

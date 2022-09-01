@@ -10,11 +10,15 @@ import VAccount from './page/account.js';
 const VERSION = '{{version}}';
 const SWIPE_THRESHOLD = 70;
 
+export const TOKEN_NAME = 'verbal-token';
+
 export const state = {
     app: null,
     tab: 'search',
     tabs: ['search', 'favorites', 'account'],
     account: null,
+    devices: null,
+    token: null,
     station: null,
     authenticated: false,
     open: false,
@@ -23,7 +27,6 @@ export const state = {
 
 (async () => {
     state.locale = await http`get::/asset/json/locale.json`();
-
     new Vue({
         el: '#app',
         data: {
@@ -48,6 +51,8 @@ export const state = {
             async init() {
                 try {
                     state.account = await http`get::/api/account`();
+                    state.devices = await http`get::/api/devices`();
+                    state.token = localStorage.getItem(TOKEN_NAME);
                 }
                 catch(error) {
                     // ignore

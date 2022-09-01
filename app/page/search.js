@@ -111,7 +111,7 @@ export default {
                                 @change="doSearch"
                                 class="w-full h-[56px] px-5 pl-11 text-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer appearance-none"
                             >
-                                <option value="" selected>All</option>
+                                <option value="">{{$lang('search.input.all')}}</option>
                                 <option v-for="country in countries" :value="country">{{country}}</option>
                             </select>
                         </div>
@@ -127,7 +127,7 @@ export default {
                                 @change="doSearch"
                                 class="w-full h-[56px] px-5 pl-11 text-lg bg-zinc-900 text-white font-medium placeholder:font-normal placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none cursor-pointer appearance-none"
                             >
-                                <option value="">All</option>
+                                <option value="">{{$lang('search.input.all')}}</option>
                                 <option v-for="language in languages" :value="language">{{language}}</option>
                             </select>
                         </div>
@@ -143,7 +143,7 @@ export default {
                     </li>
                 </ul>
                 <div v-else>
-                    <h3 class="text-white text-[24px] font-bold pb-8 pt-4 sm:pt-0">{{$lang('search.recommended')}}</h3>
+                    <h3 class="text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('search.recommended')}}</h3>
                     <ul class="flex flex-col">
                         <li
                             :key="station.id"

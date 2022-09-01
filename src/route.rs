@@ -5,9 +5,6 @@ use sqlx::Postgres;
 use tide_sqlx::SQLxRequestExt;
 
 use crate::model;
-use crate::model::Country;
-use crate::model::Language;
-use crate::model::Tag;
 use crate::unwrap_option_or_throw;
 use crate::unwrap_result_or_throw;
 use crate::Response;
@@ -214,7 +211,7 @@ pub async fn get_countries(req: tide::Request<()>) -> tide::Result {
         "#
     .to_string();
     let mut conn = req.sqlx_conn::<Postgres>().await;
-    let result = sqlx::query_as::<_, Country>(&sql)
+    let result = sqlx::query_as::<_, model::Value>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
     Response::with(result)
@@ -230,7 +227,7 @@ pub async fn get_languages(req: tide::Request<()>) -> tide::Result {
         "#
     .to_string();
     let mut conn = req.sqlx_conn::<Postgres>().await;
-    let result = sqlx::query_as::<_, Language>(&sql)
+    let result = sqlx::query_as::<_, model::Value>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
     Response::with(result)
@@ -247,8 +244,52 @@ pub async fn get_tags(req: tide::Request<()>) -> tide::Result {
         "#
     .to_string();
     let mut conn = req.sqlx_conn::<Postgres>().await;
-    let result = sqlx::query_as::<_, Tag>(&sql)
+    let result = sqlx::query_as::<_, model::Value>(&sql)
         .fetch_all(conn.acquire().await?)
+        .await?;
+    Response::with(result)
+}
+
+pub async fn get_devices(req: tide::Request<()>) -> tide::Result {
+    let account =
+        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    let sql = format!(
+        r#"
+            SELECT
+                device.*
+                FROM device
+                WHERE device.account_id = {account_id}
+        "#,
+        account_id = account.id,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let result = sqlx::query_as::<_, model::Device>(&sql)
+        .fetch_all(conn.acquire().await?)
+        .await?;
+    Response::with(result)
+}
+
+pub async fn update_account(mut req: tide::Request<()>) -> tide::Result {
+    let updated_account = req.body_json::<model::Account>().await?;
+    let account =
+        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    let sql = format!(
+        r#"
+            UPDATE
+                account
+                SET
+                    name = '{name}',
+                    language = '{language}'
+                WHERE account.id = {account_id}
+                RETURNING *
+        "#,
+        account_id = account.id,
+        name = updated_account.name.unwrap_or_default(),
+        language = updated_account.language,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let result = sqlx::query_as::<_, model::Account>(&sql)
+        .fetch_one(conn.acquire().await?)
         .await?;
     Response::with(result)
 }

@@ -43,6 +43,7 @@ CREATE TABLE account (
 CREATE TABLE device (
     id SERIAL PRIMARY KEY,
     uid TEXT UNIQUE NOT NULL,
+    name TEXT,
     account_id INTEGER
 );
 

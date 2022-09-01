@@ -24,6 +24,7 @@
         "global.welcome": "Welcome",
         "player.loading": "Loading...",
         "player.no-song-title": "- No song title available -",
+        "search.input.all": "All",
         "search.input.placeholder": "Search for stations",
         "search.list.end": "You've reached the end",
         "search.list.empty": "No results found",
@@ -36,7 +37,9 @@
         "account.player": "Player",
         "account.playback-history": "Show Playback History",
         "account.playback-history.info": "Displays the recently played songs for the current station",
-        "account.devices": "Devices"
+        "account.devices": "Linked devices",
+        "account.devices.unknown": "Unknown device",
+        "account.devices.current": "Current"
     },
     "de": {
         "global.none": "-",
@@ -63,6 +66,7 @@
         "global.welcome": "Willkommen",
         "player.loading": "Laden...",
         "player.no-song-title": "- Song Titel nicht verfügbar -",
+        "search.input.all": "Alle",
         "search.input.placeholder": "Suche nach Sender",
         "search.list.end": "Du hast das Ende erreicht",
         "search.list.empty": "Keine Ergebnisse gefunden",
@@ -75,6 +79,8 @@
         "account.player": "Wiedergabe",
         "account.playback-history": "Wiedergabeverlauf anzeigen",
         "account.playback-history.info": "Zeigt die zuletzt gespielten Songs für den aktuellen Sender an",
-        "account.devices": "Geräte"
+        "account.devices": "Verbundene Geräte",
+        "account.devices.unknown": "Unbekanntes Gerät",
+        "account.devices.current": "Aktuelles"
     }
 }

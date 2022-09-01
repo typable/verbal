@@ -49,6 +49,7 @@ impl Server {
 
         /* handle api requests */
         app.at("/api/account").get(route::get_account);
+        app.at("/api/account").put(route::update_account);
         app.at("/api/search").get(route::do_search);
         app.at("/api/song").get(route::get_song);
         app.at("/api/favorite").get(route::get_favorites);
@@ -58,6 +59,7 @@ impl Server {
         app.at("/api/countries").get(route::get_countries);
         app.at("/api/languages").get(route::get_languages);
         app.at("/api/tags").get(route::get_tags);
+        app.at("/api/devices").get(route::get_devices);
 
         let address =
             unwrap_result_or_abort!(config.server.to_url(), "cannot parse server address!");

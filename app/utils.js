@@ -1,4 +1,4 @@
-import {state} from './main.js';
+import {state, TOKEN_NAME} from './main.js';
 
 const ltr = (parts, values) => {
 	let string = '';
@@ -22,7 +22,7 @@ export function http(parts, ...values) {
                 const headers = {
                     'content-type': 'application/json',
                 }
-                const token = localStorage.getItem('verbal-token');
+                const token = localStorage.getItem(TOKEN_NAME);
                 if(token) {
                     headers['verbal-token'] = token;
                 }
