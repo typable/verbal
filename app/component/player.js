@@ -135,7 +135,7 @@ export default {
             <div
                 v-if="station"
                 ref="button"
-                class="fixed w-[64px] h-[64px] bg-zinc-900 rounded-md bottom-5 right-4 z-40 cursor-pointer shadow-xl overflow-hidden"
+                class="fixed w-[18vw] h-[18vw] max-w-[80px] max-h-[80px] bg-zinc-900 rounded-md bottom-5 right-4 z-40 cursor-pointer shadow-2xl overflow-hidden"
                 @click="state.open = !state.open"
             >
                 <img
@@ -152,10 +152,9 @@ export default {
                 ></v-icon>
             </div>
             <div
-                class="w-full flex flex-col bg-zinc-800 pb-6 rounded-t-2xl fixed left-0 right-0 bottom-0 px-4 pt-4 h-[70vh] transition-transform duration-300 ease-in-out"
+                class="w-full flex flex-col bg-black fixed left-0 right-0 top-0 h-[100vh] px-4 transition-transform duration-300 ease-in-out"
                 :style="transform"
             >
-                <div class="w-[40px] h-[8px] bg-zinc-500 rounded-[4px] mx-auto mb-12"></div>
                 <audio
                     v-if="station"
                     ref="player"
@@ -171,8 +170,17 @@ export default {
                     <source :src="station.url" type="audio/ogg">
                     <source :src="station.url" type="audio/aac">
                 </audio>
-                <div v-if="station" class="flex gap-5 items-center relative flex-col sm:flex-row">
-                    <div class="w-[140px] h-[140px] min-w-[140px] bg-zinc-900 rounded-lg overflow-hidden z-10">
+                <div class="w-full h-[98px] py-6 flex gap-4 justify-between">
+                    <v-button
+                        icon="chevron-down"
+                        @click="state.open = false"
+                    ></v-button>
+                    <v-button
+                        icon="cast"
+                    ></v-button>
+                </div>
+                <div v-if="station" class="flex gap-8 items-center relative flex-col sm:flex-row pt-12">
+                    <div class="w-[75vw] h-[75vw] min-w-[75vw] bg-zinc-900 rounded-lg overflow-hidden z-10">
                         <img
                             v-if="station.icon"
                             :src="station.icon"
@@ -187,7 +195,7 @@ export default {
                         ></v-icon>
                     </div>
                     <div
-                        class="flex flex-col flex-1 z-10 min-w-0 max-w-full"
+                        class="flex flex-col flex-1 z-10 min-w-0 max-w-[75vw]"
                     >
                         <p class="text-xl font-semibold text-white pb-1 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none text-center sm:text-left">
                             {{station.name}}
@@ -196,15 +204,22 @@ export default {
                             {{title ?? $lang('player.no-song-title')}}
                         </p>
                     </div>
-                    <div class="inline-flex gap-4 z-10 pr-2">
-                        <input type="range" min="0" max="1" step="0.05" @change="setVolume">
+                    <div class="inline-flex flex-col gap-6 z-10 pr-2 items-center">
                         <v-button
                             :icon="[ error ? 'alert-circle' : (loading ? 'rotate-clockwise' : (playing ? 'player-pause' : 'player-play')) ]"
                             :title="[ error ? $lang('global.error') : (playing ? $lang('global.pause') : $lang('global.play')) ]"
                             :animation="[ error ? '' : (loading ? 'animate-spin' : '') ]"
-                            class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10"
+                            class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10 min-w-[64px] min-h-[64px]"
                             @click="setPlaying(!playing)"
                         ></v-button>
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.05"
+                            @change="setVolume"
+                            class="w-[200px]"
+                        >
                     </div>
                 </div>
             </div>
