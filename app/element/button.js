@@ -19,13 +19,13 @@ export default {
                 v-if="icon"
                 :id="icon"
                 :class="[ active ? 'text-gray-100' : 'text-gray-400', text ? 'group-hover:text-gray-700' : '', animation ]"
-                class="hover:text-gray-700"
+                class="hover:text-gray-800"
             ></v-icon>
             <slot v-else></slot>
             <p
                 v-if="text"
                 :class="[ active ? 'text-gray-100' : 'text-gray-400' ]"
-                class="group-hover:text-gray-700 transition-colors -ml-[6px] pr-4 font-medium overflow-hidden text-ellipsis whitespace-nowrap"
+                class="group-hover:text-gray-800 transition-colors -ml-[6px] pr-4 font-medium overflow-hidden text-ellipsis whitespace-nowrap"
             >
                 {{text}}
             </p>

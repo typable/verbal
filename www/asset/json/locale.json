@@ -37,9 +37,10 @@
         "account.player": "Player",
         "account.playback-history": "Show Playback History",
         "account.playback-history.info": "Displays the recently played songs for the current station",
-        "account.devices": "Linked devices",
+        "account.devices": "Devices",
         "account.devices.unknown": "Unknown device",
-        "account.devices.current": "Current"
+        "account.devices.current": "Current",
+        "account.devices.add": "Add device"
     },
     "de": {
         "global.none": "-",
@@ -79,8 +80,9 @@
         "account.player": "Wiedergabe",
         "account.playback-history": "Wiedergabeverlauf anzeigen",
         "account.playback-history.info": "Zeigt die zuletzt gespielten Songs für den aktuellen Sender an",
-        "account.devices": "Verbundene Geräte",
+        "account.devices": "Geräte",
         "account.devices.unknown": "Unbekanntes Gerät",
-        "account.devices.current": "Aktuelles"
+        "account.devices.current": "Aktuelles",
+        "account.devices.add": "Gerät hinzufügen"
     }
 }

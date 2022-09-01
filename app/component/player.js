@@ -135,14 +135,21 @@ export default {
             <div
                 v-if="station"
                 ref="button"
-                class="fixed w-[64px] h-[64px] bg-white rounded-full bottom-4 right-4 z-40 cursor-pointer shadow-xl"
+                class="fixed w-[64px] h-[64px] bg-zinc-900 rounded-md bottom-5 right-4 z-40 cursor-pointer shadow-xl overflow-hidden"
                 @click="state.open = !state.open"
             >
-                <v-icon
-                    id="playlist"
-                    class="pointer-events-none"
+                <img
+                    v-if="station.icon"
+                    :src="station.icon"
+                    :alt="station.name"
+                    class="w-full h-full object-contain select-none pointer-events-none"
                 >
-                </v-icon>
+                <v-icon
+                    v-else
+                    id="access-point"
+                    size="38px"
+                    class="text-gray-400 pointer-events-none"
+                ></v-icon>
             </div>
             <div
                 class="w-full flex flex-col bg-zinc-800 pb-6 rounded-t-2xl fixed left-0 right-0 bottom-0 px-4 pt-4 h-[70vh] transition-transform duration-300 ease-in-out"
