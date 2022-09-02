@@ -7,9 +7,8 @@ import VSearch from './page/search.js';
 import VFavorites from './page/favorites.js';
 import VAccount from './page/account.js';
 
-const VERSION = '{{version}}';
-const SWIPE_THRESHOLD = 70;
-
+export const VERSION = '{{version}}';
+export const SWIPE_THRESHOLD = 70;
 export const TOKEN_NAME = 'verbal-token';
 
 export const state = {
@@ -124,12 +123,7 @@ export const state = {
                 };
                 const angle = Math.atan(diff.x / diff.y) * (180 / Math.PI);
                 const index = state.tabs.indexOf(state.tab);
-                if(state.open) {
-                    if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
-                        if(diff.y > 0 && angle >= -30 && angle <= 30) {
-                            state.open = false;
-                        }
-                    }
+                if(state.open === true) {
                     return;
                 }
                 if(Math.abs(diff.x) >= SWIPE_THRESHOLD) {
@@ -138,15 +132,6 @@ export const state = {
                     }
                     if(diff.x < 0 && index < state.tabs.length - 1 && (angle <= -60 || angle >= 60)) {
                         state.tab = state.tabs[index + 1];
-                    }
-                }
-                if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
-                    if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
-                        if(!state.open && this.target === this.$refs.player.$refs.button) {
-                            if(diff.y < 0 && angle >= -30 && angle <= 30) {
-                                state.open = true;
-                            }
-                        }
                     }
                 }
             }

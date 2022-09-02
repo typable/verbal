@@ -1,4 +1,4 @@
-import {state} from '../main.js';
+import {state, SWIPE_THRESHOLD} from '../main.js';
 import {http, $lang} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
@@ -13,7 +13,7 @@ export default {
             title: null,
             interval: null,
             resume: false,
-            state
+            open: false
         };
     },
     components: {
@@ -21,15 +21,18 @@ export default {
         VIcon
     },
     watch: {
-        station: function(station) {
+        station(value) {
             this.playing = false;
             this.error = false;
-            if(station !== null) {
+            if(value !== null) {
                 this.loading = true;
                 this.title = null;
                 this.updateMediaSession();
-                state.open = true;
+                this.open = true;
             }
+        },
+        open(value) {
+            state.open = value;
         }
     },
     methods: {
@@ -109,51 +112,66 @@ export default {
                 }
                 await this.fetchSong();
             }, 10000);
+        },
+        onTouchStart(event) {
+            this.touch = event.changedTouches[0];
+            this.target = event.target;
+        },
+        onTouchEnd(event) {
+            const touch = event.changedTouches[0];
+            const diff = {
+                x: touch.pageX - this.touch.pageX,
+                y: touch.pageY - this.touch.pageY
+            };
+            const angle = Math.atan(diff.x / diff.y) * (180 / Math.PI);
+            const index = state.tabs.indexOf(state.tab);
+            if(this.open) {
+                if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
+                    if(diff.y > 0 && angle >= -30 && angle <= 30) {
+                        this.open = false;
+                    }
+                }
+                return;
+            }
+            if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
+                if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
+                    if(!this.open && this.target === this.$refs.button) {
+                        if(diff.y < 0 && angle >= -30 && angle <= 30) {
+                            this.open = true;
+                        }
+                    }
+                }
+            }
         }
     },
+    created() {
+        document.body.addEventListener('touchstart', this.onTouchStart);
+        document.body.addEventListener('touchend', this.onTouchEnd);
+    },
+    onUnmounted() {
+        document.body.removeEventListener('touchstart', this.onTouchStart);
+        document.body.removeEventListener('touchend', this.onTouchEnd);
+    },
     computed: {
-        transform() {
-            return {
-                'transform': `translate(0, ${state.open ? 0 : 100}vh)`
-            };
-        },
         opacity() {
             return {
-                'opacity': `${state.open ? 1 : 0}`,
-                'pointer-events': `${state.open ? 'all' : 'none'}`
+                'opacity': `${this.open === true ? 1 : 0}`,
+                'pointer-events': `${this.open === true ? 'all' : 'none'}`
             };
         }
     },
     template: `
         <div class="z-30">
             <div
-                @click="state.open = false"
-                class="fixed top-0 bottom-0 left-0 right-0 bg-black/60 transition-opacity duration-300 ease-in-out"
+                @click="open = false"
+                class="fixed top-0 bottom-0 left-0 right-0 bg-black/60 transition-modal"
                 :style="opacity"
             >
             </div>
             <div
-                v-if="station"
-                ref="button"
-                class="fixed w-[18vw] h-[18vw] max-w-[80px] max-h-[80px] bg-zinc-900 rounded-md bottom-5 right-4 z-40 cursor-pointer shadow-2xl overflow-hidden"
-                @click="state.open = !state.open"
-            >
-                <img
-                    v-if="station.icon"
-                    :src="station.icon"
-                    :alt="station.name"
-                    class="w-full h-full object-contain select-none pointer-events-none"
-                >
-                <v-icon
-                    v-else
-                    id="access-point"
-                    size="38px"
-                    class="text-gray-400 pointer-events-none"
-                ></v-icon>
-            </div>
-            <div
-                class="w-full flex flex-col bg-black fixed left-0 right-0 top-0 h-[100vh] px-4 transition-transform duration-300 ease-in-out"
-                :style="transform"
+                ref="modal"
+                class="w-full max-w-[1200px] mx-auto flex flex-col bg-black fixed left-0 right-0 top-[100vh] h-[100vh] px-4 sm:px-10 transition-modal"
+                :class="{ 'modal-active': open }"
             >
                 <audio
                     v-if="station"
@@ -173,34 +191,42 @@ export default {
                 <div class="w-full h-[98px] py-6 flex gap-4 justify-between">
                     <v-button
                         icon="chevron-down"
-                        @click="state.open = false"
+                        @click="open = false"
                     ></v-button>
                     <v-button
                         icon="cast"
                     ></v-button>
                 </div>
-                <div v-if="station" class="flex gap-8 items-center relative flex-col sm:flex-row pt-12">
-                    <div class="w-[75vw] h-[75vw] min-w-[75vw] bg-zinc-900 rounded-lg overflow-hidden z-10">
+                <div  class="flex gap-8 items-center flex-col">
+                    <div
+                        ref="button"
+                        class="h-[75vw] max-h-[400px] aspect-square bg-zinc-900 rounded-lg overflow-hidden z-10 fixed right-[50%] translate-x-[50%] translate-y-[100%] bottom-[calc(100vh-98px)] transition-modal"
+                        :class="{ 'slide-active': !open, 'slide-hidden': !station }"
+                        @click="open = true"
+                    >
                         <img
-                            v-if="station.icon"
+                            v-if="station?.icon"
                             :src="station.icon"
                             :alt="station.name"
-                            class="w-full h-full object-contain select-none"
+                            class="w-full h-full object-contain select-none pointer-events-none"
                         >
                         <v-icon
                             v-else
                             id="access-point"
                             size="38px"
-                            class="text-gray-400"
+                            class="text-gray-400 pointer-events-none"
                         ></v-icon>
                     </div>
+                    <div class="h-[75vw] max-h-[400px]"></div>
                     <div
-                        class="flex flex-col flex-1 z-10 min-w-0 max-w-[75vw]"
+                        v-if="station"
+                        class="flex flex-col flex-1 z-10 min-w-0 w-[75vw] max-w-[400px] transition-modal"
+                        :style="opacity"
                     >
-                        <p class="text-xl font-semibold text-white pb-1 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none text-center sm:text-left">
+                        <p class="text-xl font-semibold text-white pb-1 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none text-center">
                             {{station.name}}
                         </p>
-                        <p class="text-md text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none text-center sm:text-left">
+                        <p class="text-md text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none text-center">
                             {{title ?? $lang('player.no-song-title')}}
                         </p>
                     </div>
@@ -208,6 +234,7 @@ export default {
                         <v-button
                             :icon="[ error ? 'alert-circle' : (loading ? 'rotate-clockwise' : (playing ? 'player-pause' : 'player-play')) ]"
                             :title="[ error ? $lang('global.error') : (playing ? $lang('global.pause') : $lang('global.play')) ]"
+                            size="28px"
                             :animation="[ error ? '' : (loading ? 'animate-spin' : '') ]"
                             class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10 !min-w-[64px] !min-h-[64px]"
                             @click="setPlaying(!playing)"

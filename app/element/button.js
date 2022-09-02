@@ -3,7 +3,7 @@ import VIcon from './icon.js';
 const TYPES = {};
 
 export default {
-    props: ['text', 'icon', 'title', 'active', 'animation'],
+    props: ['text', 'icon', 'title', 'active', 'animation', 'size'],
     emits: ['click'],
     components: {
         VIcon
@@ -18,6 +18,7 @@ export default {
             <v-icon
                 v-if="icon"
                 :id="icon"
+                :size="size"
                 :class="[ active ? 'text-gray-100' : 'text-gray-400', text ? 'group-hover:text-gray-700' : '', animation ]"
                 class="hover:text-gray-800"
             ></v-icon>

@@ -35,6 +35,29 @@ body {
   100% { width: 0% }
 }
 
+.transition-modal {
+  transition: all ease-in-out 250ms;
+}
+
+.modal-active {
+  top: 0 !important;
+}
+
+.slide-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.slide-active {
+  height: 22vw !important;
+  bottom: 16px !important;
+  transform: translate(0, 0) !important;
+  right: 16px !important;
+  max-height: 100px !important;
+  cursor: pointer;
+  box-shadow: 0 4px 16px 4px rgba(0, 0, 0, 0.5);
+}
+
 @font-face {
   font-family: 'Inter';
   font-style: normal;
