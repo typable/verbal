@@ -26,6 +26,10 @@ export default {
         setStation(station) {
             state.station = station;
             state.app.$refs.player.open = true;
+        },
+        openDetail(station) {
+            state.app.$refs.detail.station = station;
+            state.app.$refs.detail.open = true;
         }
     },
     template: `
@@ -35,7 +39,10 @@ export default {
                 @click="() => setStation(station)"
                 class="w-[54px] h-[54px] min-w-[54px] cursor-pointer"
             ></v-image>
-            <div class="flex flex-col flex-1 min-w-0 cursor-pointer">
+            <div
+                class="flex flex-col flex-1 min-w-0 cursor-pointer"
+                @click="() => openDetail(station)"
+            >
                 <p
                     :title="station.name"
                     class="text-lg font-medium text-gray-100 pb-0 overflow-hidden text-ellipsis whitespace-nowrap"
@@ -57,19 +64,19 @@ export default {
                     </span>
                     <span
                         v-if="station.is_restricted"
-                        class="text-white/90 items-center gap-[5px] bg-blue-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:inline-flex"
+                        class="text-white/90 items-center gap-[5px] bg-blue-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:inline-flex leading-[24px]"
                     >
                         <p class="-mt-[1px]">Restricted</p>
                     </span>
                     <span
                         v-if="station.is_broken"
-                        class="text-white/90 items-center gap-[5px] bg-red-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:inline-flex"
+                        class="text-white/90 items-center gap-[5px] bg-red-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:inline-flex leading-[24px]"
                     >
                         <p class="-mt-[1px]">Broken</p>
                     </span>
                     <span
                         v-if="station.is_no_track_info"
-                        class="text-white/90 items-center gap-[5px] bg-green-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:inline-flex"
+                        class="text-white/90 items-center gap-[5px] bg-green-600/70 rounded-[4px] text-[14px] px-[7px] hidden sm:inline-flex leading-[24px]"
                     >
                         <p class="-mt-[1px]">No track info</p>
                     </span>

@@ -6,6 +6,7 @@ import VPopup from './component/popup.js';
 import VSearch from './page/search.js';
 import VFavorites from './page/favorites.js';
 import VAccount from './page/account.js';
+import VDetail from './component/detail.js';
 
 export const VERSION = '{{version}}';
 export const SWIPE_THRESHOLD = 70;
@@ -39,7 +40,8 @@ export const state = {
             VFavorites,
             VAccount,
             VPlayer,
-            VPopup
+            VPopup,
+            VDetail
         },
         mounted() {
             document.body.style.display = '';
@@ -160,6 +162,7 @@ export const state = {
                     <v-account v-if="state.authenticated" :state="state"></v-account>
                 </div>
                 <v-player ref="player" v-if="state.authenticated" :station="state.station"></v-player>
+                <v-detail ref="detail" v-if="state.authenticated" :station="state.station"></v-detail>
                 <v-popup ref="popup"></v-popup>
             </div>
         `

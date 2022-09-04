@@ -42,7 +42,8 @@
         "account.devices": "Devices",
         "account.devices.unknown": "Unknown device",
         "account.devices.current": "Current",
-        "account.devices.add": "Add device"
+        "account.devices.add": "Add device",
+        "detail.no-description": "No description available"
     },
     "de": {
         "global.none": "-",
@@ -87,6 +88,7 @@
         "account.devices": "Geräte",
         "account.devices.unknown": "Unbekanntes Gerät",
         "account.devices.current": "Aktuelles",
-        "account.devices.add": "Gerät hinzufügen"
+        "account.devices.add": "Gerät hinzufügen",
+        "detail.no-description": "Keine Beschreibung vorhanden"
     }
 }

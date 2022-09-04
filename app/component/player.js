@@ -162,7 +162,7 @@ export default {
         }
     },
     template: `
-        <div class="z-30">
+        <div class="z-50">
             <div
                 @click="open = false"
                 class="fixed top-0 bottom-0 left-0 right-0 bg-black/60 transition-modal"

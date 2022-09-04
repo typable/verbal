@@ -27,6 +27,7 @@ pub struct Station {
     pub uid: String,
     pub name: String,
     pub url: String,
+    pub description: Option<String>,
     pub icon: Option<String>,
     pub homepage: Option<String>,
     pub tags: Option<Vec<String>>,
