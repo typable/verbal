@@ -2,12 +2,14 @@ import {state} from '../main.js';
 import {$lang, http} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
+import VImage from '../element/image.js';
 
 export default {
     props: ['station'],
     components: {
         VButton,
-        VIcon
+        VIcon,
+        VImage
     },
     methods: {
         $lang,
@@ -23,28 +25,16 @@ export default {
         },
         setStation(station) {
             state.station = station;
+            state.app.$refs.player.open = true;
         }
     },
     template: `
         <div class="w-full gap-4 group flex items-center">
-            <div
-                class="w-[54px] h-[54px] min-w-[54px] bg-zinc-900 rounded-md overflow-hidden cursor-pointer"
+            <v-image
+                :station="station"
                 @click="() => setStation(station)"
-            >
-                <img
-                    v-if="station.icon"
-                    :alt="station.name"
-                    :src="station.icon"
-                    @error="() => station.icon = null"
-                    class="w-full h-full object-contain"
-                >
-                <v-icon
-                    v-else
-                    id="access-point"
-                    size="32px"
-                    class="text-gray-400"
-                ></v-icon>
-            </div>
+                class="w-[54px] h-[54px] min-w-[54px] cursor-pointer"
+            ></v-image>
             <div class="flex flex-col flex-1 min-w-0 cursor-pointer">
                 <p
                     :title="station.name"

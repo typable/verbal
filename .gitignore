@@ -3,6 +3,7 @@ target/
 www/asset/font/
 www/asset/lib/
 dist/
+media/
 
 config.toml
 Cargo.lock

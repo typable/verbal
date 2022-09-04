@@ -42,6 +42,7 @@ impl Server {
             .serve_file("dist/www/manifest.json")?;
         app.at("/worker.js").serve_file("dist/www/worker.js")?;
         app.at("/asset").serve_dir("dist/www/asset/")?;
+        app.at("/media").serve_dir("media/")?;
         app.at("/app").serve_dir("dist/app/")?;
 
         /* handle prefetch */

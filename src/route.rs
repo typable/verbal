@@ -32,6 +32,7 @@ pub async fn do_search(req: tide::Request<()>) -> tide::Result {
                 station_status.is_broken,
                 station_status.is_no_track_info,
                 station_status.is_hidden,
+                station_status.is_icon,
                 CASE
                     WHEN favorite.id IS NULL OR favorite.account_id != {account_id}
                     THEN false
@@ -108,6 +109,7 @@ pub async fn get_favorites(req: tide::Request<()>) -> tide::Result {
                 station_status.is_broken,
                 station_status.is_no_track_info,
                 station_status.is_hidden,
+                station_status.is_icon,
                 true as is_favorite
                 FROM station
                 LEFT JOIN favorite
@@ -177,6 +179,7 @@ pub async fn get_station(req: tide::Request<()>) -> tide::Result {
                 station_status.is_broken,
                 station_status.is_no_track_info,
                 station_status.is_hidden,
+                station_status.is_icon,
                 CASE
                     WHEN favorite.id IS NULL OR favorite.account_id != {account_id}
                     THEN false

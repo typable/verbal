@@ -2,6 +2,7 @@ import {state, SWIPE_THRESHOLD} from '../main.js';
 import {http, $lang} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
+import VImage from '../element/image.js';
 
 export default {
     props: ['station'],
@@ -18,7 +19,8 @@ export default {
     },
     components: {
         VButton,
-        VIcon
+        VIcon,
+        VImage
     },
     watch: {
         station(value) {
@@ -28,7 +30,6 @@ export default {
                 this.loading = true;
                 this.title = null;
                 this.updateMediaSession();
-                this.open = true;
             }
         },
         open(value) {
@@ -135,7 +136,7 @@ export default {
             }
             if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
                 if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
-                    if(!this.open && this.target === this.$refs.button) {
+                    if(!this.open && this.target === this.$refs.button?.$refs.image) {
                         if(diff.y < 0 && angle >= -30 && angle <= 30) {
                             this.open = true;
                         }
@@ -198,26 +199,15 @@ export default {
                     ></v-button>
                 </div>
                 <div  class="flex gap-8 items-center flex-col">
-                    <div
+                    <v-image
+                        :station="station"
                         ref="button"
-                        class="h-[75vw] max-h-[400px] aspect-square bg-zinc-900 rounded-lg overflow-hidden z-10 fixed right-[50%] translate-x-[50%] translate-y-[100%] bottom-[calc(100vh-98px)] transition-modal"
+                        class="h-[75vw] max-h-[400px] aspect-square rounded-lg z-10 fixed right-[50%] translate-x-[50%] translate-y-[100%] bottom-[calc(100vh-98px-32px)] transition-modal"
                         :class="{ 'slide-active': !open, 'slide-hidden': !station }"
                         @click="open = true"
                     >
-                        <img
-                            v-if="station?.icon"
-                            :src="station.icon"
-                            :alt="station.name"
-                            class="w-full h-full object-contain select-none pointer-events-none"
-                        >
-                        <v-icon
-                            v-else
-                            id="access-point"
-                            size="38px"
-                            class="text-gray-400 pointer-events-none"
-                        ></v-icon>
-                    </div>
-                    <div class="h-[75vw] max-h-[400px]"></div>
+                    </v-image>
+                    <div class="h-[75vw] max-h-[400px] mt-[32px]"></div>
                     <div
                         v-if="station"
                         class="flex flex-col flex-1 z-10 min-w-0 w-[75vw] max-w-[400px] transition-modal"
@@ -244,7 +234,7 @@ export default {
                             min="0"
                             max="1"
                             step="0.05"
-                            @change="setVolume"
+                            @input="setVolume"
                             class="w-[200px]"
                         >
                     </div>

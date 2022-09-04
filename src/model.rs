@@ -38,6 +38,7 @@ pub struct Station {
     pub is_restricted: Option<bool>,
     pub is_broken: Option<bool>,
     pub is_no_track_info: Option<bool>,
+    pub is_icon: Option<bool>,
     // pub is_hidden: Option<bool>,
 }
 

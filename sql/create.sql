@@ -22,7 +22,8 @@ CREATE TABLE station_status (
     is_restricted BOOLEAN DEFAULT false,
     is_broken BOOLEAN DEFAULT false,
     is_no_track_info BOOLEAN DEFAULT false,
-    is_hidden BOOLEAN DEFAULT false
+    is_hidden BOOLEAN DEFAULT false,
+    is_icon BOOLEAN DEFAULT false
 );
 
 ALTER TABLE station_status

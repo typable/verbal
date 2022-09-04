@@ -46,12 +46,17 @@ fi
 print "version" $VERSION
 
 DIST_DIR="dist"
+MEDIA_DIR="media"
 
 if [[ -d "$DIST_DIR" ]]; then
   section "CLEAN"
   rm -rf "$DIST_DIR"
   print "remove" "$DIST_DIR/"
 fi
+
+section "MEDIA"
+mkdir -p "$MEDIA_DIR"
+print "create" "$MEDIA_DIR/"
 
 if [[ "$MODE" == "dev" ]]; then
   section "LINK"
