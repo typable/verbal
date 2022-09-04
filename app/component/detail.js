@@ -92,14 +92,15 @@ export default {
                         icon="share"
                     ></v-button>
                 </div>
-                <div v-if="station" class="flex gap-4 items-center">
+                <div class="flex gap-4 items-center">
                     <v-image
+                        v-if="station"
                         :station="station"
                         class="w-[96px] h-[96px] min-w-[96px]"
                     ></v-image>
                     <div
+                        v-if="station"
                         class="flex flex-col flex-1 min-w-0 cursor-pointer"
-                        @click="() => openDetail(station)"
                     >
                         <p
                             :title="station.name"
@@ -123,12 +124,15 @@ export default {
                         </span>
                     </div>
                 </div>
-                <div class="flex flex-col gap-6 mt-8">
-                    <div v-if="station.tags && station.tags.length > 0" class="flex gap-2 flex-wrap">
-                        <span v-for="tag in station.tags" class="text-white/90 items-center gap-[5px] bg-zinc-900 rounded-[4px] text-[14px] px-[10px] inline-flex h-[28px] leading-[28px]">{{tag}}</span>
+                <div
+                    v-if="station"
+                    class="flex flex-col gap-6 mt-8"
+                >
+                    <div v-if="station.tags && station.tags.length > 0" class="flex gap-3 flex-wrap">
+                        <span v-for="tag in station.tags" class="cursor-pointer text-md text-white/90 font-medium items-center gap-[5px] bg-zinc-900 hover:bg-zinc-800 rounded-[4px] text-[14px] px-[14px] inline-flex h-[34px] leading-[34px]">{{tag}}</span>
                     </div>
-                    <p v-if="station.description" class="text-sm text-gray-400" v-html="station.description"></p>
-                    <p v-else class="text-sm text-gray-400">{{$lang('detail.no-description')}}</p>
+                    <p v-if="station.description" class="text-md text-gray-400" v-html="station.description"></p>
+                    <p v-else class="text-md text-gray-400">{{$lang('detail.no-description')}}</p>
                     <div v-if="station.is_restricted || station.is_broken || station.is_no_track_info" class="flex gap-2 flex-wrap">
                         <span
                             v-if="station.is_restricted"
