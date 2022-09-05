@@ -71,3 +71,24 @@ ALTER TABLE favorite
     ADD CONSTRAINT favorite_station_id
     FOREIGN KEY (station_id)
     REFERENCES station(id);
+
+CREATE TABLE station_stats (
+    id SERIAL PRIMARY KEY,
+    account_id INTEGER,
+    station_id INTEGER,
+    playtime INTEGER DEFAULT 0
+);
+
+ALTER TABLE station_stats
+    ADD CONSTRAINT station_stats_unique
+    UNIQUE(account_id, station_id);
+
+ALTER TABLE station_stats
+    ADD CONSTRAINT station_stats_account_id
+    FOREIGN KEY (account_id)
+    REFERENCES account(id);
+
+ALTER TABLE station_stats
+    ADD CONSTRAINT station_stats_station_id
+    FOREIGN KEY (station_id)
+    REFERENCES station(id);

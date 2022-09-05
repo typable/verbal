@@ -60,6 +60,8 @@ pub async fn do_search(req: tide::Request<()>) -> tide::Result {
 }
 
 pub async fn get_song(req: tide::Request<()>) -> tide::Result {
+    let account =
+        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let station = req.query::<model::Station>()?;
     let mut response = surf::get(&station.url).header("icy-metadata", "1").await?;
     let meta_int = match response.header("icy-metaint") {
@@ -95,6 +97,22 @@ pub async fn get_song(req: tide::Request<()>) -> tide::Result {
         }
         total += len;
     }
+    let sql = format!(
+        r#"
+            INSERT INTO
+                station_stats
+                (account_id, station_id, playtime)
+            VALUES
+                ({account_id}, {station_id}, 1)
+            ON CONFLICT (account_id, station_id)
+            DO UPDATE
+                SET playtime = station_stats.playtime + EXCLUDED.playtime;
+        "#,
+        account_id = account.id,
+        station_id = station.id,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    sqlx::query(&sql).execute(conn.acquire().await?).await?;
     Response::with(title)
 }
 
