@@ -58,6 +58,45 @@ body {
   box-shadow: 0 4px 16px 4px rgba(0, 0, 0, 0.5);
 }
 
+.text-animate span {
+  position: relative;
+  animation: leftright 3s infinite alternate linear;
+}
+
+.text-animate::before,
+.text-animate::after {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 0.5rem;
+  height: 100%;
+  z-index: 2;
+  top: 0;
+}
+
+.text-animate::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+}
+
+.text-animate::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+}
+
+@keyframes leftright {
+  0%,
+  20% {
+    transform: translateX(0%);
+    left: 0%;
+  }
+  80%,
+  100% {
+    transform: translateX(-100%);
+    left: 100%;
+  }
+}
+
 @font-face {
   font-family: 'Inter';
   font-style: normal;

@@ -14,7 +14,9 @@ export default {
             title: null,
             interval: null,
             resume: false,
-            open: false
+            open: false,
+            tooLong: false,
+            animationDuration: null
         };
     },
     components: {
@@ -34,6 +36,13 @@ export default {
         },
         open(value) {
             state.open = value;
+        },
+        async title(value) {
+            await this.$nextTick();
+            const outer = this.$refs.songtitle;
+            const inner = outer.querySelector('span');
+            this.tooLong = outer.clientWidth - 12 < inner.clientWidth;
+            this.animationDuration = `${Math.max(Math.abs(outer.clientWidth - 12 - inner.clientWidth) * 70, 2500)}ms`;
         }
     },
     methods: {
@@ -213,11 +222,11 @@ export default {
                         class="flex flex-col flex-1 z-10 min-w-0 w-[75vw] max-w-[400px] transition-modal"
                         :style="opacity"
                     >
-                        <p class="text-xl font-semibold text-white pb-1 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none text-center">
+                        <p class="text-xl font-semibold text-white pb-2 overflow-hidden text-ellipsis whitespace-nowrap text-center">
                             {{station.name}}
                         </p>
-                        <p class="text-md text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap select-none pointer-events-none text-center">
-                            {{title ?? $lang('player.no-song-title')}}
+                        <p ref="songtitle" class="songtitle text-md text-gray-400 overflow-hidden whitespace-nowrap relative px-2" :class="{'text-center': !tooLong, 'text-animate': tooLong}">
+                            <span class="inline-block" :style="{'animation-duration': animationDuration}">{{title ?? $lang('player.no-song-title')}}</span>
                         </p>
                     </div>
                     <div class="inline-flex flex-col gap-6 z-10 pr-2 items-center">
