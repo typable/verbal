@@ -100,7 +100,7 @@ export default {
                     ></v-image>
                     <div
                         v-if="station"
-                        class="flex flex-col flex-1 min-w-0 cursor-pointer"
+                        class="flex flex-col flex-1 min-w-0"
                     >
                         <p
                             :title="station.name"

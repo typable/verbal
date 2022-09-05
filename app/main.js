@@ -68,6 +68,7 @@ export const state = {
                 state.authenticated = true;
                 document.addEventListener('scroll', this.onScroll);
                 document.addEventListener('wheel', this.onScroll);
+                document.addEventListener('touchmove', this.onScroll);
                 if('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('/worker.js');
                     navigator.serviceWorker.addEventListener('controllerchange', this.updated);
