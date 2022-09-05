@@ -27,6 +27,19 @@ pub struct Station {
     pub uid: String,
     pub name: String,
     pub url: String,
+    pub icon: Option<String>,
+    pub country: Option<String>,
+    pub state: Option<String>,
+    pub is_favorite: Option<bool>,
+    pub is_icon: Option<bool>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct StationDetail {
+    pub id: i32,
+    pub uid: String,
+    pub name: String,
+    pub url: String,
     pub description: Option<String>,
     pub icon: Option<String>,
     pub homepage: Option<String>,
@@ -40,7 +53,8 @@ pub struct Station {
     pub is_broken: Option<bool>,
     pub is_no_track_info: Option<bool>,
     pub is_icon: Option<bool>,
-    // pub is_hidden: Option<bool>,
+    pub playtime: Option<i32>,
+    pub color: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]

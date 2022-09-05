@@ -1,13 +1,13 @@
 import {state, SWIPE_THRESHOLD} from '../main.js';
-import {http, $lang} from '../utils.js';
+import {http, $lang, duration} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
 import VImage from '../element/image.js';
 
 export default {
-    props: ['station'],
     data() {
         return {
+            station: null,
             open: false
         };
     },
@@ -23,6 +23,11 @@ export default {
     },
     methods: {
         $lang,
+        duration,
+        async load(stationId) {
+            this.station = await http`get::/api/station/${stationId}`();
+            this.open = true;
+        },
         onTouchStart(event) {
             this.touch = event.changedTouches[0];
             this.target = event.target;
@@ -52,6 +57,9 @@ export default {
                     }
                 }
             }
+        },
+        gradient(color) {
+            return `linear-gradient(to bottom, ${color ?? 'transparent'}, transparent)`;
         }
     },
     created() {
@@ -83,6 +91,11 @@ export default {
                 class="w-full max-w-[1200px] mx-auto flex flex-col bg-black fixed left-0 right-0 top-[100vh] h-[100vh] px-4 sm:px-10 transition-modal"
                 :class="{ 'modal-active': open }"
             >
+                <div
+                    class="w-full absolute top-0 left-0 h-[40vh] z-[-1]"
+                    :style="{'background': gradient(station?.color)}"
+                >
+                </div>
                 <div class="w-full h-[98px] py-6 flex gap-4 justify-between">
                     <v-button
                         icon="chevron-down"
@@ -92,7 +105,7 @@ export default {
                         icon="share"
                     ></v-button>
                 </div>
-                <div class="flex gap-4 items-center">
+                <div class="flex flex-col gap-4">
                     <v-image
                         v-if="station"
                         :station="station"
@@ -131,6 +144,7 @@ export default {
                     <div v-if="station.tags && station.tags.length > 0" class="flex gap-3 flex-wrap">
                         <span v-for="tag in station.tags" class="cursor-pointer text-md text-white/90 font-medium items-center gap-[5px] bg-zinc-900 hover:bg-zinc-800 rounded-[4px] text-[14px] px-[14px] inline-flex h-[34px] leading-[34px]">{{tag}}</span>
                     </div>
+                    <p class="text-md text-gray-400">{{$lang('detail.playtime')}}: {{duration(station.playtime ?? 0)}}</p>
                     <p v-if="station.description" class="text-md text-gray-400" v-html="station.description"></p>
                     <p v-else class="text-md text-gray-400">{{$lang('detail.no-description')}}</p>
                     <div v-if="station.is_restricted || station.is_broken || station.is_no_track_info" class="flex gap-2 flex-wrap">

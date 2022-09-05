@@ -163,7 +163,7 @@ export const state = {
                     <v-account v-if="state.authenticated" :state="state"></v-account>
                 </div>
                 <v-player ref="player" v-if="state.authenticated" :station="state.station"></v-player>
-                <v-detail ref="detail" v-if="state.authenticated" :station="state.station"></v-detail>
+                <v-detail ref="detail" v-if="state.authenticated"></v-detail>
                 <v-popup ref="popup"></v-popup>
             </div>
         `

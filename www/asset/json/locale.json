@@ -43,7 +43,8 @@
         "account.devices.unknown": "Unknown device",
         "account.devices.current": "Current",
         "account.devices.add": "Add device",
-        "detail.no-description": "No description available"
+        "detail.no-description": "No description available",
+        "detail.playtime": "Playtime"
     },
     "de": {
         "global.none": "-",
@@ -89,6 +90,7 @@
         "account.devices.unknown": "Unbekanntes Gerät",
         "account.devices.current": "Aktuelles",
         "account.devices.add": "Gerät hinzufügen",
-        "detail.no-description": "Keine Beschreibung vorhanden"
+        "detail.no-description": "Keine Beschreibung vorhanden",
+        "detail.playtime": "Spielzeit"
     }
 }

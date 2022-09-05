@@ -73,14 +73,18 @@ export function http(parts, ...values) {
     };
 }
 
-export async function update() {
-
-}
-
 export function $lang(id, ...args) {
     let message = state.locale[state.account?.language ?? 'en'][id];
     for(const i in args) {
         message = message.replaceAll(`{${i}}`, args[i]);
     }
     return message;
+}
+
+export function duration(time) {
+    let seconds = time * 10;
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds - (hours * 3600)) / 60);
+    seconds = seconds - (hours * 3600) - (minutes * 60);
+    return `${hours > 0 ? hours + ' h ' : ''}${minutes} min`;
 }

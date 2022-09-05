@@ -12,7 +12,8 @@ CREATE TABLE station (
     state TEXT,
     languages TEXT[],
     score INTEGER,
-    description TEXT
+    description TEXT,
+    color TEXT
 );
 
 /* ### station status ### */

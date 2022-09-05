@@ -33,6 +33,7 @@ pub async fn do_search(req: tide::Request<()>) -> tide::Result {
                 station_status.is_no_track_info,
                 station_status.is_hidden,
                 station_status.is_icon,
+                station_stats.playtime,
                 CASE
                     WHEN favorite.id IS NULL OR favorite.account_id != {account_id}
                     THEN false
@@ -43,6 +44,9 @@ pub async fn do_search(req: tide::Request<()>) -> tide::Result {
                     ON station.id = favorite.station_id
                 LEFT JOIN station_status
                     ON station.id = station_status.station_id
+                LEFT JOIN station_stats
+                    ON station.id = station_stats.station_id
+                    AND station_stats.account_id = {account_id}
                 {conditions}
                 AND station_status.is_hidden IS NOT true
                 OFFSET {offset}
@@ -63,6 +67,22 @@ pub async fn get_song(req: tide::Request<()>) -> tide::Result {
     let account =
         unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let station = req.query::<model::Station>()?;
+    let sql = format!(
+        r#"
+            INSERT INTO
+                station_stats
+                (account_id, station_id, playtime)
+            VALUES
+                ({account_id}, {station_id}, 1)
+            ON CONFLICT (account_id, station_id)
+            DO UPDATE
+                SET playtime = station_stats.playtime + EXCLUDED.playtime;
+        "#,
+        account_id = account.id,
+        station_id = station.id,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    sqlx::query(&sql).execute(conn.acquire().await?).await?;
     let mut response = surf::get(&station.url).header("icy-metadata", "1").await?;
     let meta_int = match response.header("icy-metaint") {
         Some(header) => header.as_str(),
@@ -97,22 +117,6 @@ pub async fn get_song(req: tide::Request<()>) -> tide::Result {
         }
         total += len;
     }
-    let sql = format!(
-        r#"
-            INSERT INTO
-                station_stats
-                (account_id, station_id, playtime)
-            VALUES
-                ({account_id}, {station_id}, 1)
-            ON CONFLICT (account_id, station_id)
-            DO UPDATE
-                SET playtime = station_stats.playtime + EXCLUDED.playtime;
-        "#,
-        account_id = account.id,
-        station_id = station.id,
-    );
-    let mut conn = req.sqlx_conn::<Postgres>().await;
-    sqlx::query(&sql).execute(conn.acquire().await?).await?;
     Response::with(title)
 }
 
@@ -128,12 +132,16 @@ pub async fn get_favorites(req: tide::Request<()>) -> tide::Result {
                 station_status.is_no_track_info,
                 station_status.is_hidden,
                 station_status.is_icon,
+                station_stats.playtime,
                 true as is_favorite
                 FROM station
                 LEFT JOIN favorite
                     ON station.id = favorite.station_id
                 LEFT JOIN station_status
                     ON station.id = station_status.station_id
+                LEFT JOIN station_stats
+                    ON station.id = station_stats.station_id
+                    AND station_stats.account_id = {account_id}
                 WHERE favorite.account_id = {account_id}
                 AND station_status.is_hidden IS NOT true
         "#,
@@ -198,6 +206,7 @@ pub async fn get_station(req: tide::Request<()>) -> tide::Result {
                 station_status.is_no_track_info,
                 station_status.is_hidden,
                 station_status.is_icon,
+                station_stats.playtime,
                 CASE
                     WHEN favorite.id IS NULL OR favorite.account_id != {account_id}
                     THEN false
@@ -208,6 +217,9 @@ pub async fn get_station(req: tide::Request<()>) -> tide::Result {
                     ON station.id = favorite.station_id
                 LEFT JOIN station_status
                     ON station.id = station_status.station_id
+                LEFT JOIN station_stats
+                    ON station.id = station_stats.station_id
+                    AND station_stats.account_id = {account_id}
                 WHERE station.id = {station_id}
                 AND station_status.is_hidden IS NOT true
         "#,
@@ -215,7 +227,7 @@ pub async fn get_station(req: tide::Request<()>) -> tide::Result {
         station_id = station_id,
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
-    let result = sqlx::query_as::<_, model::Station>(&sql)
+    let result = sqlx::query_as::<_, model::StationDetail>(&sql)
         .fetch_optional(conn.acquire().await?)
         .await?;
     Response::with(result)

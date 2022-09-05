@@ -1,0 +1,11 @@
+#!/bin/bash
+
+id="$1"
+echo "$id"
+ext="$2"
+url=$(psql verbal -c "select icon from station where id = $id;" -t | xargs echo -n)
+curl -sL "$url" -o "logo.$ext"
+color=$(echo $(convert "logo.$ext" -colors 1 -unique-colors txt:) | awk '{print $8}')
+echo "$color"
+psql verbal -c "update station set color = '$color' where id = $id;"
+rm "logo.$ext"
