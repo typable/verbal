@@ -20,6 +20,47 @@ pub async fn get_account(req: tide::Request<()>) -> tide::Result {
     Response::with(account)
 }
 
+pub async fn add_account(mut req: tide::Request<()>) -> tide::Result {
+    if req.ext::<model::Account>().is_some() {
+        return Response::throw("already logged in with another account!");
+    }
+    let add_account = req.body_json::<model::AddAccount>().await?;
+    info!("{:#?}", add_account);
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let sql = format!(
+        r#"
+            INSERT INTO
+                account
+                (name, language)
+            VALUES
+                ('{name}', '{language}')
+            RETURNING account.*
+        "#,
+        name = add_account.name,
+        language = add_account.language,
+    );
+    let account = sqlx::query_as::<_, model::Account>(&sql)
+        .fetch_one(conn.acquire().await?)
+        .await?;
+    info!("{:#?}", account);
+    let sql = format!(
+        r#"
+            INSERT INTO
+                device
+                (uid, account_id)
+            VALUES
+                (uuid_generate_v4(), {account_id})
+            RETURNING device.*
+        "#,
+        account_id = account.id,
+    );
+    let device = sqlx::query_as::<_, model::Device>(&sql)
+        .fetch_one(conn.acquire().await?)
+        .await?;
+    info!("{:#?}", device);
+    Response::with(device)
+}
+
 pub async fn do_search(req: tide::Request<()>) -> tide::Result {
     let query = req.query::<model::Query>()?;
     let account =

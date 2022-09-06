@@ -37,6 +37,10 @@ export default {
             const {name, language} = this.state.account;
             this.name = name;
             this.language = language;
+        },
+        logout() {
+            localStorage.removeItem('verbal-token');
+            this.state.app.init();
         }
     },
     template: `
@@ -95,6 +99,14 @@ export default {
                         :text="$lang('account.devices.add')"
                         class="mt-4 mx-auto"
                     ></v-button>
+                </div>
+                <div class="flex flex-col">
+                    <button
+                        class="w-full h-[52px] px-4 text-md bg-zinc-900 hover:bg-zinc-800 text-zinc-100 rounded-md outline-none"
+                        @click="logout"
+                    >
+                        {{$lang('global.logout')}}
+                    </button>
                 </div>
                 <div>
                     <p class="text-sm text-gray-400 text-center">Verbal - {{state.version}}</p>

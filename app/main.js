@@ -6,6 +6,7 @@ import VPopup from './component/popup.js';
 import VSearch from './page/search.js';
 import VFavorites from './page/favorites.js';
 import VAccount from './page/account.js';
+import VAuth from './page/auth.js';
 import VDetail from './component/detail.js';
 
 export const VERSION = '{{version}}';
@@ -20,7 +21,7 @@ export const state = {
     devices: null,
     token: null,
     station: null,
-    authenticated: false,
+    authenticated: null,
     open: false,
     version: VERSION
 };
@@ -39,6 +40,7 @@ export const state = {
             VSearch,
             VFavorites,
             VAccount,
+            VAuth,
             VPlayer,
             VPopup,
             VDetail
@@ -55,14 +57,16 @@ export const state = {
                     state.devices = await http`get::/api/devices`();
                     state.token = localStorage.getItem(TOKEN_NAME);
                 }
-                catch(error) {
-                    // ignore
+                catch(err) {
+                    state.account = null;
+                    state.devices = null;
+                    state.token = null;
                 }
+                state.tab = 'search';
+                state.open = false;
+                state.station = null;
                 if(state.account === null) {
-                    this.$refs.popup.open({
-                        title: $lang('global.brand'),
-                        description: $lang('global.slogan') + $lang('global.upcoming')
-                    });
+                    state.authenticated = false;
                     return;
                 }
                 state.authenticated = true;
@@ -152,11 +156,13 @@ export const state = {
         },
         template: `
             <div
+                v-if="state.authenticated !== null"
                 @touchstart="onTouchStart"
                 @touchend="onTouchEnd"
                 class="px-4 sm:px-10 max-w-[1200px] mx-auto flex flex-col min-h-[100vh] max-h-[100vh] overflow-hidden"
             >
-                <v-menu :state="state"></v-menu>
+                <v-auth v-if="!state.authenticated" :state="state"></v-auth>
+                <v-menu v-if="state.authenticated" :state="state"></v-menu>
                 <div class="flex flex-1 gap-[32px] sm:gap-[5rem] overflow-y-clip transition-transform md:transition-none" :style="styles">
                     <v-search v-if="state.authenticated" ref="search" :state="state"></v-search>
                     <v-favorites v-if="state.authenticated" ref="favorites" :state="state"></v-favorites>

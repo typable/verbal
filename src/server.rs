@@ -51,6 +51,7 @@ impl Server {
         /* handle api requests */
         app.at("/api/account").get(route::get_account);
         app.at("/api/account").put(route::update_account);
+        app.at("/api/account").post(route::add_account);
         app.at("/api/search").get(route::do_search);
         app.at("/api/song").get(route::get_song);
         app.at("/api/favorite").get(route::get_favorites);

@@ -103,3 +103,9 @@ impl ToSql for Query {
 
 #[derive(Debug, Clone, Serialize, FromRow)]
 pub struct Value(pub String);
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct AddAccount {
+    pub name: String,
+    pub language: String,
+}

@@ -2,7 +2,7 @@
 
 declare -A config
 config=(
-  ["port"]=4200
+  ["port"]=""
   ["uri"]="/api"
   ["method"]="GET"
   ["args"]=""
@@ -26,6 +26,7 @@ done <<< $(echo "$@" | tr " " "\n")
 
 url="http://localhost:${config["port"]}${config["uri"]}?${config["args"]}"
 
+echo ""
 echo "Request"
 echo "------------------------------------------------------------"
 
