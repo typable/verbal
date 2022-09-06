@@ -25,7 +25,6 @@ pub async fn add_account(mut req: tide::Request<()>) -> tide::Result {
         return Response::throw("already logged in with another account!");
     }
     let add_account = req.body_json::<model::AddAccount>().await?;
-    info!("{:#?}", add_account);
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let sql = format!(
         r#"
@@ -42,7 +41,6 @@ pub async fn add_account(mut req: tide::Request<()>) -> tide::Result {
     let account = sqlx::query_as::<_, model::Account>(&sql)
         .fetch_one(conn.acquire().await?)
         .await?;
-    info!("{:#?}", account);
     let sql = format!(
         r#"
             INSERT INTO
@@ -57,7 +55,6 @@ pub async fn add_account(mut req: tide::Request<()>) -> tide::Result {
     let device = sqlx::query_as::<_, model::Device>(&sql)
         .fetch_one(conn.acquire().await?)
         .await?;
-    info!("{:#?}", device);
     Response::with(device)
 }
 
