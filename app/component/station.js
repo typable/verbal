@@ -13,16 +13,6 @@ export default {
     },
     methods: {
         $lang,
-        async setLike(is_favorite) {
-            try {
-                await http`${is_favorite ? 'post' : 'delete'}::/api/favorite`(this.station.id);
-                this.station.is_favorite = is_favorite;
-                state.app.$refs.favorites.doFetch();
-            }
-            catch(error) {
-                console.log(error);
-            }
-        },
         setStation(station) {
             state.station = station;
             state.app.$refs.player.open = true;
@@ -62,15 +52,6 @@ export default {
                         <p>{{station.state ? station.state + ', ' : ''}}{{station.country}}</p>
                     </span>
                 </span>
-            </div>
-            <div class="inline-flex gap-3 sm:gap-4">
-                <v-button
-                    :icon="[ station.is_favorite ? 'bookmark-off' : 'bookmark' ]"
-                    :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"
-                    :active="station.is_favorite"
-                    @click="() => setLike(!station.is_favorite)"
-                    class="bg-zinc-900 hover:bg-white"
-                ></v-button>
             </div>
         </div>
     `

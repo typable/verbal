@@ -16,17 +16,26 @@ export default {
         VIcon,
         VImage
     },
-    watch: {
-        open(value) {
-            state.open = value;
-        }
-    },
     methods: {
         $lang,
         duration,
         async load(stationId) {
             this.station = await http`get::/api/station/${stationId}`();
             this.open = true;
+        },
+        async setLike(is_favorite) {
+            try {
+                await http`${is_favorite ? 'post' : 'delete'}::/api/favorite`(this.station.id);
+                this.station.is_favorite = is_favorite;
+                state.app.$refs.favorites.doFetch();
+            }
+            catch(error) {
+                console.log(error);
+            }
+        },
+        setStation(station) {
+            state.station = station;
+            state.app.$refs.player.open = true;
         },
         onTouchStart(event) {
             this.touch = event.changedTouches[0];
@@ -40,21 +49,12 @@ export default {
             };
             const angle = Math.atan(diff.x / diff.y) * (180 / Math.PI);
             const index = state.tabs.indexOf(state.tab);
-            if(this.open) {
-                if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
-                    if(diff.y > 0 && angle >= -30 && angle <= 30) {
-                        this.open = false;
-                    }
-                }
+            if(state.app.$refs.player.open) {
                 return;
             }
-            if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
-                if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
-                    if(!this.open && this.target === this.$refs.button?.$refs.image) {
-                        if(diff.y < 0 && angle >= -30 && angle <= 30) {
-                            this.open = true;
-                        }
-                    }
+            if(Math.abs(diff.x) >= SWIPE_THRESHOLD) {
+                if(this.open && diff.x > 0 && (angle <= -60 || angle >= 60)) {
+                    this.open = false;
                 }
             }
         },
@@ -82,30 +82,30 @@ export default {
         <div class="z-40">
             <div
                 @click="open = false"
-                class="fixed top-0 bottom-0 left-0 right-0 bg-black/60 transition-modal"
+                class="fixed top-0 bottom-0 left-0 right-0 bg-black/60 transition-detail"
                 :style="opacity"
             >
             </div>
             <div
                 ref="modal"
-                class="w-full max-w-[1200px] mx-auto flex flex-col bg-black fixed left-0 right-0 top-[100vh] h-[100vh] px-4 sm:px-10 transition-modal"
-                :class="{ 'modal-active': open }"
+                class="w-full max-w-[1200px] mx-auto flex flex-col bg-black fixed left-[100vh] top-0 h-[100vh] overflow-y-auto px-4 pb-12 sm:pb-[100px] sm:px-10 transition-detail"
+                :class="{ 'detail-active': open }"
             >
                 <div
                     class="w-full absolute top-0 left-0 h-[40vh] z-[-1]"
                     :style="{'background': gradient(station?.color)}"
                 >
                 </div>
-                <div class="w-full h-[98px] py-6 flex gap-4 justify-between">
+                <div class="w-full h-[98px] py-6 flex gap-4 justify-between sticky top-0">
                     <v-button
-                        icon="chevron-down"
+                        icon="chevron-left"
                         @click="open = false"
                     ></v-button>
                     <v-button
                         icon="share"
                     ></v-button>
                 </div>
-                <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-5">
                     <v-image
                         v-if="station"
                         :station="station"
@@ -121,7 +121,7 @@ export default {
                         >
                             {{station.name}}
                         </p>
-                        <span class="text-md text-gray-400 overflow-hidden flex gap-2 sm:gap-3">
+                        <span class="text-md text-gray-400 overflow-hidden flex gap-3 pt-1">
                             <span
                                 v-if="station.country" 
                                 class="text-gray-400 inline-flex items-center gap-[5px]"
@@ -134,6 +134,18 @@ export default {
                                 ></v-icon>
                                 <p>{{station.state ? station.state + ', ' : ''}}{{station.country}}</p>
                             </span>
+                            <span
+                                v-if="station?.playtime && duration(station.playtime ?? 0).length > 0" 
+                                class="text-gray-400 inline-flex items-center gap-[5px]"
+                                :title="$lang('detail.playtime')"
+                            >
+                                <v-icon
+                                    id="clock"
+                                    class="w-[18px] h-[18px] !min-w-[18px] inline-flex text-gray-400"
+                                    size="100%"
+                                ></v-icon>
+                                <p>{{duration(station.playtime ?? 0)}}</p>
+                            </span>
                         </span>
                     </div>
                 </div>
@@ -144,7 +156,20 @@ export default {
                     <div v-if="station.tags && station.tags.length > 0" class="flex gap-3 flex-wrap">
                         <span v-for="tag in station.tags" class="cursor-pointer text-md text-white/90 font-medium items-center gap-[5px] bg-zinc-900 hover:bg-zinc-800 rounded-[4px] text-[14px] px-[14px] inline-flex h-[34px] leading-[34px]">{{tag}}</span>
                     </div>
-                    <p class="text-md text-gray-400">{{$lang('detail.playtime')}}: {{duration(station.playtime ?? 0)}}</p>
+                    <div class="flex gap-3">
+                        <v-button
+                            icon="player-play"
+                            @click="() => setStation(station)"
+                            class="bg-zinc-900 hover:bg-white"
+                        ></v-button>
+                        <v-button
+                            :icon="[ station.is_favorite ? 'heart-off' : 'heart' ]"
+                            :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"
+                            @click="() => setLike(!station.is_favorite)"
+                            class="bg-zinc-900 hover:bg-white"
+                            :text="$lang(station.is_favorite ? 'global.unlike' : 'global.like')"
+                        ></v-button>
+                    </div>
                     <p v-if="station.description" class="text-md text-gray-400" v-html="station.description"></p>
                     <p v-else class="text-md text-gray-400">{{$lang('detail.no-description')}}</p>
                     <div v-if="station.is_restricted || station.is_broken || station.is_no_track_info" class="flex gap-2 flex-wrap">

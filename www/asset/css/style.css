@@ -39,8 +39,16 @@ body {
   transition: all ease-in-out 250ms;
 }
 
+.transition-detail {
+  transition: all ease-in-out 250ms;
+}
+
 .modal-active {
   top: 0 !important;
+}
+
+.detail-active {
+  left: 0 !important;
 }
 
 .slide-hidden {

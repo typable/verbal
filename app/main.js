@@ -22,7 +22,6 @@ export const state = {
     token: null,
     station: null,
     authenticated: null,
-    open: false,
     version: VERSION
 };
 
@@ -63,7 +62,6 @@ export const state = {
                     state.token = null;
                 }
                 state.tab = 'search';
-                state.open = false;
                 state.station = null;
                 if(state.account === null) {
                     state.authenticated = false;
@@ -130,7 +128,7 @@ export const state = {
                 };
                 const angle = Math.atan(diff.x / diff.y) * (180 / Math.PI);
                 const index = state.tabs.indexOf(state.tab);
-                if(state.open === true) {
+                if(this.$refs.player.open === true || this.$refs.detail.open === true) {
                     return;
                 }
                 if(Math.abs(diff.x) >= SWIPE_THRESHOLD) {

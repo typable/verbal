@@ -34,9 +34,6 @@ export default {
                 this.updateMediaSession();
             }
         },
-        open(value) {
-            state.open = value;
-        },
         async title(value) {
             await this.$nextTick();
             const outer = this.$refs.songtitle;
@@ -47,6 +44,10 @@ export default {
     },
     methods: {
         $lang,
+        async openDetail(station) {
+            await state.app.$refs.detail.load(station.id);
+            this.open = false;
+        },
         setPlaying(playing) {
             if(this.error || this.loading) {
                 return;
@@ -222,7 +223,10 @@ export default {
                         class="flex flex-col flex-1 z-10 min-w-0 w-[75vw] max-w-[400px] transition-modal"
                         :style="opacity"
                     >
-                        <p class="text-xl font-semibold text-white pb-2 overflow-hidden text-ellipsis whitespace-nowrap text-center">
+                        <p
+                            class="text-xl font-semibold text-white pb-2 overflow-hidden text-ellipsis whitespace-nowrap text-center cursor-pointer"
+                            @click="openDetail(station)"
+                        >
                             {{station.name}}
                         </p>
                         <p ref="songtitle" class="songtitle text-md text-gray-400 overflow-hidden whitespace-nowrap relative px-2" :class="{'text-center': !tooLong, 'text-animate': tooLong}">
