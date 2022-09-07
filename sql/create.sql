@@ -38,7 +38,8 @@ ALTER TABLE station_status
 CREATE TABLE account (
     id SERIAL PRIMARY KEY,
     name TEXT,
-    language TEXT DEFAULT 'en'
+    language TEXT DEFAULT 'en',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
 /* ### device ### */
@@ -47,7 +48,8 @@ CREATE TABLE device (
     id SERIAL PRIMARY KEY,
     uid TEXT UNIQUE NOT NULL,
     name TEXT,
-    account_id INTEGER
+    account_id INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
 ALTER TABLE device
@@ -77,7 +79,8 @@ CREATE TABLE station_stats (
     id SERIAL PRIMARY KEY,
     account_id INTEGER,
     station_id INTEGER,
-    playtime INTEGER DEFAULT 0
+    playtime INTEGER DEFAULT 0,
+    latest_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
 ALTER TABLE station_stats

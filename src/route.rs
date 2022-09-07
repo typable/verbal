@@ -114,7 +114,8 @@ pub async fn get_song(req: tide::Request<()>) -> tide::Result {
                 ({account_id}, {station_id}, 1)
             ON CONFLICT (account_id, station_id)
             DO UPDATE
-                SET playtime = station_stats.playtime + EXCLUDED.playtime;
+                SET playtime = station_stats.playtime + EXCLUDED.playtime,
+                latest_at = now();
         "#,
         account_id = account.id,
         station_id = station.id,
