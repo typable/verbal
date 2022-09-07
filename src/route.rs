@@ -272,6 +272,46 @@ pub async fn get_station(req: tide::Request<()>) -> tide::Result {
     Response::with(result)
 }
 
+pub async fn get_group(req: tide::Request<()>) -> tide::Result {
+    let group_id = unwrap_result_or_throw!(req.param("id"), "no group id found!");
+    let account =
+        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    let sql = format!(
+        r#"
+            SELECT
+                station.*,
+                station_status.is_restricted,
+                station_status.is_broken,
+                station_status.is_no_track_info,
+                station_status.is_hidden,
+                station_status.is_icon,
+                station_stats.playtime,
+                CASE
+                    WHEN favorite.id IS NULL OR favorite.account_id != {account_id}
+                    THEN false
+                    ELSE true
+                END AS is_favorite
+                FROM station
+                LEFT JOIN favorite
+                    ON station.id = favorite.station_id
+                LEFT JOIN station_status
+                    ON station.id = station_status.station_id
+                LEFT JOIN station_stats
+                    ON station.id = station_stats.station_id
+                    AND station_stats.account_id = {account_id}
+                WHERE station.group_id = {group_id}
+                AND station_status.is_hidden IS NOT true
+        "#,
+        account_id = account.id,
+        group_id = group_id,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let result = sqlx::query_as::<_, model::Station>(&sql)
+        .fetch_all(conn.acquire().await?)
+        .await?;
+    Response::with(result)
+}
+
 pub async fn get_countries(req: tide::Request<()>) -> tide::Result {
     let sql = r#"
             SELECT

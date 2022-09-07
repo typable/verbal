@@ -45,7 +45,8 @@
         "account.devices.current": "Current",
         "account.devices.add": "Add device",
         "detail.no-description": "No description available",
-        "detail.playtime": "Playtime"
+        "detail.playtime": "Playtime",
+        "detail.related": "Related"
     },
     "de": {
         "global.none": "-",
@@ -93,6 +94,7 @@
         "account.devices.current": "Aktuelles",
         "account.devices.add": "Gerät hinzufügen",
         "detail.no-description": "Keine Beschreibung vorhanden",
-        "detail.playtime": "Spielzeit"
+        "detail.playtime": "Spielzeit",
+        "detail.related": "Zugehörig"
     }
 }

@@ -40,7 +40,7 @@ body {
 }
 
 .transition-detail {
-  transition: all ease-in-out 250ms;
+  transition: all ease-in-out 180ms;
 }
 
 .modal-active {

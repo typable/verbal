@@ -55,6 +55,7 @@ pub struct StationDetail {
     pub is_icon: Option<bool>,
     pub playtime: Option<i32>,
     pub color: Option<String>,
+    pub group_id: Option<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]

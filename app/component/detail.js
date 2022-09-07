@@ -3,24 +3,31 @@ import {http, $lang, duration} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
 import VImage from '../element/image.js';
+import VStation from '../component/station.js';
 
 export default {
     data() {
         return {
             station: null,
+            group: null,
             open: false
         };
     },
     components: {
         VButton,
         VIcon,
-        VImage
+        VImage,
+        VStation
     },
     methods: {
         $lang,
         duration,
         async load(stationId) {
             this.station = await http`get::/api/station/${stationId}`();
+            this.group = null;
+            if(this.station.group_id) {
+                this.group = await http`get::/api/group/${this.station.group_id}`();
+            }
             this.open = true;
         },
         async setLike(is_favorite) {
@@ -192,6 +199,19 @@ export default {
                             >
                                 <p class="-mt-[1px]">No track info</p>
                             </span>
+                        </div>
+                        <div v-if="group" class="pt-6">
+                            <h4 class="text-white text-xl pb-5">{{$lang('detail.related')}}</h4>
+                            <ul class="flex flex-col">
+                                <li
+                                    :key="station.id"
+                                    v-for="group_station in group"
+                                    v-if="station.id !== group_station.id"
+                                    class="border-t sm:border-t-2 first:border-none border-zinc-900 py-4 first:pt-0"
+                                >
+                                    <v-station :station="group_station"></v-station>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
