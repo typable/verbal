@@ -34,6 +34,7 @@ export default {
             try {
                 await http`${is_favorite ? 'post' : 'delete'}::/api/favorite`(this.station.id);
                 this.station.is_favorite = is_favorite;
+                this.station.likes += is_favorite ? 1 : -1;
                 state.app.$refs.favorites.doFetch();
             }
             catch(error) {
@@ -122,7 +123,7 @@ export default {
                             icon="share"
                         ></v-button>
                     </div>
-                    <div class="flex flex-col gap-5">
+                    <div class="flex flex-col gap-5 md:mt-8">
                         <v-image
                             v-if="station"
                             :station="station"
@@ -177,14 +178,15 @@ export default {
                             <v-button
                                 icon="player-play"
                                 @click="() => setStation(station)"
-                                class="bg-zinc-900 hover:bg-white"
+                                :text="$lang('global.listen')"
+                                class="bg-zinc-900 hover:bg-white px-1"
                             ></v-button>
                             <v-button
-                                :icon="[ station.is_favorite ? 'heart-off' : 'heart' ]"
-                                :title="[ $lang(station.is_favorite ? 'global.unlike' : 'global.like') ]"
+                                :icon="station.is_favorite ? 'bookmark-off' : 'bookmark'"
+                                :title="$lang(station.is_favorite ? 'global.unlike' : 'global.like')"
                                 @click="() => setLike(!station.is_favorite)"
-                                class="bg-zinc-900 hover:bg-white"
-                                :text="$lang(station.is_favorite ? 'global.unlike' : 'global.like')"
+                                class="bg-zinc-900 hover:bg-white px-1"
+                                :text="station.likes.toString()"
                             ></v-button>
                         </div>
                         <p v-if="getDescription()" class="text-md text-gray-400" v-html="getDescription()"></p>
@@ -209,8 +211,8 @@ export default {
                                 <p class="-mt-[1px]">No track info</p>
                             </span>
                         </div>
-                        <div v-if="hasGroup()" class="pt-6">
-                            <h4 class="text-white text-xl pb-5">{{$lang('detail.related')}}</h4>
+                        <div v-if="hasGroup()" class="mt-[32px]">
+                            <h3 class="text-white text-[24px] font-bold pb-6 sm:pt-0">{{$lang('detail.related')}}</h3>
                             <ul class="flex flex-col">
                                 <li
                                     :key="station.id"

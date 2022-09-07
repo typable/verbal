@@ -252,7 +252,15 @@ pub async fn get_station(req: tide::Request<()>) -> tide::Result {
                     WHEN favorite.id IS NULL OR favorite.account_id != {account_id}
                     THEN false
                     ELSE true
-                END AS is_favorite
+                END
+                AS is_favorite,
+                (
+                    SELECT
+                        count(*)
+                        FROM favorite
+                        WHERE favorite.station_id = {station_id}
+                )
+                AS likes
                 FROM station
                 LEFT JOIN favorite
                     ON station.id = favorite.station_id
