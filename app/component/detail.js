@@ -72,7 +72,10 @@ export default {
             if(this.group === null) {
                 return false;
             }
-            return this.group.filter((station) => this.station.id !== station.id).length > 0;
+            return this.group.stations.filter((station) => this.station.id !== station.id).length > 0;
+        },
+        getDescription() {
+            return this.station.description ?? this.group?.group.description;
         }
     },
     created() {
@@ -131,7 +134,7 @@ export default {
                         >
                             <p
                                 :title="station.name"
-                                class="text-[24px] font-[600] text-gray-100 pb-0 overflow-hidden text-ellipsis whitespace-nowrap"
+                                class="text-[24px] md:text-[36px] font-[600] text-gray-100 pb-0 overflow-hidden text-ellipsis whitespace-nowrap"
                             >
                                 {{station.name}}
                             </p>
@@ -184,7 +187,7 @@ export default {
                                 :text="$lang(station.is_favorite ? 'global.unlike' : 'global.like')"
                             ></v-button>
                         </div>
-                        <p v-if="station.description" class="text-md text-gray-400" v-html="station.description"></p>
+                        <p v-if="getDescription()" class="text-md text-gray-400" v-html="getDescription()"></p>
                         <p v-else class="text-md text-gray-400">{{$lang('detail.no-description')}}</p>
                         <div v-if="station.is_restricted || station.is_broken || station.is_no_track_info" class="flex gap-2 flex-wrap">
                             <span
@@ -211,7 +214,7 @@ export default {
                             <ul class="flex flex-col">
                                 <li
                                     :key="station.id"
-                                    v-for="group_station in group"
+                                    v-for="group_station in group.stations"
                                     v-if="station.id !== group_station.id"
                                     class="border-t sm:border-t-2 first:border-none border-zinc-900 py-4 first:pt-0"
                                 >

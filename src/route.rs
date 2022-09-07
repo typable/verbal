@@ -1,5 +1,6 @@
 use async_std::io::ReadExt;
 use regex::Regex;
+use serde::Serialize;
 use sqlx::Acquire;
 use sqlx::Postgres;
 use tide_sqlx::SQLxRequestExt;
@@ -276,6 +277,22 @@ pub async fn get_group(req: tide::Request<()>) -> tide::Result {
     let group_id = unwrap_result_or_throw!(req.param("id"), "no group id found!");
     let account =
         unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let sql = format!(
+        r#"
+            SELECT
+                station_group.*
+                FROM station_group
+                WHERE station_group.id = {group_id}
+        "#,
+        group_id = group_id,
+    );
+    let group = unwrap_option_or_throw!(
+        sqlx::query_as::<_, model::StationGroup>(&sql)
+            .fetch_optional(conn.acquire().await?)
+            .await?,
+        "no group with id found!"
+    );
     let sql = format!(
         r#"
             SELECT
@@ -305,10 +322,15 @@ pub async fn get_group(req: tide::Request<()>) -> tide::Result {
         account_id = account.id,
         group_id = group_id,
     );
-    let mut conn = req.sqlx_conn::<Postgres>().await;
-    let result = sqlx::query_as::<_, model::Station>(&sql)
+    let stations = sqlx::query_as::<_, model::Station>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
+    #[derive(Serialize)]
+    struct Result {
+        group: model::StationGroup,
+        stations: Vec<model::Station>,
+    }
+    let result = Result { group, stations };
     Response::with(result)
 }
 

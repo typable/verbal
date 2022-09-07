@@ -25,7 +25,10 @@ export default {
         VImage
     },
     watch: {
-        station(value) {
+        station(value, old) {
+            if(value?.id === old?.id) {
+                return;
+            }
             this.playing = false;
             this.error = false;
             if(value !== null) {

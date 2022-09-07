@@ -58,6 +58,13 @@ pub struct StationDetail {
     pub group_id: Option<i32>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct StationGroup {
+    pub id: i32,
+    pub name: String,
+    pub description: Option<String>,
+}
+
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct Favorite {
     pub id: i32,

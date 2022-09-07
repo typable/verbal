@@ -30,7 +30,8 @@ ALTER TABLE station
 
 CREATE TABLE station_group (
     id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    description TEXT
 );
 
 /* ############################################################ */
