@@ -82,6 +82,7 @@ pub async fn do_search(req: tide::Request<()>) -> tide::Result {
                 FROM station
                 LEFT JOIN favorite
                     ON station.id = favorite.station_id
+                    AND favorite.account_id = {account_id}
                 LEFT JOIN station_status
                     ON station.id = station_status.station_id
                 LEFT JOIN station_stats
@@ -178,6 +179,7 @@ pub async fn get_favorites(req: tide::Request<()>) -> tide::Result {
                 FROM station
                 LEFT JOIN favorite
                     ON station.id = favorite.station_id
+                    AND favorite.account_id = {account_id}
                 LEFT JOIN station_status
                     ON station.id = station_status.station_id
                 LEFT JOIN station_stats
@@ -264,6 +266,7 @@ pub async fn get_station(req: tide::Request<()>) -> tide::Result {
                 FROM station
                 LEFT JOIN favorite
                     ON station.id = favorite.station_id
+                    AND favorite.account_id = {account_id}
                 LEFT JOIN station_status
                     ON station.id = station_status.station_id
                 LEFT JOIN station_stats
@@ -320,6 +323,7 @@ pub async fn get_group(req: tide::Request<()>) -> tide::Result {
                 FROM station
                 LEFT JOIN favorite
                     ON station.id = favorite.station_id
+                    AND favorite.account_id = {account_id}
                 LEFT JOIN station_status
                     ON station.id = station_status.station_id
                 LEFT JOIN station_stats
@@ -362,6 +366,7 @@ pub async fn get_category(req: tide::Request<()>) -> tide::Result {
                 FROM station
                 LEFT JOIN favorite
                     ON station.id = favorite.station_id
+                    AND favorite.account_id = {account_id}
                 LEFT JOIN station_status
                     ON station.id = station_status.station_id
                 LEFT JOIN station_stats
