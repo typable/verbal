@@ -19,15 +19,8 @@ export default {
             more: true,
             countries: [],
             languages: [],
-            recommended: [],
-            popular: [
-                45761,
-                44366,
-                37156,
-                33977,
-                56254,
-                30615
-            ]
+            playtime: null,
+            latest: null,
         };
     },
     components: {
@@ -59,10 +52,9 @@ export default {
             }
             this.results.push(...result);
         },
-        async loadRecommended() {
-            for(const id of this.popular) {
-                this.recommended.push(await http`get::/api/station/${id}`());
-            }
+        async loadCategories() {
+            this.playtime = await http`get::/api/category/playtime`();
+            this.latest = await http`get::/api/category/latest`();
         },
         async loadFilters() {
             this.countries = await http`get::/api/countries`();
@@ -76,11 +68,11 @@ export default {
             };
             this.searching = false;
             this.results = [];
-            this.loadRecommended();
+            this.loadCategories();
         }
     },
     mounted() {
-        this.loadRecommended();
+        this.loadCategories();
         this.loadFilters();
     },
     template: `
@@ -143,11 +135,21 @@ export default {
                     </li>
                 </ul>
                 <div v-else>
-                    <h3 class="text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('search.recommended')}}</h3>
+                    <h3 class="text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('search.latest')}}</h3>
                     <ul class="flex flex-col">
                         <li
                             :key="station.id"
-                            v-for="station in recommended"
+                            v-for="station in latest"
+                            class="border-t sm:border-t-2 first:border-none border-zinc-900 py-4 first:pt-0"
+                        >
+                            <v-station :station="station"></v-station>
+                        </li>
+                    </ul>
+                    <h3 class="mt-[32px] text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('search.playtime')}}</h3>
+                    <ul class="flex flex-col">
+                        <li
+                            :key="station.id"
+                            v-for="station in playtime"
                             class="border-t sm:border-t-2 first:border-none border-zinc-900 py-4 first:pt-0"
                         >
                             <v-station :station="station"></v-station>

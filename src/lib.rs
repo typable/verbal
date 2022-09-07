@@ -84,6 +84,31 @@ pub trait ToUrl {
     fn to_url(&self) -> Result<String>;
 }
 
+pub enum Category {
+    Playtime,
+    Latest,
+}
+
+impl Category {
+    pub fn from(kind: &str) -> Result<Self> {
+        match kind {
+            "playtime" => Ok(Self::Playtime),
+            "latest" => Ok(Self::Latest),
+            _ => Err(Error::new("not a valid category!")),
+        }
+    }
+}
+
+impl ToSql for Category {
+    fn to_sql(&self) -> Result<String> {
+        Ok(match self {
+            Self::Playtime => "AND station_stats.playtime > 0 ORDER BY station_stats.playtime DESC",
+            Self::Latest => "AND station_stats.playtime > 0 ORDER BY station_stats.latest_at DESC",
+        }
+        .to_string())
+    }
+}
+
 pub fn init_logger() {
     Builder::new()
         .format_timestamp_secs()
