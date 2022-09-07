@@ -181,75 +181,77 @@ export default {
             </div>
             <div
                 ref="modal"
-                class="w-full max-w-[1200px] mx-auto flex flex-col bg-black fixed left-0 right-0 top-[100vh] h-[100vh] px-4 sm:px-10 transition-modal"
+                class="w-full mx-auto flex flex-col bg-black fixed left-0 right-0 top-[100vh] h-[100vh] px-4 sm:px-10 transition-modal"
                 :class="{ 'modal-active': open }"
             >
-                <audio
-                    v-if="station"
-                    ref="player"
-                    controls autoplay
-                    :src="station.url"
-                    @loadeddata="onLoad"
-                    @play="onPlay"
-                    @pause="onPause"
-                    @error="onError"
-                    class="select-none pointer-events-none w-0 h-0 opacity-0"
-                >
-                    <source :src="station.url" type="audio/mpeg">
-                    <source :src="station.url" type="audio/ogg">
-                    <source :src="station.url" type="audio/aac">
-                </audio>
-                <div class="w-full h-[98px] py-6 flex gap-4 justify-between">
-                    <v-button
-                        icon="chevron-down"
-                        @click="open = false"
-                    ></v-button>
-                    <v-button
-                        icon="cast"
-                    ></v-button>
-                </div>
-                <div  class="flex gap-8 items-center flex-col">
-                    <v-image
-                        :station="station"
-                        ref="button"
-                        class="h-[75vw] max-h-[400px] aspect-square rounded-lg z-10 fixed right-[50%] translate-x-[50%] translate-y-[100%] bottom-[calc(100vh-98px-32px)] transition-modal"
-                        :class="{ 'slide-active': !open, 'slide-hidden': !station }"
-                        @click="open = true"
-                    >
-                    </v-image>
-                    <div class="h-[75vw] max-h-[400px] mt-[32px]"></div>
-                    <div
+                <div class="w-full flex flex-col max-w-[1200px] mx-auto">
+                    <audio
                         v-if="station"
-                        class="flex flex-col flex-1 z-10 min-w-0 w-[75vw] max-w-[400px] transition-modal"
-                        :style="opacity"
+                        ref="player"
+                        controls autoplay
+                        :src="station.url"
+                        @loadeddata="onLoad"
+                        @play="onPlay"
+                        @pause="onPause"
+                        @error="onError"
+                        class="select-none pointer-events-none w-0 h-0 opacity-0"
                     >
-                        <p
-                            class="text-xl font-semibold text-white pb-2 overflow-hidden text-ellipsis whitespace-nowrap text-center cursor-pointer"
-                            @click="openDetail(station)"
-                        >
-                            {{station.name}}
-                        </p>
-                        <p ref="songtitle" class="songtitle text-md text-gray-400 overflow-hidden whitespace-nowrap relative px-2" :class="{'text-center': !tooLong, 'text-animate': tooLong}">
-                            <span class="inline-block" :style="{'animation-duration': animationDuration}">{{title ?? $lang('player.no-song-title')}}</span>
-                        </p>
-                    </div>
-                    <div class="inline-flex flex-col gap-6 z-10 pr-2 items-center">
+                        <source :src="station.url" type="audio/mpeg">
+                        <source :src="station.url" type="audio/ogg">
+                        <source :src="station.url" type="audio/aac">
+                    </audio>
+                    <div class="w-full h-[98px] py-6 flex gap-4 justify-between">
                         <v-button
-                            :icon="[ error ? 'alert-circle' : (loading ? 'rotate-clockwise' : (playing ? 'player-pause' : 'player-play')) ]"
-                            :title="[ error ? $lang('global.error') : (playing ? $lang('global.pause') : $lang('global.play')) ]"
-                            size="28px"
-                            :animation="[ error ? '' : (loading ? 'animate-spin' : '') ]"
-                            class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10 !min-w-[64px] !min-h-[64px]"
-                            @click="setPlaying(!playing)"
+                            icon="chevron-down"
+                            @click="open = false"
                         ></v-button>
-                        <input
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.05"
-                            @input="setVolume"
-                            class="w-[200px]"
+                        <v-button
+                            icon="cast"
+                        ></v-button>
+                    </div>
+                    <div  class="flex gap-8 items-center flex-col">
+                        <v-image
+                            :station="station"
+                            ref="button"
+                            class="h-[75vw] max-h-[400px] aspect-square rounded-lg z-10 fixed right-[50%] translate-x-[50%] translate-y-[100%] bottom-[calc(100vh-98px-32px)] transition-modal"
+                            :class="{ 'slide-active': !open, 'slide-hidden': !station }"
+                            @click="open = true"
                         >
+                        </v-image>
+                        <div class="h-[75vw] max-h-[400px] mt-[32px]"></div>
+                        <div
+                            v-if="station"
+                            class="flex flex-col flex-1 z-10 min-w-0 w-[75vw] max-w-[400px] transition-modal"
+                            :style="opacity"
+                        >
+                            <p
+                                class="text-xl font-semibold text-white pb-2 overflow-hidden text-ellipsis whitespace-nowrap text-center cursor-pointer"
+                                @click="openDetail(station)"
+                            >
+                                {{station.name}}
+                            </p>
+                            <p ref="songtitle" class="songtitle text-md text-gray-400 overflow-hidden whitespace-nowrap relative px-2" :class="{'text-center': !tooLong, 'text-animate': tooLong}">
+                                <span class="inline-block" :style="{'animation-duration': animationDuration}">{{title ?? $lang('player.no-song-title')}}</span>
+                            </p>
+                        </div>
+                        <div class="inline-flex flex-col gap-6 z-10 pr-2 items-center">
+                            <v-button
+                                :icon="[ error ? 'alert-circle' : (loading ? 'rotate-clockwise' : (playing ? 'player-pause' : 'player-play')) ]"
+                                :title="[ error ? $lang('global.error') : (playing ? $lang('global.pause') : $lang('global.play')) ]"
+                                size="28px"
+                                :animation="[ error ? '' : (loading ? 'animate-spin' : '') ]"
+                                class="bg-zinc-900 hover:bg-white focus:ring-[6px] ring-white/10 !min-w-[64px] !min-h-[64px]"
+                                @click="setPlaying(!playing)"
+                            ></v-button>
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.05"
+                                @input="setVolume"
+                                class="w-[200px]"
+                            >
+                        </div>
                     </div>
                 </div>
             </div>
