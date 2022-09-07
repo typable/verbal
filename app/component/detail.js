@@ -67,6 +67,12 @@ export default {
         },
         gradient(color) {
             return `linear-gradient(to bottom, ${color ?? 'transparent'}, transparent)`;
+        },
+        hasGroup() {
+            if(this.group === null) {
+                return false;
+            }
+            return this.group.filter((station) => this.station.id !== station.id).length > 0;
         }
     },
     created() {
@@ -200,7 +206,7 @@ export default {
                                 <p class="-mt-[1px]">No track info</p>
                             </span>
                         </div>
-                        <div v-if="group" class="pt-6">
+                        <div v-if="hasGroup()" class="pt-6">
                             <h4 class="text-white text-xl pb-5">{{$lang('detail.related')}}</h4>
                             <ul class="flex flex-col">
                                 <li
