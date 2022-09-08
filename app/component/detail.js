@@ -139,10 +139,10 @@ export default {
                             >
                                 {{station.name}}
                             </p>
-                            <span class="text-md text-gray-400 overflow-hidden flex gap-3 pt-1">
+                            <span class="text-md text-gray-400 overflow-hidden flex flex-wrap gap-x-3 gap-y-1 pt-1">
                                 <span
                                     v-if="group?.group"
-                                    class="text-gray-400 inline-flex items-center gap-[5px]"
+                                    class="text-gray-400 inline-flex items-center gap-[5px] w-full sm:w-auto"
                                     :title="$lang('global.country')"
                                 >
                                     <p>{{$lang('detail.hosted-by')}} {{group.group.name}}</p>
@@ -196,7 +196,7 @@ export default {
                                 :text="station.likes.toString()"
                             ></v-button>
                         </div>
-                        <p v-if="getDescription()" class="text-md text-gray-400" v-html="getDescription()"></p>
+                        <p v-if="getDescription()" class="text-md text-gray-400 mt-2" v-html="getDescription()"></p>
                         <p v-else class="text-md text-gray-400">{{$lang('detail.no-description')}}</p>
                         <div v-if="station.is_restricted || station.is_broken || station.is_no_track_info" class="flex gap-2 flex-wrap">
                             <span
