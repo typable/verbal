@@ -68,6 +68,10 @@ body {
 
 @media(min-width: 768px) {
 
+  .transition-detail {
+    transition: none !important;
+  }
+
   .slide-active {
     bottom: 32px !important;
     right: 32px !important;
