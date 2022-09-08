@@ -48,10 +48,10 @@ export default {
             <div class="flex flex-col flex-1 gap-[32px] pb-8 sm:pb-[100px] pt-2">
                 <div>
                     <h3 class="text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('account.settings')}}</h3>
-                    <div class="flex flex-col gap-8">
-                        <div class="flex flex-col gap-2">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="flex flex-col gap-2 w-full">
                             <label for="username" class="text-white text-lg">{{$lang('account.username')}}</label>
-                            <span class="text-gray-400 text-sm">{{$lang('account.username.info')}}</span>
+                            <span class="flex-1 text-gray-400 text-sm">{{$lang('account.username.info')}}</span>
                             <input
                                 v-model="name"
                                 id="username"
@@ -63,9 +63,9 @@ export default {
                                 class="rounded-md w-full h-[52px] px-4 mt-2 text-md bg-zinc-900 text-white placeholder:text-gray-500 focus:placeholder:text-gray-600 outline-none"
                             >
                         </div>
-                        <div class="flex flex-col gap-2">
+                        <div class="flex flex-col gap-2 w-full">
                             <label for="language" class="text-white text-lg">{{$lang('account.language')}}</label>
-                            <span class="text-gray-400 text-sm">{{$lang('account.language.info')}}</span>
+                            <span class="flex-1 text-gray-400 text-sm">{{$lang('account.language.info')}}</span>
                             <v-select
                                 id="language"
                                 v-model="language"

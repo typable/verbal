@@ -30,6 +30,11 @@ body {
   animation-timing-function: linear;
 }
 
+.scroll-hidden::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
 @keyframes progress {
   0% { width: 100% }
   100% { width: 0% }

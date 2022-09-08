@@ -86,7 +86,7 @@ export default {
     },
     template: `
         <v-tab id="search" :tab="state.tab">
-            <div class="flex flex-col flex-1 gap-[32px] pb-8 sm:pb-[100px] pt-2">
+            <div class="flex flex-col flex-1 gap-6 md:gap-16 pb-8 sm:pb-[100px] pt-2">
                 <div class="flex flex-wrap rounded-md overflow-hidden bg-zinc-900">
                     <div class="relative before:absolute before:w-full before:bottom-0 before:border-b md:before:border-none before:border-zinc-800 flex-1">
                         <input
@@ -145,25 +145,31 @@ export default {
                 </ul>
                 <div v-else>
                     <h3 class="text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('search.latest')}}</h3>
-                    <ul class="flex flex-col">
-                        <li
-                            :key="station.id"
-                            v-for="station in latest"
-                            class="border-t sm:border-t-2 first:border-none border-zinc-900 py-4 first:pt-0"
-                        >
-                            <v-station :station="station"></v-station>
-                        </li>
-                    </ul>
-                    <h3 class="mt-[32px] text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('search.playtime')}}</h3>
-                    <ul class="flex flex-col">
-                        <li
-                            :key="station.id"
-                            v-for="station in playtime"
-                            class="border-t sm:border-t-2 first:border-none border-zinc-900 py-4 first:pt-0"
-                        >
-                            <v-station :station="station"></v-station>
-                        </li>
-                    </ul>
+                    <div class="relative">
+                        <ul class="flex overflow-y-auto max-w-full snap-x snap-mandatory gap-4 pr-3 scroll-hidden">
+                            <li
+                                :key="station.id"
+                                v-for="station in latest"
+                                class="snap-start"
+                            >
+                                <v-station :station="station" type="grid"></v-station>
+                            </li>
+                        </ul>
+                        <div class="absolute right-0 top-0 h-full w-3 bg-gradient-to-l from-black to-transparent"></div>
+                    </div>
+                    <h3 class="mt-6 md:mt-16 text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('search.playtime')}}</h3>
+                    <div class="relative">
+                        <ul class="flex overflow-y-auto max-w-full snap-x snap-mandatory gap-4 pr-3 scroll-hidden">
+                            <li
+                                :key="station.id"
+                                v-for="station in playtime"
+                                class="snap-start"
+                            >
+                                <v-station :station="station" type="grid"></v-station>
+                            </li>
+                        </ul>
+                        <div class="absolute right-0 top-0 h-full w-3 bg-gradient-to-l from-black to-transparent"></div>
+                    </div>
                 </div>
                 <div
                     v-show="loading"
