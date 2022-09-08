@@ -141,6 +141,13 @@ export default {
                             </p>
                             <span class="text-md text-gray-400 overflow-hidden flex gap-3 pt-1">
                                 <span
+                                    v-if="group?.group"
+                                    class="text-gray-400 inline-flex items-center gap-[5px]"
+                                    :title="$lang('global.country')"
+                                >
+                                    <p>{{$lang('detail.hosted-by')}} {{group.group.name}}</p>
+                                </span>
+                                <span
                                     v-if="station.country" 
                                     class="text-gray-400 inline-flex items-center gap-[5px]"
                                     :title="$lang('global.country')"
