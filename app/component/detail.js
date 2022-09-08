@@ -114,7 +114,7 @@ export default {
                         :style="{'background': gradient(station?.color)}"
                     >
                     </div>
-                    <div class="w-full h-[98px] py-6 flex gap-4 justify-between sticky top-0">
+                    <div class="w-full h-[98px] py-6 flex gap-4 justify-between">
                         <v-button
                             icon="chevron-left"
                             @click="open = false"

@@ -10,7 +10,7 @@ export default {
         $lang
     },
     template: `
-        <div class="sticky top-0 z-30">
+        <div class="sticky top-0 z-30 -mb-2">
             <div class="flex bg-black py-6 gap-4">
                 <div class="flex flex-1 gap-4">
                     <v-button
@@ -34,6 +34,7 @@ export default {
                     @click="() => state.tab = 'account'"
                 ></v-button>
             </div>
+            <div class="w-full h-2 bg-gradient-to-b from-black to-transparent"></div>
         </div>
     `
 }
