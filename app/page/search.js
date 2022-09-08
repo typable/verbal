@@ -32,6 +32,10 @@ export default {
         $lang,
         async doSearch() {
             this.results = [];
+            if(this.isQueryEmpty()) {
+                this.reset();
+                return;
+            }
             this.loading = true;
             this.more = true;
             this.searching = true;
@@ -61,9 +65,14 @@ export default {
             const languages = await http`get::/api/languages`();
             this.languages = languages.map(language => language.toUpperCase());
         },
+        isQueryEmpty() {
+            return this.query.name === '' && this.query.country === '' && this.query.language === '';
+        },
         reset() {
             this.query = {
                 name : '',
+                country: '',
+                language: '',
                 page: 0
             };
             this.searching = false;
