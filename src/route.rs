@@ -374,7 +374,7 @@ pub async fn get_category(req: tide::Request<()>) -> tide::Result {
                     AND station_stats.account_id = {account_id}
                 WHERE station_status.is_hidden IS NOT true
                 {category}
-                LIMIT 8
+                LIMIT 10
         "#,
         account_id = account.id,
         category = unwrap_result_or_throw!(category.to_sql(), "cannot parse sql statement!"),

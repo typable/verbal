@@ -115,53 +115,16 @@ export const state = {
                         }
                     }
                 }
-            },
-            onTouchStart(event) {
-                this.touch = event.changedTouches[0];
-                this.target = event.target;
-            },
-            onTouchEnd(event) {
-                const touch = event.changedTouches[0];
-                const diff = {
-                    x: touch.pageX - this.touch.pageX,
-                    y: touch.pageY - this.touch.pageY
-                };
-                const angle = Math.atan(diff.x / diff.y) * (180 / Math.PI);
-                const index = state.tabs.indexOf(state.tab);
-                if(this.$refs.player.open === true || this.$refs.detail.open === true) {
-                    return;
-                }
-                if(Math.abs(diff.x) >= SWIPE_THRESHOLD) {
-                    if(diff.x > 0 && index > 0 && (angle <= -60 || angle >= 60)) {
-                        state.tab = state.tabs[index - 1];
-                    }
-                    if(diff.x < 0 && index < state.tabs.length - 1 && (angle <= -60 || angle >= 60)) {
-                        state.tab = state.tabs[index + 1];
-                    }
-                }
-            }
-        },
-        computed: {
-            styles() {
-                const index = state.tabs.indexOf(state.tab);
-                const offset = window.innerWidth < 1200
-                    ? `${index * -100}vw`
-                    : `${index * -1200}px`;
-                return {
-                    'transform': `translate(${offset}, 0)`
-                };
             }
         },
         template: `
             <div
                 v-if="state.authenticated !== null"
-                @touchstart="onTouchStart"
-                @touchend="onTouchEnd"
-                class="px-4 sm:px-10 max-w-[1200px] mx-auto flex flex-col min-h-[100vh] max-h-[100vh] overflow-hidden"
+                class="px-4 sm:px-10 max-w-[1200px] mx-auto flex flex-col min-h-[100vh]"
             >
                 <v-auth v-if="!state.authenticated" :state="state"></v-auth>
                 <v-menu v-if="state.authenticated" :state="state"></v-menu>
-                <div class="flex flex-1 gap-[32px] sm:gap-[5rem] overflow-y-clip transition-transform md:transition-none" :style="styles">
+                <div>
                     <v-search v-if="state.authenticated" ref="search" :state="state"></v-search>
                     <v-favorites v-if="state.authenticated" ref="favorites" :state="state"></v-favorites>
                     <v-account v-if="state.authenticated" :state="state"></v-account>

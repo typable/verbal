@@ -2,6 +2,7 @@ import {$lang, http} from '../utils.js';
 import VIcon from '../element/icon.js';
 import VTab from '../component/tab.js';
 import VStation from '../component/station.js';
+import VCarousel from '../component/carousel.js';
 
 export default {
     props: ['state'],
@@ -26,7 +27,8 @@ export default {
     components: {
         VIcon,
         VTab,
-        VStation
+        VStation,
+        VCarousel
     },
     methods: {
         $lang,
@@ -86,7 +88,7 @@ export default {
     },
     template: `
         <v-tab id="search" :tab="state.tab">
-            <div class="flex flex-col flex-1 gap-6 md:gap-16 pb-8 sm:pb-[100px] pt-2">
+            <div class="flex flex-col flex-1 gap-4 md:gap-14 pb-8 sm:pb-[100px] pt-2">
                 <div class="flex flex-wrap rounded-md overflow-hidden bg-zinc-900">
                     <div class="relative before:absolute before:w-full before:bottom-0 before:border-b md:before:border-none before:border-zinc-800 flex-1">
                         <input
@@ -143,33 +145,9 @@ export default {
                         <v-station :station="station"></v-station>
                     </li>
                 </ul>
-                <div v-else>
-                    <h3 class="text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('search.latest')}}</h3>
-                    <div class="relative">
-                        <ul class="flex overflow-y-auto max-w-full snap-x snap-mandatory gap-4 pr-3 scroll-hidden">
-                            <li
-                                :key="station.id"
-                                v-for="station in latest"
-                                class="snap-start"
-                            >
-                                <v-station :station="station" type="grid"></v-station>
-                            </li>
-                        </ul>
-                        <div class="absolute right-0 top-0 h-full w-3 bg-gradient-to-l from-black to-transparent"></div>
-                    </div>
-                    <h3 class="mt-6 md:mt-16 text-white text-[24px] font-bold pb-6 pt-4 sm:pt-0">{{$lang('search.playtime')}}</h3>
-                    <div class="relative">
-                        <ul class="flex overflow-y-auto max-w-full snap-x snap-mandatory gap-4 pr-3 scroll-hidden">
-                            <li
-                                :key="station.id"
-                                v-for="station in playtime"
-                                class="snap-start"
-                            >
-                                <v-station :station="station" type="grid"></v-station>
-                            </li>
-                        </ul>
-                        <div class="absolute right-0 top-0 h-full w-3 bg-gradient-to-l from-black to-transparent"></div>
-                    </div>
+                <div v-else class="flex flex-col gap-4 md:gap-14">
+                    <v-carousel :title="$lang('search.latest')" :items="latest"></v-carousel>
+                    <v-carousel :title="$lang('search.playtime')" :items="playtime"></v-carousel>
                 </div>
                 <div
                     v-show="loading"

@@ -55,7 +55,7 @@ export default {
                     </span>
                 </div>
             </div>
-            <div v-if="type === 'grid'" class="flex flex-col gap-3 group w-[160px] min-w-[160px]">
+            <div v-if="type === 'grid'" class="flex flex-col gap-3 group w-full min-w-full">
                 <v-image
                     :station="station"
                     @click="() => openDetail(station)"
