@@ -51,8 +51,8 @@ macro_rules! unwrap_result_or_throw {
     ($target:expr, $message:expr) => {{
         match $target {
             Ok(target) => target,
-            Err(_) => {
-                error!("{}", $message);
+            Err(err) => {
+                error!("{}\n{}", $message, err);
                 return $crate::Response::throw($message);
             }
         }

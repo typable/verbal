@@ -1,4 +1,4 @@
-import {state, TOKEN_NAME} from './main.js';
+import {state, TOKEN_NAME, ROUTES} from './main.js';
 
 const ltr = (parts, values) => {
 	let string = '';
@@ -79,6 +79,26 @@ export function $lang(id, ...args) {
         message = message.replaceAll(`{${i}}`, args[i]);
     }
     return message;
+}
+
+export function $route(path, { update = true } = {}) {
+    for(const [key, value] of Object.entries(ROUTES)) {
+        const regex = new RegExp(key);
+        const match = regex.exec(path);
+        if(match !== null) {
+            state.tab = value;
+            if(value === 'detail') {
+                if(state.app.$refs.detail) {
+                    state.app.$refs.detail.show({ id: match[1] });
+                }
+            }
+            if(update) {
+                window.history.pushState(null, null, path);
+            }
+            return;
+        }
+    }
+    state.tab = 'not-found';
 }
 
 export function duration(time) {

@@ -11,6 +11,7 @@ pub struct Account {
     pub id: i32,
     pub name: Option<String>,
     pub language: String,
+    pub playtime: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]

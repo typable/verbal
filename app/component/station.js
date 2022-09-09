@@ -1,5 +1,5 @@
 import {state} from '../main.js';
-import {$lang, http} from '../utils.js';
+import {$lang, $route, http} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
 import VImage from '../element/image.js';
@@ -16,6 +16,7 @@ export default {
     },
     methods: {
         $lang,
+        $route
     },
     template: `
         <div>
@@ -27,7 +28,7 @@ export default {
                 ></v-image>
                 <div
                     class="flex flex-col flex-1 min-w-0 cursor-pointer"
-                    @click="() => state.app.$refs.detail.show(station)"
+                    @click="$route('/station/' + station.id)"
                 >
                     <p
                         :title="station.name"
@@ -54,7 +55,7 @@ export default {
             <div v-if="type === 'grid'" class="flex flex-col gap-3 group w-full min-w-full">
                 <v-image
                     :station="station"
-                    @click="() => state.app.$refs.detail.show(station)"
+                    @click="$route('/station/' + station.id)"
                     class="w-full aspect-square min-w-full cursor-pointer"
                 ></v-image>
                 <p

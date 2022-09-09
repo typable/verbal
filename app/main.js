@@ -1,17 +1,27 @@
 import Vue, {reactive} from '/asset/lib/vue.min.js';
-import {http, $lang} from './utils.js';
+import {http, $lang, $route} from './utils.js';
 import VMenu from './component/menu.js';
 import VPlayer from './component/player.js';
 import VPopup from './component/popup.js';
 import VSearch from './page/search.js';
 import VFavorites from './page/favorites.js';
 import VAccount from './page/account.js';
+import VNotfound from './page/notfound.js';
 import VAuth from './page/auth.js';
 import VDetail from './component/detail.js';
 
 export const VERSION = '{{version}}';
 export const SWIPE_THRESHOLD = 70;
 export const TOKEN_NAME = 'verbal-token';
+
+export const ROUTES = {
+    '^\/$': 'search',
+    '^\/search$': 'search',
+    '^\/favorites$': 'favorites',
+    '^\/account$': 'account',
+    '^\/station\/(\\d+)$': 'detail',
+    '^@not-found$': 'not-found'
+};
 
 export const state = reactive({
     app: null,
@@ -39,6 +49,7 @@ export const state = reactive({
             VSearch,
             VFavorites,
             VAccount,
+            VNotfound,
             VAuth,
             VPlayer,
             VPopup,
@@ -48,6 +59,7 @@ export const state = reactive({
             document.body.style.display = '';
             state.app = this;
             this.init();
+            window.addEventListener('popstate', this.onPopState);
         },
         methods: {
             async init() {
@@ -75,6 +87,7 @@ export const state = reactive({
                     navigator.serviceWorker.register('/worker.js');
                     navigator.serviceWorker.addEventListener('controllerchange', this.updated);
                 }
+                $route(window.location.pathname, { update: false });
             },
             showError(error) {
                 this.$refs.popup.open({
@@ -107,6 +120,9 @@ export const state = reactive({
                     ]
                 });
             },
+            onPopState() {
+                $route(window.location.pathname, { update: false });
+            },
             onScroll() {
                 if(state.tab === 'search') {
                     if(window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 200) {
@@ -131,6 +147,7 @@ export const state = reactive({
                 </div>
                 <v-player ref="player" v-if="state.authenticated" :station="state.station"></v-player>
                 <v-detail ref="detail" v-if="state.authenticated"></v-detail>
+                <v-notfound v-if="state.authenticated" :state="state"></v-notfound>
                 <v-popup ref="popup"></v-popup>
             </div>
         `

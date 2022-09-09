@@ -1,4 +1,4 @@
-import {$lang} from '../utils.js';
+import {$lang, $route} from '../utils.js';
 import VButton from '../element/button.js';
 
 export default {
@@ -7,7 +7,8 @@ export default {
         VButton
     },
     methods: {
-        $lang
+        $lang,
+        $route
     },
     template: `
         <div class="sticky top-0 z-30 -mb-2">
@@ -17,13 +18,13 @@ export default {
                         icon="search"
                         :title="$lang('global.search')"
                         :active="state.tab === 'search'"
-                        @click="() => state.tab = 'search'"
+                        @click="$route('/search')"
                     ></v-button>
                     <v-button
                         icon="bookmarks"
                         :title="$lang('global.favorites')"
                         :active="state.tab === 'favorites'"
-                        @click="() => state.tab = 'favorites'"
+                        @click="$route('/favorites')"
                     ></v-button>
                 </div>
                 <v-button
@@ -31,7 +32,7 @@ export default {
                     icon="user"
                     :title="$lang('global.account')"
                     :active="state.tab === 'account'"
-                    @click="() => state.tab = 'account'"
+                    @click="$route('/account')"
                 ></v-button>
             </div>
             <div class="w-full h-2 bg-gradient-to-b from-black to-transparent"></div>

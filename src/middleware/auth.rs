@@ -27,10 +27,17 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for Auth {
                     {
                         let query = format!(
                             "
-                                SELECT account.*
+                                SELECT
+                                    account.*,
+                                    (
+                                        SELECT
+                                            sum(playtime)
+                                        FROM get_playtime(account.id)
+                                    )
+                                    AS playtime
                                     FROM account
                                     INNER JOIN device
-                                    ON account.id = device.account_id
+                                        ON account.id = device.account_id
                                     WHERE device.uid = '{}'
                             ",
                             &token,

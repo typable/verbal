@@ -38,6 +38,7 @@ impl Server {
 
         /* serve content */
         app.at("/").serve_file("dist/www/index.html")?;
+        app.at("/*").serve_file("dist/www/index.html")?;
         app.at("/manifest.json")
             .serve_file("dist/www/manifest.json")?;
         app.at("/worker.js").serve_file("dist/www/worker.js")?;

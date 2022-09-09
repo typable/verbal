@@ -466,7 +466,14 @@ pub async fn update_account(mut req: tide::Request<()>) -> tide::Result {
                     name = '{name}',
                     language = '{language}'
                 WHERE account.id = {account_id}
-                RETURNING *
+                RETURNING
+                    account.*,
+                    (
+                        SELECT
+                            sum(playtime)
+                        FROM get_playtime(account.id)
+                    )
+                    AS playtime
         "#,
         account_id = account.id,
         name = updated_account.name.unwrap_or_default(),
