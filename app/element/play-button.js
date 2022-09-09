@@ -34,8 +34,8 @@ export default {
             () => state.app.$refs.player.playing,
             () => state.app.$refs.player.loading,
             () => state.app.$refs.player.error
-        ], ([, value, playing, loading, error]) => {
-            if(value === null || value?.id !== this.station?.id) {
+        ], ([station, value, playing, loading, error]) => {
+            if(value === null || value?.id !== station?.id) {
                 this.synced = false;
                 this.playing = false;
                 return;
@@ -44,7 +44,7 @@ export default {
             this.playing = playing;
             this.loading = loading;
             this.error = error;
-        });
+        }, { immediate: true, deep: true });
     },
     template: `
         <v-button
