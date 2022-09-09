@@ -145,7 +145,7 @@ export default {
                         <v-station :station="station"></v-station>
                     </li>
                 </ul>
-                <div v-else class="flex flex-col gap-4 md:gap-14">
+                <div v-else class="flex flex-col gap-3 md:gap-10">
                     <v-carousel :title="$lang('search.latest')" :items="latest"></v-carousel>
                     <v-carousel :title="$lang('search.playtime')" :items="playtime"></v-carousel>
                 </div>

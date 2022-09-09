@@ -1,4 +1,4 @@
-import Vue from '/asset/lib/vue.min.js';
+import Vue, {reactive} from '/asset/lib/vue.min.js';
 import {http, $lang} from './utils.js';
 import VMenu from './component/menu.js';
 import VPlayer from './component/player.js';
@@ -13,7 +13,7 @@ export const VERSION = '{{version}}';
 export const SWIPE_THRESHOLD = 70;
 export const TOKEN_NAME = 'verbal-token';
 
-export const state = {
+export const state = reactive({
     app: null,
     tab: 'search',
     tabs: ['search', 'favorites', 'account'],
@@ -23,7 +23,7 @@ export const state = {
     station: null,
     authenticated: null,
     version: VERSION
-};
+});
 
 (async () => {
     state.locale = await http`get::/asset/json/locale.json`();

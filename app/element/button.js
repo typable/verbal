@@ -1,7 +1,5 @@
 import VIcon from './icon.js';
 
-const TYPES = {};
-
 export default {
     props: ['text', 'icon', 'title', 'active', 'animation', 'size', 'disabled'],
     emits: ['click'],

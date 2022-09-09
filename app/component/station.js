@@ -6,6 +6,9 @@ import VImage from '../element/image.js';
 
 export default {
     props: ['station', 'type'],
+    data() {
+        return { state };
+    },
     components: {
         VButton,
         VIcon,
@@ -13,25 +16,18 @@ export default {
     },
     methods: {
         $lang,
-        setStation(station) {
-            state.station = station;
-            state.app.$refs.player.open = true;
-        },
-        openDetail(station) {
-            state.app.$refs.detail.load(station.id);
-        }
     },
     template: `
         <div>
             <div v-if="type === undefined || type === 'list'" class="w-full gap-4 group flex items-center">
                 <v-image
                     :station="station"
-                    @click="() => setStation(station)"
+                    @click="() => state.app.$refs.player.play(station)"
                     class="w-[54px] h-[54px] min-w-[54px] cursor-pointer"
                 ></v-image>
                 <div
                     class="flex flex-col flex-1 min-w-0 cursor-pointer"
-                    @click="() => openDetail(station)"
+                    @click="() => state.app.$refs.detail.show(station)"
                 >
                     <p
                         :title="station.name"
@@ -58,7 +54,7 @@ export default {
             <div v-if="type === 'grid'" class="flex flex-col gap-3 group w-full min-w-full">
                 <v-image
                     :station="station"
-                    @click="() => openDetail(station)"
+                    @click="() => state.app.$refs.detail.show(station)"
                     class="w-full aspect-square min-w-full cursor-pointer"
                 ></v-image>
                 <p

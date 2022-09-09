@@ -3,6 +3,7 @@ import {http, $lang, duration} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
 import VImage from '../element/image.js';
+import VPlayButton from '../element/play-button.js';
 import VStation from '../component/station.js';
 
 export default {
@@ -17,13 +18,14 @@ export default {
         VButton,
         VIcon,
         VImage,
-        VStation
+        VStation,
+        VPlayButton
     },
     methods: {
         $lang,
         duration,
-        async load(stationId) {
-            this.station = await http`get::/api/station/${stationId}`();
+        async show(station) {
+            this.station = await http`get::/api/station/${station.id}`();
             this.group = null;
             if(this.station.group_id) {
                 this.group = await http`get::/api/group/${this.station.group_id}`();
@@ -40,10 +42,6 @@ export default {
             catch(error) {
                 console.log(error);
             }
-        },
-        setStation(station) {
-            state.station = station;
-            state.app.$refs.player.open = true;
         },
         onTouchStart(event) {
             this.touch = event.changedTouches[0];
@@ -182,12 +180,7 @@ export default {
                             <span v-for="tag in station.tags" class="cursor-pointer text-md text-white/90 font-medium items-center gap-[5px] bg-zinc-900 hover:bg-zinc-800 rounded-[4px] text-[14px] px-[14px] inline-flex h-[34px] leading-[34px]">{{tag}}</span>
                         </div>
                         <div class="flex gap-3">
-                            <v-button
-                                icon="player-play"
-                                @click="() => setStation(station)"
-                                :text="$lang('global.listen')"
-                                class="bg-zinc-900 hover:bg-white px-1"
-                            ></v-button>
+                            <v-play-button :station="station"></v-play-button>
                             <v-button
                                 :icon="station.is_favorite ? 'bookmark-off' : 'bookmark'"
                                 :title="$lang(station.is_favorite ? 'global.unlike' : 'global.like')"

@@ -16,7 +16,8 @@ export default {
             resume: false,
             open: false,
             tooLong: false,
-            animationDuration: null
+            animationDuration: null,
+            state
         };
     },
     components: {
@@ -25,18 +26,6 @@ export default {
         VImage
     },
     watch: {
-        station(value, old) {
-            if(value?.id === old?.id) {
-                return;
-            }
-            this.playing = false;
-            this.error = false;
-            if(value !== null) {
-                this.loading = true;
-                this.title = null;
-                this.updateMediaSession();
-            }
-        },
         async title(value) {
             await this.$nextTick();
             const outer = this.$refs.songtitle;
@@ -47,9 +36,18 @@ export default {
     },
     methods: {
         $lang,
-        async openDetail(station) {
-            await state.app.$refs.detail.load(station.id);
-            this.open = false;
+        play(station) {
+            if(this.station?.id === station?.id) {
+                return;
+            }
+            this.station = station;
+            this.playing = false;
+            this.error = false;
+            if(this.station !== null) {
+                this.loading = true;
+                this.title = null;
+                this.updateMediaSession();
+            }
         },
         setPlaying(playing) {
             if(this.error || this.loading) {
@@ -126,6 +124,10 @@ export default {
                 }
                 await this.fetchSong();
             }, 10000);
+        },
+        async showDetail(station) {
+            await state.app.$refs.detail.show(station);
+            this.open = false;
         },
         onTouchStart(event) {
             this.touch = event.changedTouches[0];
@@ -229,7 +231,7 @@ export default {
                         >
                             <p
                                 class="text-xl font-semibold text-white pb-2 overflow-hidden text-ellipsis whitespace-nowrap text-center cursor-pointer"
-                                @click="openDetail(station)"
+                                @click="showDetail(station)"
                             >
                                 {{station.name}}
                             </p>
