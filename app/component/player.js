@@ -1,5 +1,5 @@
 import {state, SWIPE_THRESHOLD} from '../main.js';
-import {http, $lang} from '../utils.js';
+import {http, $lang, $route} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
 import VImage from '../element/image.js';
@@ -36,6 +36,7 @@ export default {
     },
     methods: {
         $lang,
+        $route,
         play(station) {
             if(this.station?.id === station?.id) {
                 return;
@@ -126,7 +127,7 @@ export default {
             }, 10000);
         },
         async showDetail(station) {
-            await state.app.$refs.detail.show(station);
+            $route('/station/' + this.station.id);
             this.open = false;
         },
         onTouchStart(event) {
