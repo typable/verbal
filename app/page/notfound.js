@@ -22,7 +22,7 @@ export default {
                     ref="modal"
                     class="w-full mx-auto flex flex-col bg-black fixed left-[100vw] top-0 h-[100vh] overflow-y-auto px-4 pb-12 sm:pb-[100px] sm:px-10 transition-detail detail-active"
                 >
-                    <div class="w-full flex flex-col max-w-[1200px] mx-auto">
+                    <div class="w-full flex flex-col px-4 sm:px-10 max-w-[1200px] mx-auto">
                         <div class="w-full h-[98px] py-6 flex gap-4 justify-between">
                             <v-button
                                 icon="chevron-left"
