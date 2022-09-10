@@ -35,7 +35,14 @@ pub async fn add_account(mut req: tide::Request<()>) -> tide::Result {
                 (name, language)
             VALUES
                 ('{name}', '{language}')
-            RETURNING account.*
+            RETURNING
+                account.*,
+                (
+                    SELECT
+                        sum(playtime)
+                    FROM get_playtime(account.id)
+                )
+                AS playtime
         "#,
         name = add_account.name,
         language = add_account.language,
