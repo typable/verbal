@@ -20,7 +20,8 @@ export const ROUTES = {
     '^\/favorites$': 'favorites',
     '^\/account$': 'account',
     '^\/station\/(\\d+)$': 'detail',
-    '^@not-found$': 'not-found'
+    '^@not-found$': 'not-found',
+    '^@auth$': 'auth'
 };
 
 export const state = reactive({
@@ -77,6 +78,7 @@ export const state = reactive({
                 state.station = null;
                 if(state.account === null) {
                     state.authenticated = false;
+                    $route('@auth', { update: false });
                     return;
                 }
                 state.authenticated = true;

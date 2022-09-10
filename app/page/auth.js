@@ -1,4 +1,4 @@
-import {$lang, http} from '../utils.js';
+import {$lang, $route, http} from '../utils.js';
 import VTab from '../component/tab.js';
 import VSelect from '../component/select.js';
 import VButton from '../element/button.js';
@@ -20,6 +20,7 @@ export default {
     },
     methods: {
         $lang,
+        $route,
         async register() {
             try {
                 localStorage.removeItem('verbal-token');
@@ -29,6 +30,7 @@ export default {
                 });
                 localStorage.setItem('verbal-token', device.uid);
                 this.state.app.init();
+                $route('/');
             }
             catch(err) {
                 console.error(err);
@@ -39,6 +41,7 @@ export default {
                 localStorage.setItem('verbal-token', this.token);
                 await http`get::/api/account`();
                 this.state.app.init();
+                $route('/');
             }
             catch(err) {
                 localStorage.removeItem('verbal-token');
@@ -47,7 +50,7 @@ export default {
         }
     },
     template: `
-        <v-tab id="account" :tab="state.tab">
+        <v-tab id="auth" :tab="state.tab">
             <div class="flex flex-col items-center justify-center h-screen min-h-screen">
                 <div v-if="method === null">
                     <h3 class="text-white text-[34px] font-bold pb-4 -mt-14 text-center">{{$lang('global.brand')}}</h3>

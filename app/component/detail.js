@@ -51,27 +51,6 @@ export default {
                 console.log(error);
             }
         },
-        onTouchStart(event) {
-            this.touch = event.changedTouches[0];
-            this.target = event.target;
-        },
-        onTouchEnd(event) {
-            const touch = event.changedTouches[0];
-            const diff = {
-                x: touch.pageX - this.touch.pageX,
-                y: touch.pageY - this.touch.pageY
-            };
-            const angle = Math.atan(diff.x / diff.y) * (180 / Math.PI);
-            const index = state.tabs.indexOf(state.tab);
-            if(state.app.$refs.player.open) {
-                return;
-            }
-            if(Math.abs(diff.x) >= SWIPE_THRESHOLD) {
-                if(this.open && diff.x > 0 && (angle <= -60 || angle >= 60)) {
-                    this.open = false;
-                }
-            }
-        },
         gradient(color) {
             return `linear-gradient(to bottom, ${color ?? 'transparent'}, transparent)`;
         },
@@ -101,31 +80,9 @@ export default {
             this.show({ id });
         }
     },
-    created() {
-        document.body.addEventListener('touchstart', this.onTouchStart);
-        document.body.addEventListener('touchend', this.onTouchEnd);
-    },
-    onUnmounted() {
-        document.body.removeEventListener('touchstart', this.onTouchStart);
-        document.body.removeEventListener('touchend', this.onTouchEnd);
-    },
-    computed: {
-        opacity() {
-            return {
-                'opacity': `${this.open === true ? 1 : 0}`,
-                'pointer-events': `${this.open === true ? 'all' : 'none'}`
-            };
-        }
-    },
     template: `
         <v-tab id="detail" :tab="state.tab">
             <div class="z-40">
-                <div
-                    @click="open = false"
-                    class="fixed top-0 bottom-0 left-0 right-0 bg-black/60 transition-detail"
-                    :style="opacity"
-                >
-                </div>
                 <div
                     ref="modal"
                     class="w-full mx-auto flex flex-col bg-black fixed left-[100vw] top-0 h-[100vh] overflow-y-auto pb-12 sm:pb-[100px] transition-detail"
