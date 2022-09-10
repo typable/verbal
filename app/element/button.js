@@ -8,9 +8,9 @@ export default {
     },
     template: `
         <button
-            @click="$emit('click')"
+            @click="() => disabled ? {} : $emit('click')"
             :title="title"
-            :class="{ 'bg-zinc-900': active, '!bg-inherit pointer-events-none': disabled }"
+            :class="{ 'bg-zinc-900': active, '!bg-inherit cursor-default': disabled }"
             class="group min-w-[50px] h-[50px] hover:bg-white rounded-full inline-flex justify-center items-center cursor-pointer transition-colors outline-none"
         >
             <v-icon
@@ -23,8 +23,8 @@ export default {
             <slot v-else></slot>
             <p
                 v-if="text"
-                :class="[ active ? 'text-gray-100' : 'text-gray-400' ]"
-                class="group-hover:text-gray-800 transition-colors -ml-[6px] pr-4 font-medium overflow-hidden text-ellipsis whitespace-nowrap"
+                :class="[ active ? 'text-gray-100' : 'text-gray-400', disabled ? '!text-gray-700' : '' ]"
+                class="group-hover:text-gray-800 transition-colors -ml-[6px] pr-4 font-medium overflow-hidden text-ellipsis whitespace-nowrap select-none"
             >
                 {{text}}
             </p>

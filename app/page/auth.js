@@ -29,8 +29,7 @@ export default {
                     language: this.language
                 });
                 localStorage.setItem('verbal-token', device.uid);
-                this.state.app.init();
-                $route('/');
+                $route('/', { reload: true });
             }
             catch(err) {
                 console.error(err);
@@ -40,8 +39,7 @@ export default {
             try {
                 localStorage.setItem('verbal-token', this.token);
                 await http`get::/api/account`();
-                this.state.app.init();
-                $route('/');
+                $route('/', { reload: true });
             }
             catch(err) {
                 localStorage.removeItem('verbal-token');
@@ -60,13 +58,13 @@ export default {
                             class="w-full h-[52px] px-4 text-md bg-zinc-100 hover:bg-zinc-300 text-zinc-900 rounded-md outline-none"
                             @click="method = 'register'"
                         >
-                            Create an account
+                            {{$lang('global.register')}}
                         </button>
                         <button
                             class="w-full h-[52px] px-4 text-md bg-zinc-900 hover:bg-zinc-800 text-zinc-100 rounded-md outline-none"
                             @click="method = 'login'"
                         >
-                            Log In
+                            {{$lang('global.login')}}
                         </button>
                     </div>
                 </div>
@@ -78,7 +76,7 @@ export default {
                         class="self-start"
                     >
                     </v-button>
-                    <h3 class="text-white text-[24px] font-bold pb-4 px-4 sm:pt-0">Create an account</h3>
+                    <h3 class="text-white text-[24px] font-bold pb-4 px-4 sm:pt-0">{{$lang('global.register')}}</h3>
                     <div class="flex flex-col gap-1 w-full px-4">
                         <label for="username" class="text-white text-lg">Choose your username</label>
                         <input
@@ -106,7 +104,7 @@ export default {
                         class="h-[52px] px-4 mx-4 text-md bg-zinc-100 hover:bg-zinc-300 text-zinc-900 rounded-md outline-none mt-8"
                         @click="register"
                     >
-                        Sign up now
+                        {{$lang('global.register.now')}}
                     </button>
                 </div>
                 <div v-if="method === 'login'" class="w-full flex flex-col gap-5 -mt-12">
@@ -117,7 +115,7 @@ export default {
                         class="self-start"
                     >
                     </v-button>
-                    <h3 class="text-white text-[24px] font-bold pb-4 px-4 sm:pt-0">Log In</h3>
+                    <h3 class="text-white text-[24px] font-bold pb-4 px-4 sm:pt-0">{{$lang('global.login')}}</h3>
                     <div class="flex flex-col gap-1 w-full px-4">
                         <label for="token" class="text-white text-lg">Insert account token</label>
                         <input
@@ -133,7 +131,7 @@ export default {
                         class="h-[52px] px-4 mx-4 text-md bg-zinc-100 hover:bg-zinc-300 text-zinc-900 rounded-md outline-none mt-8"
                         @click="login"
                     >
-                        Sign In
+                        {{$lang('global.login.now')}}
                     </button>
                 </div>
             </div>

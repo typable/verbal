@@ -81,19 +81,24 @@ export function $lang(id, ...args) {
     return message;
 }
 
-export function $route(path, { update = true } = {}) {
+export function $route(path, { update = true, reload = false } = {}) {
     for(const [key, value] of Object.entries(ROUTES)) {
         const regex = new RegExp(key);
         const match = regex.exec(path);
         if(match !== null) {
-            state.tab = value;
-            if(value === 'detail') {
-                if(state.app.$refs.detail) {
-                    state.app.$refs.detail.show({ id: match[1] });
+            if(!reload) {
+                state.tab = value;
+                if(value === 'detail') {
+                    if(state.app.$refs.detail) {
+                        state.app.$refs.detail.show({ id: match[1] });
+                    }
                 }
             }
             if(update) {
                 window.history.pushState(null, null, path);
+            }
+            if(reload) {
+                window.location.reload();
             }
             return;
         }

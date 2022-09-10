@@ -141,7 +141,7 @@ export default {
                                         <p>{{station.state ? station.state + ', ' : ''}}{{station.country}}</p>
                                     </span>
                                     <span
-                                        v-if="station?.playtime && duration(station.playtime ?? 0).length > 0"
+                                        v-if="state.authenticated && station?.playtime && duration(station.playtime ?? 0).length > 0"
                                         class="text-gray-400 inline-flex items-center gap-[5px]"
                                         :title="$lang('detail.playtime')"
                                     >
@@ -166,10 +166,12 @@ export default {
                                 <v-play-button :station="station"></v-play-button>
                                 <v-button
                                     :icon="station.is_favorite ? 'bookmark-off' : 'bookmark'"
-                                    :title="$lang(station.is_favorite ? 'global.unlike' : 'global.like')"
+                                    :title="$lang(state.authenticated ? (station.is_favorite ? 'global.unlike' : 'global.like') : 'global.requires-auth')"
                                     @click="() => setLike(!station.is_favorite)"
                                     class="bg-zinc-900 hover:bg-white px-1"
+                                    :class="{ '!bg-zinc-900': !state.authenticated }"
                                     :text="station.likes.toString()"
+                                    :disabled="!state.authenticated"
                                 ></v-button>
                             </div>
                             <p v-if="getDescription()" class="text-md text-gray-400 mt-2" v-html="getDescription()"></p>

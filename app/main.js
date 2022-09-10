@@ -21,7 +21,7 @@ export const ROUTES = {
     '^\/account$': 'account',
     '^\/station\/(\\d+)$': 'detail',
     '^@not-found$': 'not-found',
-    '^@auth$': 'auth'
+    '^\/auth$': 'auth'
 };
 
 export const state = reactive({
@@ -77,11 +77,20 @@ export const state = reactive({
                 state.tab = 'search';
                 state.station = null;
                 if(state.account === null) {
-                    state.authenticated = false;
-                    $route('@auth', { update: false });
-                    return;
+                    localStorage.setItem(TOKEN_NAME, 'guest-token');
+                    state.account = await http`get::/api/account`();
+                    state.devices = await http`get::/api/devices`();
+                    state.token = localStorage.getItem(TOKEN_NAME);
                 }
-                state.authenticated = true;
+                state.authenticated = state.token !== 'guest-token';
+                if(!state.authenticated) {
+                    const navigatorLanguage = navigator?.language;
+                    let language = 'en';
+                    if(/^de-?/.test(navigatorLanguage)) {
+                        language = 'de';
+                    }
+                    state.account.language = language;
+                }
                 document.addEventListener('scroll', this.onScroll);
                 document.addEventListener('wheel', this.onScroll);
                 document.addEventListener('touchmove', this.onScroll);
@@ -140,16 +149,16 @@ export const state = reactive({
                 v-if="state.authenticated !== null"
                 class="px-4 sm:px-10 max-w-[1200px] mx-auto flex flex-col min-h-[100vh]"
             >
-                <v-auth v-if="!state.authenticated" :state="state"></v-auth>
-                <v-menu v-if="state.authenticated" :state="state"></v-menu>
+                <v-menu :state="state"></v-menu>
+                <v-auth :state="state"></v-auth>
                 <div>
-                    <v-search v-if="state.authenticated" ref="search" :state="state"></v-search>
-                    <v-favorites v-if="state.authenticated" ref="favorites" :state="state"></v-favorites>
-                    <v-account v-if="state.authenticated" :state="state"></v-account>
+                    <v-search ref="search" :state="state"></v-search>
+                    <v-favorites ref="favorites" :state="state"></v-favorites>
+                    <v-account :state="state"></v-account>
                 </div>
-                <v-player ref="player" v-if="state.authenticated" :station="state.station"></v-player>
-                <v-detail ref="detail" v-if="state.authenticated"></v-detail>
-                <v-notfound v-if="state.authenticated" :state="state"></v-notfound>
+                <v-player ref="player" :station="state.station"></v-player>
+                <v-detail ref="detail"></v-detail>
+                <v-notfound :state="state"></v-notfound>
                 <v-popup ref="popup"></v-popup>
             </div>
         `

@@ -1,4 +1,4 @@
-import {$lang, http} from '../utils.js';
+import {$lang, $route, http} from '../utils.js';
 import VTab from '../component/tab.js';
 import VSelect from '../component/select.js';
 import VButton from '../element/button.js';
@@ -19,6 +19,7 @@ export default {
     },
     methods: {
         $lang,
+        $route,
         isCurrentDevice(device) {
             return device.uid === this.state.token;
         },
@@ -40,7 +41,7 @@ export default {
         },
         logout() {
             localStorage.removeItem('verbal-token');
-            this.state.app.init();
+            $route('/', { reload: true });
         }
     },
     template: `
@@ -94,13 +95,8 @@ export default {
                             <p class="text-sm text-gray-500">{{device.uid}}</p>
                         </li>
                     </ul>
-                    <v-button
-                        icon="plus"
-                        :text="$lang('account.devices.add')"
-                        class="mt-4 mx-auto"
-                    ></v-button>
                 </div>
-                <div class="flex flex-col">
+                <div class="flex flex-col pt-4">
                     <button
                         class="w-full h-[52px] px-4 text-md bg-zinc-900 hover:bg-zinc-800 text-zinc-100 rounded-md outline-none"
                         @click="logout"

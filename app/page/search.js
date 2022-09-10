@@ -22,6 +22,7 @@ export default {
             languages: [],
             playtime: null,
             latest: null,
+            favorites: null
         };
     },
     components: {
@@ -61,6 +62,10 @@ export default {
         async loadCategories() {
             this.playtime = await http`get::/api/category/playtime`();
             this.latest = await http`get::/api/category/latest`();
+            let favorites = await http`get::/api/favorite`();
+            favorites = favorites.sort(() => Math.random() - 0.5);
+            favorites.length = 10;
+            this.favorites = favorites;
         },
         async loadFilters() {
             this.countries = await http`get::/api/countries`();
@@ -146,8 +151,9 @@ export default {
                     </li>
                 </ul>
                 <div v-else class="flex flex-col gap-3 md:gap-10">
-                    <v-carousel :title="$lang('search.latest')" :items="latest"></v-carousel>
-                    <v-carousel :title="$lang('search.playtime')" :items="playtime"></v-carousel>
+                    <v-carousel v-if="state.authenticated" :title="$lang('search.latest')" :items="latest"></v-carousel>
+                    <v-carousel v-if="state.authenticated" :title="$lang('search.playtime')" :items="playtime"></v-carousel>
+                    <v-carousel v-if="state.authenticated" :title="$lang('search.favorites')" :items="favorites"></v-carousel>
                 </div>
                 <div
                     v-show="loading"

@@ -126,3 +126,13 @@ ALTER TABLE favorite
     ADD CONSTRAINT favorite_station_id
     FOREIGN KEY (station_id)
     REFERENCES station(id);
+
+/* ############################################################ */
+/* # guest account                                            # */
+/* ############################################################ */
+
+INSERT INTO account (id, name)
+    VALUES (0, 'Guest');
+
+INSERT INTO device (uid, account_id)
+    VALUES ('guest-token', 0);

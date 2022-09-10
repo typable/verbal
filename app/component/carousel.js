@@ -19,8 +19,10 @@ export default {
         calc() {
             const items = this.$refs.list.querySelectorAll('li');
             this.length = items.length;
-            this.size = items[1].offsetLeft;
-            this.count = Math.ceil(this.$refs.list.clientWidth / this.size);
+            if(this.length > 0) {
+                this.size = items[1].offsetLeft;
+                this.count = Math.ceil(this.$refs.list.clientWidth / this.size);
+            }
         },
         prev() {
             this.calc();
