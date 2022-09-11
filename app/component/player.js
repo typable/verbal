@@ -28,7 +28,14 @@ export default {
     watch: {
         async title(value) {
             await this.$nextTick();
-            const outer = this.$refs.songtitle;
+            const outer = this.open ? this.$refs.songtitle : this.$refs.subsongtitle;
+            const inner = outer.querySelector('span');
+            this.tooLong = outer.clientWidth - 12 < inner.clientWidth;
+            this.animationDuration = `${Math.max(Math.abs(outer.clientWidth - 12 - inner.clientWidth) * 70, 2500)}ms`;
+        },
+        async open(value) {
+            await this.$nextTick();
+            const outer = value ? this.$refs.songtitle : this.$refs.subsongtitle;
             const inner = outer.querySelector('span');
             this.tooLong = outer.clientWidth - 12 < inner.clientWidth;
             this.animationDuration = `${Math.max(Math.abs(outer.clientWidth - 12 - inner.clientWidth) * 70, 2500)}ms`;
@@ -216,14 +223,37 @@ export default {
                         ></v-button>
                     </div>
                     <div  class="flex gap-8 items-center flex-col">
-                        <v-image
-                            :station="station"
+                        <div
                             ref="button"
-                            class="h-[75vw] max-h-[400px] aspect-square rounded-lg z-10 fixed right-[50%] translate-x-[50%] translate-y-[100%] bottom-[calc(100vh-98px-32px)] transition-modal"
-                            :class="{ 'slide-active': !open, 'slide-hidden': !station }"
+                            class="h-[75vw] max-h-[400px] aspect-square rounded-lg z-10 fixed right-[50%] translate-x-[50%] translate-y-[100%] bottom-[calc(100vh-98px-32px)] transition-modal flex"
+                            :class="{ 'slide-active bg-zinc-900 items-center gap-4': !open, 'slide-hidden': !station }"
                             @click="open = true"
                         >
-                        </v-image>
+                            <v-image
+                                :station="station"
+                                class="h-full"
+                            >
+                            </v-image>
+                            <div
+                                v-if="station"
+                                class="hidden md:flex flex-col flex-1 min-w-0 w-[400px] max-w-[400px] mr-4 transition-modal"
+                                :class="{ 'max-w-0 mr-0 opacity-0': open }"
+                            >
+                                <p
+                                    class="text-xl font-semibold text-white pb-1 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer"
+                                    @click="showDetail(station)"
+                                >
+                                    {{station.name}}
+                                </p>
+                                <p
+                                    ref="subsongtitle"
+                                    class="subsongtitle text-md text-gray-400 overflow-hidden whitespace-nowrap relative px-2 -ml-2 before:bg-gradient-to-r before:from-zinc-900 before:to-transparent after:bg-gradient-to-l after:from-zinc-900 after:to-transparent"
+                                    :class="{'text-animate': tooLong}"
+                                >
+                                    <span class="inline-block" :style="{'animation-duration': animationDuration}">{{title ?? $lang('player.no-song-title')}}</span>
+                                </p>
+                            </div>
+                        </div>
                         <div class="h-[75vw] max-h-[400px] mt-[32px]"></div>
                         <div
                             v-if="station"
