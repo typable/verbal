@@ -25,7 +25,7 @@ pub struct Device {
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Station {
     pub id: i32,
-    pub uid: String,
+    pub uid: Option<String>,
     pub name: String,
     pub url: String,
     pub icon: Option<String>,
