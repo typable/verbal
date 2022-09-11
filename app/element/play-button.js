@@ -38,6 +38,8 @@ export default {
             if(value === null || value?.id !== station?.id) {
                 this.synced = false;
                 this.playing = false;
+                this.loading = false;
+                this.error = false;
                 return;
             }
             this.synced = true;
