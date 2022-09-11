@@ -1,5 +1,5 @@
 import {state} from '../main.js';
-import {$lang, $route, http} from '../utils.js';
+import {$lang, $route} from '../utils.js';
 import VButton from '../element/button.js';
 import VIcon from '../element/icon.js';
 import VImage from '../element/image.js';

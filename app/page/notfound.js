@@ -1,4 +1,3 @@
-import {state} from '../main.js';
 import {$lang, $route} from '../utils.js';
 import VButton from '../element/button.js';
 import VTab from '../component/tab.js';

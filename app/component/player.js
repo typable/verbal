@@ -26,7 +26,7 @@ export default {
         VImage
     },
     watch: {
-        async title(value) {
+        async title() {
             await this.$nextTick();
             const outer = this.open ? this.$refs.songtitle : this.$refs.subsongtitle;
             const inner = outer.querySelector('span');
@@ -134,7 +134,7 @@ export default {
             }, 10000);
         },
         async showDetail(station) {
-            $route('/station/' + this.station.id);
+            $route('/station/' + station.id);
             this.open = false;
         },
         onTouchStart(event) {
@@ -148,7 +148,6 @@ export default {
                 y: touch.pageY - this.touch.pageY
             };
             const angle = Math.atan(diff.x / diff.y) * (180 / Math.PI);
-            const index = state.tabs.indexOf(state.tab);
             if(this.open) {
                 if(Math.abs(diff.y) >= SWIPE_THRESHOLD) {
                     if(diff.y > 0 && angle >= -30 && angle <= 30) {
@@ -239,10 +238,7 @@ export default {
                                 class="hidden md:flex flex-col flex-1 min-w-0 w-[400px] max-w-[400px] mr-4 transition-modal"
                                 :class="{ 'max-w-0 mr-0 opacity-0': open }"
                             >
-                                <p
-                                    class="text-xl font-semibold text-white pb-1 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer"
-                                    @click="showDetail(station)"
-                                >
+                                <p class="text-xl font-semibold text-white pb-1 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer">
                                     {{station.name}}
                                 </p>
                                 <p

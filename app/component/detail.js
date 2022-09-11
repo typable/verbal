@@ -1,4 +1,4 @@
-import {state, SWIPE_THRESHOLD} from '../main.js';
+import {state} from '../main.js';
 import {http, $lang, $route, duration} from '../utils.js';
 import VButton from '../element/button.js';
 import VTab from '../component/tab.js';

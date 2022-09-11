@@ -6,7 +6,7 @@ export default {
         VIcon,
     },
     methods: {
-        onChange(event) {
+        onChange() {
             this.$emit('input', this.value);
             this.$emit('change', this.value);
         }
