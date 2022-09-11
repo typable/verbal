@@ -38,7 +38,7 @@ pub struct Station {
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct StationDetail {
     pub id: i32,
-    pub uid: String,
+    pub uid: Option<String>,
     pub name: String,
     pub url: String,
     pub description: Option<String>,
