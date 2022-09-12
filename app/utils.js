@@ -93,6 +93,11 @@ export function $route(path, { update = true, reload = false } = {}) {
                         state.app.$refs.detail.show({ id: match[1] });
                     }
                 }
+                if(value === 'profile') {
+                    if(state.app.$refs.profile) {
+                        state.app.$refs.profile.show(match[1] ?? state.account.id);
+                    }
+                }
             }
             if(update) {
                 window.history.pushState(null, null, path);

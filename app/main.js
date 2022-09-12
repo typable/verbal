@@ -8,6 +8,7 @@ import VFavorites from './page/favorites.js';
 import VAccount from './page/account.js';
 import VNotfound from './page/notfound.js';
 import VAuth from './page/auth.js';
+import VProfile from './page/profile.js';
 import VDetail from './component/detail.js';
 
 export const VERSION = '{{version}}';
@@ -21,7 +22,9 @@ export const ROUTES = {
     '^\/account$': 'account',
     '^\/station\/(\\d+)$': 'detail',
     '^@not-found$': 'not-found',
-    '^\/auth$': 'auth'
+    '^\/auth$': 'auth',
+    '^\/profile$': 'profile',
+    '^\/profile/(\\d+)$': 'profile'
 };
 
 export const state = reactive({
@@ -54,7 +57,8 @@ export const state = reactive({
             VAuth,
             VPlayer,
             VPopup,
-            VDetail
+            VDetail,
+            VProfile
         },
         mounted() {
             document.body.style.display = '';
@@ -155,6 +159,7 @@ export const state = reactive({
                     <v-search ref="search" :state="state"></v-search>
                     <v-favorites ref="favorites" :state="state"></v-favorites>
                     <v-account :state="state"></v-account>
+                    <v-profile ref="profile" :state="state"></v-profile>
                 </div>
                 <v-player ref="player" :station="state.station"></v-player>
                 <v-detail ref="detail"></v-detail>

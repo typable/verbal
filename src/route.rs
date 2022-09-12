@@ -243,7 +243,31 @@ pub async fn delete_favorite(mut req: tide::Request<()>) -> tide::Result {
     Response::with(())
 }
 
-pub async fn get_station(req: tide::Request<()>) -> tide::Result {
+pub async fn get_account_by_id(req: tide::Request<()>) -> tide::Result {
+    let account_id = unwrap_result_or_throw!(req.param("id"), "no account id found!");
+    let sql = format!(
+        r#"
+            SELECT
+                account.*,
+                (
+                    SELECT
+                        sum(playtime)
+                    FROM get_playtime(account.id)
+                )
+                AS playtime
+                FROM account
+                WHERE account.id = {account_id}
+        "#,
+        account_id = account_id,
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let result = sqlx::query_as::<_, model::Account>(&sql)
+        .fetch_optional(conn.acquire().await?)
+        .await?;
+    Response::with(result)
+}
+
+pub async fn get_station_by_id(req: tide::Request<()>) -> tide::Result {
     let station_id = unwrap_result_or_throw!(req.param("id"), "no station id found!");
     let account =
         unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");

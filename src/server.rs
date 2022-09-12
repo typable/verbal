@@ -58,7 +58,8 @@ impl Server {
         app.at("/api/favorite").get(route::get_favorites);
         app.at("/api/favorite").post(route::add_favorite);
         app.at("/api/favorite").delete(route::delete_favorite);
-        app.at("/api/station/:id").get(route::get_station);
+        app.at("/api/account/:id").get(route::get_account_by_id);
+        app.at("/api/station/:id").get(route::get_station_by_id);
         app.at("/api/category/:kind").get(route::get_category);
         app.at("/api/group/:id").get(route::get_group);
         app.at("/api/countries").get(route::get_countries);
