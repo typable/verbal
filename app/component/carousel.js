@@ -97,13 +97,15 @@ export default {
             <div class="relative sm:overflow-x-hidden">
                 <ul
                     ref="list"
+                    v-if="items?.length > 0"
                     class="flex overflow-x-auto sm:overflow-x-visible max-w-full snap-x snap-mandatory gap-4 lg:gap-6 scroll-hidden transition-transform"
                     :style="transform"
                 >
                     <li
                         :key="item.id"
                         v-for="item in items"
-                        class="snap-start min-w-[calc(33.333%-(1rem/3*2))] sm:min-w-[calc(25%-(1rem/4*3))] md:min-w-[calc(20%-(1rem/5*4))] lg:min-w-[calc(16.666%-(1.5rem/6*5))]"
+                        v-if="item"
+                        class="snap-start min-w-[calc(33.333%-(1rem/3*2))] sm:min-w-[calc(25%-(1rem/4*3))] md:min-w-[calc(20%-(1rem/5*4))] lg:min-w-[calc(16.666%-(1.5rem/6*5))] max-w-[calc(33.333%-(1rem/3*2))] sm:max-w-[calc(25%-(1rem/4*3))] md:max-w-[calc(20%-(1rem/5*4))] lg:max-w-[calc(16.666%-(1.5rem/6*5))]"
                     >
                         <v-station :station="item" type="grid"></v-station>
                     </li>
