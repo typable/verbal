@@ -1,0 +1,8 @@
+#!/bin/bash
+
+id="$1"
+echo "$id"
+ext="$2"
+url=$(psql verbal -c "select icon from station where id = $id;" -t | xargs echo -n)
+curl -sL "$url" -o "/home/andreas/git/verbal/media/$id.jpg"
+psql verbal -c "insert into station_status (station_id, is_icon) values ($id, true) on conflict (station_id) do update set is_icon = excluded.is_icon;"

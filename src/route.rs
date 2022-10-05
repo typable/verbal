@@ -221,7 +221,7 @@ pub async fn add_favorite(mut req: tide::Request<()>) -> tide::Result {
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
     sqlx::query(&sql).execute(conn.acquire().await?).await?;
-    Response::with(())
+    Response::ok()
 }
 
 pub async fn delete_favorite(mut req: tide::Request<()>) -> tide::Result {
@@ -240,7 +240,7 @@ pub async fn delete_favorite(mut req: tide::Request<()>) -> tide::Result {
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
     sqlx::query(&sql).execute(conn.acquire().await?).await?;
-    Response::with(())
+    Response::ok()
 }
 
 pub async fn get_account_by_id(req: tide::Request<()>) -> tide::Result {

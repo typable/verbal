@@ -159,9 +159,6 @@ export default {
                             v-if="station"
                             class="flex flex-col gap-6 mt-8"
                         >
-                            <div v-if="station.tags && station.tags.length > 0" class="flex gap-3 flex-wrap">
-                                <span v-for="tag in station.tags" class="cursor-pointer text-md text-white/90 font-medium items-center gap-[5px] bg-zinc-900 hover:bg-zinc-800 rounded-[4px] text-[14px] px-[14px] inline-flex h-[34px] leading-[34px]">{{tag}}</span>
-                            </div>
                             <div class="flex gap-3">
                                 <v-play-button :station="station"></v-play-button>
                                 <v-button
@@ -176,6 +173,9 @@ export default {
                             </div>
                             <p v-if="getDescription()" class="text-md text-gray-400 mt-2" v-html="getDescription()"></p>
                             <p v-else class="text-md text-gray-400">{{$lang('detail.no-description')}}</p>
+                            <div v-if="station.tags && station.tags.length > 0" class="flex gap-3 flex-wrap">
+                                <span v-for="tag in station.tags" class="cursor-pointer text-md text-white/90 font-medium items-center gap-[5px] bg-zinc-900 hover:bg-zinc-800 rounded-[4px] text-[14px] px-[14px] inline-flex h-[34px] leading-[34px]">{{tag}}</span>
+                            </div>
                             <div v-if="station.is_restricted || station.is_broken || station.is_no_track_info" class="flex gap-2 flex-wrap">
                                 <span
                                     v-if="station.is_restricted"

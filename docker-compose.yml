@@ -6,7 +6,8 @@ services:
       args:
         - VERSION
     ports:
-      - "443:443"
+      - "4202:4202"
     volumes:
       - /home/andreas/.config/:/root/.config/:z
       - /etc/letsencrypt/:/etc/letsencrypt/:z
+      - /home/andreas/git/verbal/media/:/home/andreas/git/verbal/media/:z

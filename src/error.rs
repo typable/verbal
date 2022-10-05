@@ -38,3 +38,15 @@ impl From<toml::de::Error> for Error {
         Self::new(&err.to_string())
     }
 }
+
+impl From<sqlx::Error> for Error {
+    fn from(err: sqlx::Error) -> Self {
+        Self::new(&err.to_string())
+    }
+}
+
+impl From<tide::Error> for Error {
+    fn from(err: tide::Error) -> Self {
+        Self::new(&err.to_string())
+    }
+}

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+city="$1"
+state="$2"
+location=$(curl -sL "https://nominatim.openstreetmap.org/search?city=$city&state=$state&format=json" | jq -r '.[0] | "[" + .lat + ", " + .lon + "],"')
+echo "$location"

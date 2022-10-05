@@ -18,6 +18,14 @@ impl Response<(), ()> {
             ))
             .build())
     }
+
+    pub fn ok() -> tide::Result {
+        Response::respond(tide::Body::from_json(&Self {
+            ok: true,
+            data: None,
+            error: None,
+        }))
+    }
 }
 
 impl<T> Response<T, ()>
