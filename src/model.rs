@@ -31,6 +31,7 @@ pub struct Station {
     pub icon: Option<String>,
     pub country: Option<String>,
     pub state: Option<String>,
+    pub city: Option<String>,
     pub is_favorite: Option<bool>,
     pub is_icon: Option<bool>,
 }
@@ -47,6 +48,7 @@ pub struct StationDetail {
     pub tags: Option<Vec<String>>,
     pub country: Option<String>,
     pub state: Option<String>,
+    pub city: Option<String>,
     pub languages: Option<Vec<String>>,
     pub score: i32,
     pub is_favorite: Option<bool>,

@@ -138,7 +138,7 @@ export default {
                                             class="w-[18px] h-[18px] !min-w-[18px] inline-flex text-gray-400"
                                             size="100%"
                                         ></v-icon>
-                                        <p>{{station.state ? station.state + ', ' : ''}}{{station.country}}</p>
+                                        <p>{{station.city ? station.city + ', ' : ''}}{{station.state ? station.state + ', ' : ''}}{{station.country}}</p>
                                     </span>
                                     <span
                                         v-if="state.authenticated && station?.playtime && duration(station.playtime ?? 0).length > 0"
