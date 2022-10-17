@@ -1,5 +1,5 @@
 FROM rust:latest as builder
-WORKDIR /home/andreas/git/verbal
+WORKDIR /srv/verbal
 
 RUN cargo init
 
