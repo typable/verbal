@@ -10,4 +10,4 @@ services:
     volumes:
       - /home/andreas/.config/:/root/.config/:z
       - /etc/letsencrypt/:/etc/letsencrypt/:z
-      - /home/andreas/git/verbal/media/:/home/andreas/git/verbal/media/:z
+      - /srv/verbal/media/:/srv/verbal/media/:z
