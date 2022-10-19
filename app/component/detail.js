@@ -124,14 +124,12 @@ export default {
                                     <span
                                         v-if="group?.group"
                                         class="text-gray-400 inline-flex items-center gap-[5px] w-full sm:w-auto"
-                                        :title="$lang('global.country')"
                                     >
                                         <p>{{$lang('detail.hosted-by')}} {{group.group.name}}</p>
                                     </span>
                                     <span
                                         v-if="station.country"
                                         class="text-gray-400 inline-flex items-center gap-[5px]"
-                                        :title="$lang('global.country')"
                                     >
                                         <v-icon
                                             id="map-pin"
@@ -143,7 +141,6 @@ export default {
                                     <span
                                         v-if="state.authenticated && station?.playtime && duration(station.playtime ?? 0).length > 0"
                                         class="text-gray-400 inline-flex items-center gap-[5px]"
-                                        :title="$lang('detail.playtime')"
                                     >
                                         <v-icon
                                             id="clock"

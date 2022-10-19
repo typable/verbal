@@ -10,7 +10,7 @@ export default {
         <button
             @click="() => disabled ? {} : $emit('click')"
             :title="title"
-            :class="{ 'bg-zinc-900': active, '!bg-inherit cursor-default': disabled }"
+            :class="{ 'bg-zinc-900': active, 'cursor-default': disabled }"
             class="group min-w-[50px] h-[50px] hover:bg-white rounded-full inline-flex justify-center items-center cursor-pointer transition-colors outline-none"
         >
             <v-icon
