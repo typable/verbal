@@ -121,7 +121,7 @@ export function duration(time) {
 
 export function utc(number) {
     let utc = `${number}`;
-    if(number === 0) {
+    if(number >= 0) {
         utc = '+' + utc;
     }
     return `UTC${utc}`;
