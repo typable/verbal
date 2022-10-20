@@ -118,3 +118,11 @@ export function duration(time) {
     seconds = seconds - (hours * 3600) - (minutes * 60);
     return `${hours > 0 ? hours + ' h ' : ''}${minutes > 0 ? minutes + ' min' : ''}`;
 }
+
+export function utc(number) {
+    let utc = `${number}`;
+    if(number === 0) {
+        utc = '+' + utc;
+    }
+    return `UTC${utc}`;
+}

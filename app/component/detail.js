@@ -1,5 +1,5 @@
 import {state} from '../main.js';
-import {http, $lang, $route, duration} from '../utils.js';
+import {http, $lang, $route, duration, utc} from '../utils.js';
 import VButton from '../element/button.js';
 import VTab from '../component/tab.js';
 import VIcon from '../element/icon.js';
@@ -28,6 +28,7 @@ export default {
         $lang,
         $route,
         duration,
+        utc,
         async show(station) {
             this.station = await http`get::/api/station/${station.id}`();
             if(this.station === null) {
@@ -139,7 +140,7 @@ export default {
                                         <p>{{station.city ? station.city + ', ' : ''}}{{station.state ? station.state + ', ' : ''}}{{station.country}}</p>
                                     </span>
                                     <span
-                                        v-if="station.utc"
+                                        v-if="station.utc !== null || station.utc !== undefined"
                                         class="text-gray-400 inline-flex items-center gap-[5px] w-full sm:w-auto"
                                     >
                                         <v-icon
@@ -147,7 +148,7 @@ export default {
                                             class="w-[18px] h-[18px] !min-w-[18px] inline-flex text-gray-400"
                                             size="100%"
                                         ></v-icon>
-                                        <p>UTC{{station.utc}}</p>
+                                        <p>{{utc(station.utc)}}</p>
                                     </span>
                                     <span
                                         v-if="state.authenticated && station?.playtime && duration(station.playtime ?? 0).length > 0"
