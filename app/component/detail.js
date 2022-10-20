@@ -140,7 +140,7 @@ export default {
                                         <p>{{station.city ? station.city + ', ' : ''}}{{station.state ? station.state + ', ' : ''}}{{station.country}}</p>
                                     </span>
                                     <span
-                                        v-if="station.utc !== null || station.utc !== undefined"
+                                        v-if="station.utc !== null && station.utc !== undefined"
                                         class="text-gray-400 inline-flex items-center gap-[5px] w-full sm:w-auto"
                                     >
                                         <v-icon
