@@ -30,6 +30,7 @@ export default {
         duration,
         utc,
         async show(station) {
+            this.open = false;
             this.station = await http`get::/api/station/${station.id}`();
             if(this.station === null) {
                 $route('@not-found', { update: false });
@@ -86,10 +87,9 @@ export default {
             <div class="z-40">
                 <div
                     ref="modal"
-                    class="w-full mx-auto flex flex-col bg-black fixed left-[100vw] top-0 h-[100vh] overflow-y-auto pb-12 sm:pb-[100px] transition-detail"
-                    :class="{ 'detail-active': open }"
+                    class="w-full mx-auto flex flex-col bg-black fixed left-[100vw] top-0 h-[100vh] overflow-y-auto pb-12 sm:pb-[100px] transition-detail detail-active"
                 >
-                    <div class="w-full flex flex-col px-4 sm:px-10 max-w-[1200px] mx-auto">
+                    <div v-if="open" class="w-full flex flex-col px-4 sm:px-10 max-w-[1200px] mx-auto">
                         <div
                             class="w-full absolute top-0 left-0 h-[40vh] z-[-1]"
                             :style="{'background': gradient(station?.color)}"
@@ -218,6 +218,71 @@ export default {
                                     </li>
                                 </ul>
                             </div>
+                        </div>
+                    </div>
+                    <div v-else class="w-full flex flex-col px-4 sm:px-10 max-w-[1200px] mx-auto">
+                        <div
+                            class="w-full absolute top-0 left-0 h-[40vh] z-[-1]"
+                        >
+                        </div>
+                        <div class="w-full h-[98px] py-6 flex gap-4 justify-between">
+                            <v-button
+                                icon="chevron-left"
+                                @click="$route('/')"
+                            ></v-button>
+                            <v-button
+                                icon="share"
+                                @click="share()"
+                            ></v-button>
+                        </div>
+                        <div class="flex flex-col gap-5 md:mt-8">
+                            <v-image
+                                :station="null"
+                                class="w-[96px] h-[96px] min-w-[96px]"
+                            ></v-image>
+                            <div
+                                class="flex flex-col flex-1 min-w-0 items-start"
+                            >
+                                <p
+                                    class="inline-block text-[24px] md:text-[36px] font-[600] bg-gray-100/30 text-transparent pb-0 overflow-hidden text-ellipsis whitespace-nowrap rounded-[4px] animate-pulse leading-[36px] my-[9px] break-all max-w-full"
+                                >
+                                    012345678901234567890123456789
+                                </p>
+                                <span class="text-md text-gray-400 overflow-hidden flex flex-wrap gap-x-3 gap-y-1 pt-1">
+                                    <span
+                                        class="bg-gray-400/30 text-transparent inline-flex items-center gap-[5px] w-full sm:w-auto rounded-[4px] animate-pulse leading-[16px] my-[4px]"
+                                    >
+                                        <p>01234567890123456789</p>
+                                    </span>
+                                    <span
+                                        class="bg-gray-400/30 text-transparent inline-flex items-center gap-[5px] rounded-[4px] animate-pulse leading-[16px] my-[4px]"
+                                    >
+                                        <p>012345678901234567890123456789</p>
+                                    </span>
+                                    <span
+                                        class="bg-gray-400/30 text-transparent inline-flex items-center gap-[5px] rounded-[4px] animate-pulse leading-[16px] my-[4px]"
+                                    >
+                                        <p>0123456789</p>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-col gap-6 mt-8"
+                        >
+                            <div class="flex gap-3">
+                                <v-play-button :station="null" class="pointer-events-none"></v-play-button>
+                                <v-button
+                                    icon="bookmark"
+                                    class="bg-zinc-900 hover:bg-white px-1"
+                                    :class="{ '!bg-zinc-900': true }"
+                                    text="0"
+                                    :disabled="true"
+                                ></v-button>
+                            </div>
+                            <p class="text-md bg-gray-400/30 text-transparent mt-2 break-all rounded-[4px] animate-pulse leading-[16px] my-[4px]">
+                                01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+                            </p>
                         </div>
                     </div>
                 </div>
