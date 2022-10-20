@@ -16,7 +16,8 @@ CREATE TABLE station (
     score INTEGER,
     description TEXT,
     color TEXT,
-    group_id INTEGER
+    group_id INTEGER,
+    utc INTEGER
 );
 
 ALTER TABLE station

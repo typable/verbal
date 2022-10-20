@@ -54,7 +54,7 @@ export default {
                         :title="$lang('detail.playtime')"
                     >
                         <v-icon
-                            id="clock"
+                            id="headphones"
                             class="w-[18px] h-[18px] !min-w-[18px] inline-flex text-gray-400"
                             size="100%"
                         ></v-icon>

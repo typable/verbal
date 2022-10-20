@@ -139,11 +139,22 @@ export default {
                                         <p>{{station.city ? station.city + ', ' : ''}}{{station.state ? station.state + ', ' : ''}}{{station.country}}</p>
                                     </span>
                                     <span
+                                        v-if="station.utc"
+                                        class="text-gray-400 inline-flex items-center gap-[5px] w-full sm:w-auto"
+                                    >
+                                        <v-icon
+                                            id="clock"
+                                            class="w-[18px] h-[18px] !min-w-[18px] inline-flex text-gray-400"
+                                            size="100%"
+                                        ></v-icon>
+                                        <p>UTC{{station.utc}}</p>
+                                    </span>
+                                    <span
                                         v-if="state.authenticated && station?.playtime && duration(station.playtime ?? 0).length > 0"
                                         class="text-gray-400 inline-flex items-center gap-[5px]"
                                     >
                                         <v-icon
-                                            id="clock"
+                                            id="headphones"
                                             class="w-[18px] h-[18px] !min-w-[18px] inline-flex text-gray-400"
                                             size="100%"
                                         ></v-icon>

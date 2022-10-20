@@ -51,6 +51,7 @@ pub struct StationDetail {
     pub city: Option<String>,
     pub languages: Option<Vec<String>>,
     pub score: i32,
+    pub utc: Option<i32>,
     pub is_favorite: Option<bool>,
     pub is_restricted: Option<bool>,
     pub is_broken: Option<bool>,
