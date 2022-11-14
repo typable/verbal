@@ -1,0 +1,10 @@
+[Unit]
+Description=A mobile app for listening to radio stations from around the globe
+
+[Service]
+User=andreas
+WorkingDirectory=/srv/verbal
+ExecStart=/srv/verbal/target/release/verbal
+
+[Install]
+WantedBy=multi-user.target
