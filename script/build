@@ -132,6 +132,12 @@ rm -rf "$FONT_DIR/inter.zip"
 
 section "BUILD"
 
+# typescript
+print "build" "typescript"
+
+deno bundle "app/main.ts" "$DIST_DIR/bundle.js"
+
+# tailwindcss
 TW_BIN="$DIST_DIR/tailwindcss"
 TW_WATCH="${config["--tw-watch"]}"
 
