@@ -1,18 +1,10 @@
-import { useEffect, useRef, useState } from "./deps.ts";
-import { Option, Route, UseRoute, UseState, UseStateRef } from "./types.ts";
+import { useEffect, useState } from "../deps.ts";
+import { UseState } from "../types.ts";
 
-export function useStateRef<T>(initial: Option<unknown>): UseStateRef<T> {
-  const [value, setValue]: UseState<T> = useState(initial);
-  const ref = useRef(value);
-  
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-  
-  return [value, setValue, ref];
-}
+export type UseRoute = [Route, (p: string, u?: boolean) => void, (e: Event) => void, (e: Event) => void];
+export type Route = unknown;
 
-export function useRoute(routes: Record<string, Route>, path: string): UseRoute {
+export default function useRoute(routes: Record<string, Route>, path: string): UseRoute {
   const [value, setValue]: UseState<Route> = useState(routes[path]);
   
   useEffect(() => {
