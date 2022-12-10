@@ -14,25 +14,28 @@ export function useStateRef<T>(initial: Option<unknown>): UseStateRef<T> {
 
 export function useRoute(routes: Record<string, Route>, path: string): UseRoute {
   const [value, setValue]: UseState<Route> = useState(routes[path]);
-  const [, setHistory, historyRef]: UseStateRef<string[]> = useStateRef([]);
   
   useEffect(() => {
-      const history = [...historyRef.current];
-      history.push(path);
-      setHistory(history);
+    addEventListener('popstate', onPopState);
+    return () => {
+      removeEventListener('popstate', onPopState);
+    }
   }, []);
+
+  function onPopState(_event: PopStateEvent) {
+    const path = window.location.pathname;
+    setRoute(path, true);
+  }
   
   function setRoute(path: string, preventUpdate?: boolean) {
     const route = routes[path];
-    if (route === undefined) {
+    if (route == null) {
       console.warn('No route for given path found!');
       return;
     }
     setValue(route);
     if (preventUpdate !== true) {
-      const history = [...historyRef.current];
-      history.push(path);
-      setHistory(history);
+      window.history.pushState(null, '', path);
     }
   }
   
@@ -55,13 +58,9 @@ export function useRoute(routes: Record<string, Route>, path: string): UseRoute 
   function doBack(event: Event) {
     event.preventDefault();
     event.stopPropagation();
-    const history = historyRef.current;
-    history.pop();
-    const route = history.at(-1);
-    if (route !== undefined) {
-      setHistory(history);
-      setRoute(route, false);
-    }
+    window.history.back();
+    const path = window.location.pathname;
+    setRoute(path, true);
   }
   
   return [value, setRoute, doRoute, doBack];

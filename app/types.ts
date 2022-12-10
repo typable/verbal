@@ -8,6 +8,10 @@ export interface Ref<T> {
 }
 
 export interface GlobalContext {
+  routing: Routing,
+}
+
+export interface Routing {
   route: Route,
   setRoute: (p: string) => void,
   doRoute: (e: Event) => void,

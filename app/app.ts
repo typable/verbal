@@ -17,10 +17,7 @@ export default function App() {
   const [route, setRoute, doRoute, doBack] = useRoute(ROUTES, '/');
   
   const context: GlobalContext = {
-    route,
-    setRoute,
-    doRoute,
-    doBack,
+    routing: { route, setRoute, doRoute, doBack }
   }
   
   return html`

@@ -3,8 +3,8 @@ import { html, useContext } from "../deps.ts";
 import { GlobalContext } from "../types.ts";
 
 export default function HomePage() {
-  const context: GlobalContext = useContext(global);
-  const { doRoute } = context;
+  const { routing }: GlobalContext = useContext(global);
+  const { doRoute } = routing;
   
   return html`
     <home-page>

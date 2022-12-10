@@ -3,8 +3,8 @@ import { html, useContext } from "../deps.ts";
 import { GlobalContext } from "../types.ts";
 
 export default function SearchPage() {
-  const context: GlobalContext = useContext(global);
-  const { doBack } = context;
+  const { routing }: GlobalContext = useContext(global);
+  const { doBack } = routing;
 
   return html`
     <search-page>
