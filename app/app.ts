@@ -5,7 +5,7 @@ import HomePage from './pages/home.page.ts';
 import ProfilePage from './pages/profile.page.ts';
 import SearchPage from './pages/search.page.ts';
 import StationPage from "./pages/station.page.ts";
-import { Account, Config, Endpoint, GlobalContext } from './types.ts';
+import { Account, Config, Endpoint, GlobalContext, Method } from './types.ts';
 
 export const global = createContext({});
 
@@ -15,8 +15,9 @@ export const CONFIG: Config = {
 }
 
 export const ENDPOINTS: Record<string, Endpoint> = {
-  GET_ACCOUNT: { method: 'GET', path: 'account' },
-  GET_SEARCH: { method: 'GET', path: 'search' },
+  GET_ACCOUNT: { method: Method.GET, path: () => '/account' },
+  GET_SEARCH: { method: Method.GET, path: () => '/search' },
+  GET_STATION: { method: Method.GET, path: ([id]: string[]) => '/station/' + id },
 }
 
 const ROUTES = {

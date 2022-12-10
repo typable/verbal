@@ -15,7 +15,7 @@ export default function SearchPage() {
 
   function doSearch() {
     if (isModified || search.value == null) {
-      search.doFetch(data);
+      search.doFetch({ payload: data });
     }
   }
 

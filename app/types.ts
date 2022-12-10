@@ -10,7 +10,16 @@ export type ChangeEvent<T extends HTMLElement> = Event & {
   target: T,
 }
 
-export type Endpoint = { method: string, path: string };
+export enum Method {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  PATCH = 'PATCH',
+  DELETE = 'DELETE',
+  OPTIONS = 'OPTIONS',
+}
+
+export type Endpoint = { method: Method, path: (props: string[]) => string };
 
 export interface Ref<T> {
   current: T,
@@ -40,17 +49,21 @@ export interface Account {
   playtime: number,
 }
 
-export interface Station {
-  id: number,
-  uid: string,
-  name: string,
-  url: string,
-  icon?: string,
-  city?: string,
-  state?: string,
-  country?: string,
-  is_favorite: boolean,
-  is_icon?: boolean,
+export type Station = {
+  id: number;
+  uid: string;
+  name: string;
+  url: string;
+  icon?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  is_favorite: boolean;
+  is_icon?: boolean;
+}
+
+export type StationDetail = Station & {
+  description?: string;
 }
 
 export type SearchQuery = {
