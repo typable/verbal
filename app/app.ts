@@ -4,6 +4,7 @@ import useRoute from "./hooks/route.hook.ts";
 import HomePage from './pages/home.page.ts';
 import ProfilePage from './pages/profile.page.ts';
 import SearchPage from './pages/search.page.ts';
+import StationPage from "./pages/station.page.ts";
 import { Account, Config, Endpoint, GlobalContext } from './types.ts';
 
 export const global = createContext({});
@@ -22,6 +23,7 @@ const ROUTES = {
   '/': () => dyn(HomePage),
   '/search': () => dyn(SearchPage),
   '/profile': () => dyn(ProfilePage),
+  '/station/(\\d+)': ([id]: string[]) => dyn(StationPage, { id }),
 }
 
 export default function App() {

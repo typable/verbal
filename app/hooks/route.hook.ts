@@ -1,8 +1,8 @@
 import { useEffect, useState } from "../deps.ts";
-import { UseState } from "../types.ts";
+import { UseState, Option } from "../types.ts";
 
 export type UseRoute = [Route, (p: string, u?: boolean) => void, (e: Event) => void, (e: Event) => void];
-export type Route = unknown;
+export type Route = (props: string[]) => unknown;
 
 export default function useRoute(routes: Record<string, Route>, path: string): UseRoute {
   const [value, setValue]: UseState<Route> = useState(routes[path]);
@@ -14,13 +14,22 @@ export default function useRoute(routes: Record<string, Route>, path: string): U
     }
   }, []);
 
-  function onPopState(_event: PopStateEvent) {
+  function onPopState() {
     const path = window.location.pathname;
     setRoute(path, true);
   }
   
   function setRoute(path: string, preventUpdate?: boolean) {
-    const route = routes[path];
+    let route: Option<Route> = null;
+    for (const [key, value] of Object.entries(routes)) {
+      const exp = new RegExp(`^${key}$`);
+      const match = exp.exec(path);
+      if (match) {
+        const [, ...groups] = match;
+        route = () => value(groups);
+        break;
+      }
+    }
     if (route == null) {
       console.warn('No route for given path found!');
       return;
