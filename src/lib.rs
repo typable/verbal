@@ -3,6 +3,7 @@ use env_logger::Target;
 use log::LevelFilter;
 
 pub mod error;
+pub mod messages;
 pub mod middleware;
 pub mod model;
 pub mod route;
@@ -82,6 +83,10 @@ pub trait ToSql {
 
 pub trait ToUrl {
     fn to_url(&self) -> Result<String>;
+}
+
+pub trait ToAddress {
+    fn to_address(&self) -> Result<String>;
 }
 
 pub enum Category {

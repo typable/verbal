@@ -12,15 +12,24 @@ use crate::unwrap_option_or_abort;
 use crate::unwrap_result_or_abort;
 use crate::Config;
 use crate::Result;
+use crate::ToAddress;
 use crate::ToUrl;
 
 #[derive(Default)]
 pub struct Server;
 
+#[derive(Debug, Clone)]
+pub struct State {
+    pub config: Config,
+}
+
 impl Server {
     pub async fn run(&self) -> Result<()> {
         let config = unwrap_result_or_abort!(Config::acquire(), "cannot acquire config!");
-        let mut app = tide::new();
+        let state = State {
+            config: config.clone(),
+        };
+        let mut app = tide::with_state(state);
 
         /* bind middleware */
         app.with(Error::default());
@@ -37,19 +46,20 @@ impl Server {
         app.with(CompressMiddleware::new());
 
         /* serve content */
-        app.at("/").serve_file("dist/www/index.html")?;
-        app.at("/*").serve_file("dist/www/index.html")?;
-        app.at("/manifest.json")
-            .serve_file("dist/www/manifest.json")?;
-        app.at("/worker.js").serve_file("dist/www/worker.js")?;
-        app.at("/asset").serve_dir("dist/www/asset/")?;
-        app.at("/media").serve_dir("media/")?;
-        app.at("/app").serve_dir("dist/app/")?;
+        app.at("/").serve_file("index.html")?;
+        app.at("/*").serve_file("index.html")?;
+        app.at("/dist").serve_dir("dist/")?;
 
         /* handle prefetch */
         app.at("*").options(route::do_prefetch);
 
         /* handle api requests */
+        app.at("/api/register").post(route::do_register);
+        app.at("/api/login").post(route::do_login);
+        app.at("/api/verify").post(route::do_verify);
+
+        app.at("/api/user").get(route::get_user);
+
         app.at("/api/account").get(route::get_account);
         app.at("/api/account").put(route::update_account);
         app.at("/api/account").post(route::add_account);
@@ -68,8 +78,9 @@ impl Server {
         app.at("/api/devices").get(route::get_devices);
 
         let address =
-            unwrap_result_or_abort!(config.server.to_url(), "cannot parse server address!");
-        info!("starting server on http://{}", address);
+            unwrap_result_or_abort!(config.server.to_address(), "cannot parse server address!");
+        let url = unwrap_result_or_abort!(config.server.to_url(), "cannot parse server address!");
+        info!("starting server on {}", url);
         let listener = if config.server.is_tls() {
             app.listen(
                 TlsListener::build()

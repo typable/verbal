@@ -32,7 +32,7 @@ export interface Config {
 
 export interface GlobalContext {
   routing: Routing,
-  account: Fetch<Account>,
+  user: Fetch<User>,
 }
 
 export interface Routing {
@@ -42,11 +42,10 @@ export interface Routing {
   doBack: (e: Event) => void,
 }
 
-export interface Account {
-  id: number,
-  name: string,
+export interface User {
+  name?: string,
+  email: string,
   language: string,
-  playtime: number,
 }
 
 export type Station = {
@@ -68,4 +67,20 @@ export type StationDetail = Station & {
 
 export type SearchQuery = {
   name: string;
+}
+
+export type LoginForm = {
+  email: string;
+  password: string;
+}
+
+export type RegisterForm = {
+  email: string;
+  password: string;
+}
+
+export type Session = {
+  id: number,
+  token: string,
+  user_id: string,
 }

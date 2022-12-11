@@ -122,3 +122,43 @@ pub struct AddAccount {
     pub name: String,
     pub language: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct User {
+    pub id: i32,
+    pub name: Option<String>,
+    pub email: String,
+    pub verified: bool,
+    pub language: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct Session {
+    pub id: i32,
+    pub token: String,
+    pub user_id: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct Verification {
+    pub id: i32,
+    pub code: String,
+    pub user_id: i32,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RegisterForm {
+    pub email: String,
+    pub password: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct LoginForm {
+    pub email: String,
+    pub password: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct VerfiyForm {
+    pub code: String,
+}

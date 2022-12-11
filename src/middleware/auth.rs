@@ -4,9 +4,6 @@ use tide::http::Method;
 use tide_sqlx::SQLxRequestExt;
 
 use crate::model;
-use crate::unwrap_option_or_throw;
-use crate::unwrap_result_or_throw;
-use crate::Response;
 
 #[derive(Default)]
 pub struct Auth;
@@ -18,53 +15,35 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for Auth {
         mut req: tide::Request<State>,
         next: tide::Next<'_, State>,
     ) -> tide::Result {
-        if req.method() != Method::Options {
-            let path_url = req.url().path();
-            if path_url.starts_with("/api") {
-                match req.header("verbal-token") {
-                    Some(header) => {
-                        let token = header.as_str();
-                        let option_account;
-                        {
-                            let query = format!(
-                                "
-                                    SELECT
-                                        account.*,
-                                        (
-                                            SELECT
-                                                sum(playtime)
-                                            FROM get_playtime(account.id)
-                                        )
-                                        AS playtime
-                                        FROM account
-                                        INNER JOIN device
-                                            ON account.id = device.account_id
-                                        WHERE device.uid = '{}'
-                                ",
-                                &token,
-                            );
-                            let mut conn = req.sqlx_conn::<Postgres>().await;
-                            option_account = unwrap_result_or_throw!(
-                                sqlx::query_as::<_, model::Account>(&query)
-                                    .fetch_optional(unwrap_result_or_throw!(
-                                        conn.acquire().await,
-                                        "cannot acquire connection to database!"
-                                    ))
-                                    .await,
-                                "cannot acquire account for given device!"
-                            );
+        if req.method() != Method::Options && req.url().path().starts_with("/api") {
+            let mut user = None;
+            if let Some(cookie) = req.cookie("token") {
+                let token = cookie.value();
+                {
+                    let sql = format!(
+                        r#"
+                            SELECT users.* FROM users
+                            INNER JOIN sessions ON users.id = sessions.user_id
+                            WHERE sessions.token = '{token}'
+                        "#,
+                        token = token,
+                    );
+                    let mut conn = req.sqlx_conn::<Postgres>().await;
+                    match sqlx::query_as::<_, model::User>(&sql)
+                        .fetch_one(conn.acquire().await?)
+                        .await
+                    {
+                        Ok(model) => {
+                            user = Some(model);
                         }
-                        req.set_ext(unwrap_option_or_throw!(
-                            option_account,
-                            "no account found for given token!"
-                        ));
-                    }
-                    None => {
-                        if !(path_url.eq("/api/account") && req.method() == Method::Post) {
-                            return Response::throw("no token was provided!");
+                        Err(err) => {
+                            warn!("session for token '{}' does not exist! Err: {}", token, err);
                         }
                     }
                 }
+            }
+            if let Some(user) = user {
+                req.set_ext(user);
             }
         }
         let res = next.run(req).await;

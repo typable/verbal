@@ -16,10 +16,16 @@ export interface FetchProps {
   payload?: Record<string, string>,
 }
 
-export interface FetchOptions {
+interface FetchOptions {
   method?: string,
   headers?: Record<string, string>,
   body?: string,
+}
+
+interface FetchData<T> {
+  ok: boolean,
+  data: Option<T>,
+  error: Option<{ message: string }>,
 }
 
 export default function useFetch<T>(config: Config, endpoint: Endpoint, initial?: T) {
@@ -29,6 +35,8 @@ export default function useFetch<T>(config: Config, endpoint: Endpoint, initial?
 
   async function doFetch(props?: FetchProps) {
     setPending(true);
+    setValue(null);
+    setError(null);
     let url = `${config.host}:${config.port}/api${endpoint.path(props?.query ?? [])}`;
     const options: FetchOptions = {
       method: endpoint.method,
@@ -44,8 +52,13 @@ export default function useFetch<T>(config: Config, endpoint: Endpoint, initial?
     }
     try {
       const rsp = await fetch(url, options);
-      const data = await rsp.json();
-      setValue(data.data);
+      const data: FetchData<T> = await rsp.json();
+      if (data.ok) {
+        setValue(data.data);
+      }
+      else {
+        setError(data.error);
+      }
       setPending(false);
     }
     catch (error) {

@@ -6,6 +6,7 @@ use std::path::PathBuf;
 
 use crate::error::Error;
 use crate::Result;
+use crate::ToAddress;
 use crate::ToUrl;
 use crate::APP_NAME;
 
@@ -33,6 +34,20 @@ impl Server {
 
 impl ToUrl for Server {
     fn to_url(&self) -> Result<String> {
+        let mut url = String::new();
+        write!(
+            url,
+            "{}://{}:{}",
+            if self.is_tls() { "https" } else { "http" },
+            self.hostname,
+            self.port
+        )?;
+        Ok(url)
+    }
+}
+
+impl ToAddress for Server {
+    fn to_address(&self) -> Result<String> {
         let mut url = String::new();
         write!(url, "{}:{}", self.hostname, self.port)?;
         Ok(url)
@@ -66,9 +81,25 @@ impl ToUrl for Database {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+pub struct Mail {
+    pub provider: String,
+    pub email: String,
+    pub username: String,
+    pub password: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct Auth {
+    pub cost: u32,
+    pub salt: [u8; 16],
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub struct Config {
     pub server: Server,
     pub database: Database,
+    pub mail: Mail,
+    pub auth: Auth,
 }
 
 impl Config {
