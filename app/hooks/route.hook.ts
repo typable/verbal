@@ -1,10 +1,17 @@
 import { useEffect, useState } from "../deps.ts";
 import { UseState, Option } from "../types.ts";
 
-export type UseRoute = [Route, (p: string, u?: boolean) => void, (e: Event) => void, (e: Event) => void];
+export type UseRoute = Routing;
 export type Route = (props: string[]) => unknown;
 
-export default function useRoute(routes: Record<string, Route>, path: string): UseRoute {
+export interface Routing {
+  route: Route,
+  setRoute: (p: string, u?: boolean, f?: boolean) => void,
+  doRoute: (e: Event) => void,
+  doBack: (e: Event) => void,
+}
+
+export default function useRoute(routes: Record<string, Route>, path: string): Routing {
   const [value, setValue]: UseState<Route> = useState(routes[path]);
   
   useEffect(() => {
@@ -16,10 +23,10 @@ export default function useRoute(routes: Record<string, Route>, path: string): U
 
   function onPopState() {
     const path = window.location.pathname;
-    setRoute(path, true);
+    setRoute(path, true, true);
   }
   
-  function setRoute(path: string, preventUpdate?: boolean) {
+  function setRoute(path: string, preventUpdate?: boolean, force?: boolean) {
     let route: Option<Route> = null;
     for (const [key, value] of Object.entries(routes)) {
       const exp = new RegExp(`^${key}$`);
@@ -32,6 +39,9 @@ export default function useRoute(routes: Record<string, Route>, path: string): U
     }
     if (route == null) {
       console.warn('No route for given path found!');
+      return;
+    }
+    if (force !== true && window.location.pathname === path) {
       return;
     }
     setValue(route);
@@ -64,5 +74,5 @@ export default function useRoute(routes: Record<string, Route>, path: string): U
     setRoute(path, true);
   }
   
-  return [value, setRoute, doRoute, doBack];
+  return { route: value, setRoute, doRoute, doBack };
 }

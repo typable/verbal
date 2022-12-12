@@ -1,5 +1,0 @@
-#!/bin/bash
-
-query="$2"
-info=$(curl -sL "https://$1.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exintro=&redirects=1&titles=$query" | jq -r '.query.pages[].extract' | awk -v RS='<[^>]+>' -v ORS= '1' | tr -s '\n' ' ')
-echo "$info"

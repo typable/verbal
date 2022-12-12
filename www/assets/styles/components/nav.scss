@@ -1,0 +1,60 @@
+@use '../vars.scss' as *;
+
+nav-component {
+  display: flex;
+  width: 100%;
+  padding: $sp-lg;
+
+  .menu-list {
+    display: flex;
+    flex: 1;
+    gap: $sp-sm;
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+    
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: $sp-sm;
+      height: 44px;
+      padding: 0px $sp-lg;
+      border-radius: 22px;
+      background-color: #EEE;
+      cursor: pointer;
+
+      .ti {
+        margin-top: -2px;
+        margin-left: -$sp-xs;
+        font-size: 20px;
+      }
+
+      p {
+        text-decoration: none;
+        user-select: none;
+      }
+    }
+  }
+
+  .account {
+    display: flex;
+    align-items: center;
+    gap: $sp-sm;
+    height: 44px;
+    padding: 0px $sp-lg;
+    border-radius: 22px;
+    background-color: #EEE;
+    cursor: pointer;
+
+    .ti {
+      margin-top: -2px;
+      margin-left: -$sp-xs;
+      font-size: 20px;
+    }
+
+    p {
+      text-decoration: none;
+      user-select: none;
+    }
+  }
+}

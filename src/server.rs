@@ -49,14 +49,14 @@ impl Server {
 
         /* serve content */
         app.at("/")
-            .serve_file("index.html")
+            .serve_file("www/index.html")
             .expect("unable to bind '/'!");
         app.at("/*")
-            .serve_file("index.html")
+            .serve_file("www/index.html")
             .expect("unable to bind '/*'!");
-        app.at("/dist")
+        app.at("/assets")
             .serve_dir("dist/")
-            .expect("unable to bind '/dist'!");
+            .expect("unable to bind '/assets'!");
 
         /* handle prefetch */
         app.at("*").options(route::do_prefetch);
@@ -67,6 +67,7 @@ impl Server {
         app.at("/api/verify").post(route::do_verify);
 
         app.at("/api/user").get(route::get_user);
+        app.at("/api/user/:name").get(route::get_user_by_name);
 
         app.at("/api/account").get(route::get_account);
         app.at("/api/account").put(route::update_account);

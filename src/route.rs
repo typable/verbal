@@ -242,6 +242,32 @@ pub async fn get_user(req: tide::Request<State>) -> tide::Result {
     Response::with(user)
 }
 
+pub async fn get_user_by_name(req: tide::Request<State>) -> tide::Result {
+    let user_name = unwrap_result_or_throw!(req.param("name"), messages::USER_DOES_NOT_EXIST);
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let sql = format!(
+        r#"
+            SELECT users.* FROM users
+            WHERE users.name = '{name}'
+        "#,
+        name = user_name,
+    );
+    let user = match sqlx::query_as::<_, model::User>(&sql)
+        .fetch_one(conn.acquire().await?)
+        .await
+    {
+        Ok(model) => model,
+        Err(_) => {
+            warn!("user for name '{}' does not exist!", user_name);
+            return Response::throw(messages::USER_DOES_NOT_EXIST);
+        }
+    };
+    if !user.verified {
+        return Response::throw(messages::USER_DOES_NOT_EXIST);
+    }
+    Response::with(user)
+}
+
 pub async fn get_account(req: tide::Request<State>) -> tide::Result {
     let account =
         unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");

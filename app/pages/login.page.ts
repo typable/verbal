@@ -9,7 +9,7 @@ import { GlobalContext, LoginForm, Session } from "../types.ts";
 
 export default function LoginPage() {
   const { routing, user }: GlobalContext = useContext(global);
-  const { doBack, setRoute } = routing;
+  const { doRoute, setRoute } = routing;
   const auth: UseFetch<Session> = useFetch(CONFIG, ENDPOINTS.DO_LOGIN);
   const form: UseForm<LoginForm> = useForm({ email: '', password: '' }, doAuth);
   const { data, handleChange, handleSubmit } = form;
@@ -17,8 +17,14 @@ export default function LoginPage() {
   const passwordRef = useInput(data.password);
 
   useEffect(() => {
+    if (user.value != null) {
+      setRoute('/');
+    }
+  }, [user.value]);
+
+  useEffect(() => {
     if (auth.value != null) {
-      document.cookie = `token=${auth.value.token}; SameSite=None; Secure`;
+      document.cookie = `token=${auth.value.token}; Path=/ SameSite=None; Secure`;
       user.doFetch();
       setRoute('/');
     }
@@ -29,9 +35,8 @@ export default function LoginPage() {
   }
 
   return html`
-    <login-page>
+    <login-page class="page">
       <h1>Login</h1>
-      <a @click="${doBack}" href="/">Back</a>
       <p>${auth.pending ? '' : auth.error?.message}</p>
       <form @submit="${handleSubmit}">
         <input
@@ -41,7 +46,6 @@ export default function LoginPage() {
           type="email"
           value="${data.email}"
           spellcheck="false"
-          autocomplete="off"
         >
         <input
           ref="${passwordRef}"
@@ -50,9 +54,9 @@ export default function LoginPage() {
           type="password"
           value="${data.password}"
           spellcheck="false"
-          autocomplete="off"
         >
         <button type="submit">Log in</button>
+        <a @click="${doRoute}" href="/reset">Reset password</a>
       </form>
     </login-page>
   `;

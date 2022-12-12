@@ -1,0 +1,26 @@
+@use 'vars.scss' as *;
+@use 'fonts.scss';
+
+@use 'pages/home.scss';
+
+@use 'components/nav.scss';
+
+* {
+  box-sizing: border-box;
+}
+
+.ti {
+  user-select: none;
+}
+
+body {
+  @include fs-sm;
+  margin: 0px;
+  background-color: $bg-default;
+  color: $fg-default;
+}
+
+.page {
+  display: block;
+  padding: 0px $sp-lg;
+}

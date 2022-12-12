@@ -1,15 +1,56 @@
-import { global } from "../app.ts";
-import { html, useContext } from "../deps.ts";
-import { GlobalContext } from "../types.ts";
+import { CONFIG, ENDPOINTS, global } from "../app.ts";
+import { html, useContext, useEffect } from "../deps.ts";
+import useFetch, { UseFetch } from "../hooks/fetch.hook.ts";
+import { GlobalContext, User } from "../types.ts";
 
-export default function ProfilePage() {
-  const { routing }: GlobalContext = useContext(global);
-  const { doBack } = routing;
+export type Props = {
+  name?: string;
+}
 
+export default function ProfilePage(props: Props) {
+  const { routing, user }: GlobalContext = useContext(global);
+  const { setRoute } = routing;
+  const profile: UseFetch<User> = useFetch(CONFIG, ENDPOINTS.GET_USER_BY_NAME);
+
+  useEffect(() => {
+    if (props.name) {
+      profile.doFetch({ query: [props.name] });
+    }
+  }, [props.name]);
+
+  useEffect(() => {
+    if (props.name == null) {
+      if (!user.pending && user.value == null) {
+        setRoute('/login', true);
+      }
+    }
+  }, [props.name, user.pending, user.value]);
+  
   return html`
-    <profile-page>
+    <profile-page class="page">
       <h1>Profile</h1>
-      <a @click="${doBack}" href="/">Back</a>
+      ${props.name == null ? html`
+        ${user.pending ? '' : user.value != null ? html`
+          <div>
+            <p>Name: ${user.value?.name ?? 'None'}</p>
+            <p>Email: ${user.value?.email}</p>
+            <p>Language: ${user.value?.language ?? 'None'}</p>
+          </div>
+        ` : ''}
+      ` : html`
+        <div>
+          ${!profile.pending && profile.error ? html`
+            <p>${profile.error.message}</p>
+          ` : ''}
+          ${profile.pending ? '' : profile.value != null ? html`
+            <div>
+              <p>Name: ${profile.value?.name ?? 'None'}</p>
+              <p>Email: ${profile.value?.email}</p>
+              <p>Language: ${profile.value?.language ?? 'None'}</p>
+            </div>
+          ` : ''}
+        </div>
+      `}
     </profile-page>
   `;
 }

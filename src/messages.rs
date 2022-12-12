@@ -1,6 +1,7 @@
 pub const INVALID_EMAIL: &str = "invalid.email";
 pub const INVALID_PASSWORD: &str = "invalid.password";
 pub const USER_ALREADY_EXISTS: &str = "user.already-exists";
+pub const USER_DOES_NOT_EXIST: &str = "user.does-not-exist";
 pub const USER_DOES_NOT_EXIST_OR_PASSWORD_IS_WRONG: &str =
     "user.does-not-exist-or-password-is-wrong";
 pub const USER_IS_NOT_VERIFIED: &str = "user.is-not-verified";

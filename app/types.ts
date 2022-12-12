@@ -1,5 +1,6 @@
 import { Fetch } from './hooks/fetch.hook.ts';
-import { Route } from './hooks/route.hook.ts';
+import { Route, Routing } from './hooks/route.hook.ts';
+import { Translate } from './hooks/translate.hook.ts';
 
 export type UseState<T> = [T, SetState<T>];
 export type UseStateRef<T> = [T, SetState<T>, Ref<T>];
@@ -33,13 +34,7 @@ export interface Config {
 export interface GlobalContext {
   routing: Routing,
   user: Fetch<User>,
-}
-
-export interface Routing {
-  route: Route,
-  setRoute: (p: string) => void,
-  doRoute: (e: Event) => void,
-  doBack: (e: Event) => void,
+  translation: Translate,
 }
 
 export interface User {
@@ -75,6 +70,11 @@ export type LoginForm = {
 }
 
 export type RegisterForm = {
+  email: string;
+  password: string;
+}
+
+export type ResetForm = {
   email: string;
   password: string;
 }

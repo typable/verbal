@@ -7,7 +7,7 @@ import useInput from "../hooks/input.hook.ts";
 
 export default function SearchPage() {
   const { routing }: GlobalContext = useContext(global);
-  const { doRoute, doBack } = routing;
+  const { doRoute } = routing;
   const search: UseFetch<Station[]> = useFetch(CONFIG, ENDPOINTS.GET_SEARCH);
   const form: UseForm<SearchQuery> = useForm({ name: '' }, doSearch, () => search.setValue(null));
   const { data, isModified, handleChange, handleSubmit, doReset } = form;
@@ -20,9 +20,8 @@ export default function SearchPage() {
   }
 
   return html`
-    <search-page>
+    <search-page class="page">
       <h1>Search</h1>
-      <a @click="${doBack}" href="/">Back</a>
       <form @submit="${handleSubmit}">
         <input
           ref="${nameRef}"

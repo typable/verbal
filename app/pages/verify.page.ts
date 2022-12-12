@@ -22,7 +22,7 @@ export default function VerifyPage(props: Props) {
   }, [verify.value]);
 
   return html`
-    <verify-page>
+    <verify-page class="page">
       <h1>Verify</h1>
       <a @click="${doBack}" href="/">Back</a>
       <p>${verify.pending ? '' : verify.error?.message}</p>
