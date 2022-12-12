@@ -6,10 +6,10 @@ use tide_sqlx::SQLxRequestExt;
 use crate::model;
 
 #[derive(Default)]
-pub struct Auth;
+pub struct AuthMiddleware;
 
 #[tide::utils::async_trait]
-impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for Auth {
+impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for AuthMiddleware {
     async fn handle(
         &self,
         mut req: tide::Request<State>,

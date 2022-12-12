@@ -1,10 +1,10 @@
 use crate::Response;
 
 #[derive(Default)]
-pub struct Error;
+pub struct ErrorMiddleware;
 
 #[tide::utils::async_trait]
-impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for Error {
+impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for ErrorMiddleware {
     async fn handle(&self, req: tide::Request<State>, next: tide::Next<'_, State>) -> tide::Result {
         let res = next.run(req).await;
         if let Some(err) = res.error() {

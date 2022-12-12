@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use std::collections::HashMap;
 use std::fmt::Write;
 use std::fs;
 use std::path::Path;
@@ -56,7 +57,8 @@ impl ToAddress for Server {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Options {
-    pub origin: String,
+    pub cors: String,
+    pub caching: Option<HashMap<String, String>>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

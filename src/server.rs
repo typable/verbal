@@ -4,9 +4,10 @@ use tide_rustls::TlsListener;
 use tide_sqlx::SQLxMiddleware;
 
 use crate::abort;
-use crate::middleware::Auth;
-use crate::middleware::Cors;
-use crate::middleware::Error;
+use crate::middleware::AuthMiddleware;
+use crate::middleware::CacheMiddleware;
+use crate::middleware::CorsMiddleware;
+use crate::middleware::ErrorMiddleware;
 use crate::route;
 use crate::unwrap_option_or_abort;
 use crate::unwrap_result_or_abort;
@@ -32,7 +33,7 @@ impl Server {
         let mut app = tide::with_state(state);
 
         /* bind middleware */
-        app.with(Error::default());
+        app.with(ErrorMiddleware::default());
         app.with(unwrap_result_or_abort!(
             SQLxMiddleware::<Postgres>::new(&unwrap_result_or_abort!(
                 config.database.to_url(),
@@ -41,14 +42,21 @@ impl Server {
             .await,
             "cannot connect to database!"
         ));
-        app.with(Auth::default());
-        app.with(Cors::new(&config.server.options.origin));
+        app.with(AuthMiddleware::default());
+        app.with(CorsMiddleware::new(&config.server.options.cors));
+        app.with(CacheMiddleware::new(&config.server.options.caching));
         app.with(CompressMiddleware::new());
 
         /* serve content */
-        app.at("/").serve_file("index.html")?;
-        app.at("/*").serve_file("index.html")?;
-        app.at("/dist").serve_dir("dist/")?;
+        app.at("/")
+            .serve_file("index.html")
+            .expect("unable to bind '/'!");
+        app.at("/*")
+            .serve_file("index.html")
+            .expect("unable to bind '/*'!");
+        app.at("/dist")
+            .serve_dir("dist/")
+            .expect("unable to bind '/dist'!");
 
         /* handle prefetch */
         app.at("*").options(route::do_prefetch);
