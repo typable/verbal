@@ -1,7 +1,7 @@
 import NavComponent from "./components/nav.component.ts";
 import { html, dyn, createContext, useEffect } from './deps.ts';
 import useFetch, { UseFetch } from "./hooks/fetch.hook.ts";
-import useRoute, { UseRoute } from "./hooks/route.hook.ts";
+import useRoute, { Routes, UseRoute } from "./hooks/route.hook.ts";
 import useTranslate from "./hooks/translate.hook.ts";
 import HomePage from './pages/home.page.ts';
 import LoginPage from './pages/login.page.ts';
@@ -32,20 +32,20 @@ export const ENDPOINTS: Record<string, Endpoint> = {
   DO_RESET: { method: Method.POST, path: () => '/reset' },
 }
 
-const ROUTES = {
-  '/': () => dyn(HomePage),
-  '/search': () => dyn(SearchPage),
-  '/profile': () => dyn(ProfilePage),
-  '/profile/([\\w\\d-_]+)': ([name]: string[]) => dyn(ProfilePage, { name }),
-  '/login': () => dyn(LoginPage),
-  '/register': () => dyn(RegisterPage),
-  '/verify/([\\w\\d-]+)': ([code]: string[]) => dyn(VerifyPage, { code }),
-  '/reset/?([\\w\\d-]+)?': ([code]: string[]) => dyn(ResetPage, { code }),
-  '/station/(\\d+)': ([id]: string[]) => dyn(StationPage, { id }),
+export const ROUTES: Routes = {
+  HOME: ['/', () => dyn(HomePage)],
+  SEARCH: ['/search', () => dyn(SearchPage)],
+  PROFILE: ['/profile', () => dyn(ProfilePage)],
+  PROFILE_BY_NAME: ['/profile/([\\w\\d-_]+)', ([name]) => dyn(ProfilePage, { name })],
+  LOGIN: ['/login', () => dyn(LoginPage)],
+  REGISTER: ['/register', () => dyn(RegisterPage)],
+  VERIFY: ['/verify/([\\w\\d-]+)', ([code]) => dyn(VerifyPage, { code })],
+  RESTE: ['/reset/?([\\w\\d-]+)?', ([code]) => dyn(ResetPage, { code })],
+  STATION_BY_ID: ['/station/(\\d+)', ([id]) => dyn(StationPage, { id })],
 }
 
 export default function App() {
-  const routing: UseRoute = useRoute(ROUTES, '/');
+  const routing: UseRoute = useRoute(ROUTES, ROUTES.HOME);
   const user: UseFetch<User> = useFetch(CONFIG, ENDPOINTS.GET_USER);
   const { route, setRoute } = routing;
   const translation = useTranslate();

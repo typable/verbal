@@ -33,6 +33,10 @@ nav-component {
         text-decoration: none;
         user-select: none;
       }
+
+      &.menu--active {
+        background-color: #CCC;
+      }
     }
   }
 
@@ -55,6 +59,10 @@ nav-component {
     p {
       text-decoration: none;
       user-select: none;
+    }
+
+    &.account--active {
+      background-color: #CCC;
     }
   }
 }

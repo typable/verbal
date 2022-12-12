@@ -58,10 +58,14 @@ section "BUILD"
 # typescript
 print "build" "typescript"
 deno bundle "app/main.ts" "$DIST_DIR/bundle.js"
+print "minify" "typescript"
+minify --type=js -o "$DIST_DIR/bundle.min.js" "$DIST_DIR/bundle.js"
 
 # styles
 print "build" "styles"
 sass "www/assets/styles/style.scss" "$DIST_DIR/style.css" --no-source-map
+print "minify" "styles"
+minify --type=css -o "$DIST_DIR/style.min.css" "$DIST_DIR/style.css"
 
 STATUS="$?"
 
