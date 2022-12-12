@@ -1,4 +1,4 @@
-import { CONFIG, ENDPOINTS, global } from "../app.ts";
+import { ORIGIN, ENDPOINTS, global } from "../app.ts";
 import { html, useContext, useEffect } from "../deps.ts";
 import useFetch, { UseFetch } from "../hooks/fetch.hook.ts";
 import { GlobalContext, User } from "../types.ts";
@@ -10,7 +10,7 @@ export type Props = {
 export default function ProfilePage(props: Props) {
   const { routing, user }: GlobalContext = useContext(global);
   const { setRoute } = routing;
-  const profile: UseFetch<User> = useFetch(CONFIG, ENDPOINTS.GET_USER_BY_NAME);
+  const profile: UseFetch<User> = useFetch(ORIGIN, ENDPOINTS.GET_USER_BY_NAME);
 
   useEffect(() => {
     if (props.name) {

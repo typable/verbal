@@ -1,4 +1,4 @@
-import { CONFIG, ENDPOINTS, global } from "../app.ts";
+import { ORIGIN, ENDPOINTS, global } from "../app.ts";
 import { html, useContext } from "../deps.ts";
 import useFetch from "../hooks/fetch.hook.ts";
 import { UseFetch } from "../hooks/fetch.hook.ts";
@@ -13,8 +13,8 @@ export type Props = {
 export default function ResetPage(props: Props) {
   const { routing }: GlobalContext = useContext(global);
   const { doBack } = routing;
-  const request: UseFetch<void> = useFetch(CONFIG, ENDPOINTS.GET_RESET);
-  const reset: UseFetch<void> = useFetch(CONFIG, ENDPOINTS.DO_RESET);
+  const request: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.GET_RESET);
+  const reset: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.DO_RESET);
   const form: UseForm<ResetForm> = useForm({ email: '', password: '' }, doRequestReset);
   const { data, handleChange, handleSubmit } = form;
   const emailRef = useInput(data.email);

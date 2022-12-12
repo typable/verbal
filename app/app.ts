@@ -1,5 +1,5 @@
-import NavComponent from "./components/nav.component.ts";
 import { html, dyn, createContext, useEffect } from './deps.ts';
+import { User, Endpoint, GlobalContext, Method } from './types.ts';
 import useFetch, { UseFetch } from "./hooks/fetch.hook.ts";
 import useRoute, { Routes, UseRoute } from "./hooks/route.hook.ts";
 import useTranslate from "./hooks/translate.hook.ts";
@@ -11,14 +11,11 @@ import ResetPage from "./pages/reset.page.ts";
 import SearchPage from './pages/search.page.ts';
 import StationPage from "./pages/station.page.ts";
 import VerifyPage from "./pages/verify.page.ts";
-import { User, Config, Endpoint, GlobalContext, Method } from './types.ts';
+import NavComponent from "./components/nav.component.ts";
 
 export const global = createContext({});
 
-export const CONFIG: Config = {
-  host: 'http://localhost',
-  port: 4202,
-}
+export const ORIGIN = window.location.origin;
 
 export const ENDPOINTS: Record<string, Endpoint> = {
   GET_USER: { method: Method.GET, path: () => '/user' },
@@ -46,7 +43,7 @@ export const ROUTES: Routes = {
 
 export default function App() {
   const routing: UseRoute = useRoute(ROUTES, ROUTES.HOME);
-  const user: UseFetch<User> = useFetch(CONFIG, ENDPOINTS.GET_USER);
+  const user: UseFetch<User> = useFetch(ORIGIN, ENDPOINTS.GET_USER);
   const { route, setRoute } = routing;
   const translation = useTranslate();
   const { setLanguage } = translation;

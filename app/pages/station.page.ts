@@ -1,4 +1,4 @@
-import { CONFIG, ENDPOINTS, global } from "../app.ts";
+import { ORIGIN, ENDPOINTS, global } from "../app.ts";
 import { html, useContext, useEffect } from "../deps.ts";
 import useFetch, { UseFetch } from "../hooks/fetch.hook.ts";
 import { GlobalContext, StationDetail } from "../types.ts";
@@ -10,7 +10,7 @@ export type Props = {
 export default function StationPage(props: Props) {
   const { routing }: GlobalContext = useContext(global);
   const { doBack } = routing;
-  const station: UseFetch<StationDetail> = useFetch(CONFIG, ENDPOINTS.GET_STATION_BY_ID);
+  const station: UseFetch<StationDetail> = useFetch(ORIGIN, ENDPOINTS.GET_STATION_BY_ID);
 
   useEffect(() => {
     station.doFetch({ query: [props.id] });

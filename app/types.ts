@@ -26,11 +26,6 @@ export interface Ref<T> {
   current: T,
 }
 
-export interface Config {
-  host: string,
-  port: number,
-}
-
 export interface GlobalContext {
   routing: Routing,
   user: Fetch<User>,

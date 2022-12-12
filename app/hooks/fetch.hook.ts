@@ -1,5 +1,5 @@
 import { useState } from "../deps.ts";
-import { Option, Config, Endpoint, SetState, Method } from "../types.ts";
+import { Option, Endpoint, SetState, Method } from "../types.ts";
 
 export type UseFetch<T> = Fetch<T>;
 
@@ -28,7 +28,7 @@ interface FetchData<T> {
   error: Option<{ message: string }>,
 }
 
-export default function useFetch<T>(config: Config, endpoint: Endpoint, initial?: T) {
+export default function useFetch<T>(address: string, endpoint: Endpoint, initial?: T) {
   const [value, setValue] = useState(initial);
   const [pending, setPending] = useState(initial);
   const [error, setError] = useState(initial);
@@ -37,7 +37,7 @@ export default function useFetch<T>(config: Config, endpoint: Endpoint, initial?
     setPending(true);
     setValue(null);
     setError(null);
-    let url = `${config.host}:${config.port}/api${endpoint.path(props?.query ?? [])}`;
+    let url = `${address}/api${endpoint.path(props?.query ?? [])}`;
     const options: FetchOptions = {
       method: endpoint.method,
       headers: { 'verbal-token': '1382d700-d1f7-4455-abab-b2d831a686b4' },

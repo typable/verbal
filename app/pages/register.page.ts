@@ -1,4 +1,4 @@
-import { CONFIG, ENDPOINTS, global } from "../app.ts";
+import { ORIGIN, ENDPOINTS, global } from "../app.ts";
 import { html, useContext, useEffect } from "../deps.ts";
 import useFetch from "../hooks/fetch.hook.ts";
 import { UseFetch } from "../hooks/fetch.hook.ts";
@@ -10,7 +10,7 @@ import { GlobalContext, RegisterForm } from "../types.ts";
 export default function RegisterPage() {
   const { routing, user }: GlobalContext = useContext(global);
   const { setRoute } = routing;
-  const register: UseFetch<void> = useFetch(CONFIG, ENDPOINTS.DO_REGISTER);
+  const register: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.DO_REGISTER);
   const form: UseForm<RegisterForm> = useForm({ email: '', password: '' }, doRegister);
   const { data, handleChange, handleSubmit } = form;
   const emailRef = useInput(data.email);

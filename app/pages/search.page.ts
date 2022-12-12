@@ -1,4 +1,4 @@
-import { CONFIG, ENDPOINTS, global } from "../app.ts";
+import { ORIGIN, ENDPOINTS, global } from "../app.ts";
 import { html, useContext } from "../deps.ts";
 import useFetch, { UseFetch } from "../hooks/fetch.hook.ts";
 import { GlobalContext, SearchQuery, Station } from "../types.ts";
@@ -8,7 +8,7 @@ import useInput from "../hooks/input.hook.ts";
 export default function SearchPage() {
   const { routing }: GlobalContext = useContext(global);
   const { doRoute } = routing;
-  const search: UseFetch<Station[]> = useFetch(CONFIG, ENDPOINTS.GET_SEARCH);
+  const search: UseFetch<Station[]> = useFetch(ORIGIN, ENDPOINTS.GET_SEARCH);
   const form: UseForm<SearchQuery> = useForm({ name: '' }, doSearch, () => search.setValue(null));
   const { data, isModified, handleChange, handleSubmit, doReset } = form;
   const nameRef = useInput(data.name);

@@ -1,4 +1,4 @@
-import { CONFIG, ENDPOINTS, global } from "../app.ts";
+import { ORIGIN, ENDPOINTS, global } from "../app.ts";
 import { html, useContext, useEffect } from "../deps.ts";
 import useFetch from "../hooks/fetch.hook.ts";
 import { UseFetch } from "../hooks/fetch.hook.ts";
@@ -10,7 +10,7 @@ import { GlobalContext, LoginForm, Session } from "../types.ts";
 export default function LoginPage() {
   const { routing, user }: GlobalContext = useContext(global);
   const { doRoute, setRoute } = routing;
-  const auth: UseFetch<Session> = useFetch(CONFIG, ENDPOINTS.DO_LOGIN);
+  const auth: UseFetch<Session> = useFetch(ORIGIN, ENDPOINTS.DO_LOGIN);
   const form: UseForm<LoginForm> = useForm({ email: '', password: '' }, doAuth);
   const { data, handleChange, handleSubmit } = form;
   const emailRef = useInput(data.email);

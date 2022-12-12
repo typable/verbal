@@ -1,4 +1,4 @@
-import { CONFIG, ENDPOINTS, global } from "../app.ts";
+import { ORIGIN, ENDPOINTS, global } from "../app.ts";
 import { html, useContext, useEffect } from "../deps.ts";
 import useFetch from "../hooks/fetch.hook.ts";
 import { UseFetch } from "../hooks/fetch.hook.ts";
@@ -11,7 +11,7 @@ export type Props = {
 export default function VerifyPage(props: Props) {
   const { routing }: GlobalContext = useContext(global);
   const { doBack } = routing;
-  const verify: UseFetch<void> = useFetch(CONFIG, ENDPOINTS.DO_VERIFY);
+  const verify: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.DO_VERIFY);
 
   useEffect(() => {
     verify.doFetch({ payload: { code: props.code } });
