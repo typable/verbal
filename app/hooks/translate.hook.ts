@@ -6,7 +6,7 @@ import { Option, SetState } from '../types.ts';
 export type UseTranslate = (initial?: string) => Translate;
 
 export interface Translate {
-  translate: (c: string) => string,
+  translate: (code: string) => string,
   setLanguage: SetState<string>
 }
 

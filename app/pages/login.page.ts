@@ -24,7 +24,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (auth.value != null) {
-      document.cookie = `token=${auth.value.token}; Path=/ SameSite=None; Secure`;
+      document.cookie = `token=${auth.value.token}; Path=/; SameSite=None; Secure`;
       user.doFetch();
       setRoute('/');
     }

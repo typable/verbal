@@ -7,8 +7,8 @@ export interface Form<T> {
   data: T,
   setData: SetState<T>,
   isModified: boolean,
-  handleChange: (e: ChangeEvent<HTMLInputElement>) => void,
-  handleSubmit: (e: SubmitEvent) => void,
+  handleChange: (event: ChangeEvent<HTMLInputElement>) => void,
+  handleSubmit: (event: SubmitEvent) => void,
   doReset: () => void,
 }
 

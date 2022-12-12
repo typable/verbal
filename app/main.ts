@@ -1,9 +1,4 @@
-import {
-  figure,
-  render,
-  createElement,
-} from './deps.ts';
-
+import { figure, render, createElement } from './deps.ts';
 import App from './app.ts';
 
 figure({ createElement })

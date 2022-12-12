@@ -8,9 +8,9 @@ export type Route = (props: string[]) => unknown;
 export interface Routing {
   route: Option<Route>,
   current: Option<[string, Route]>,
-  setRoute: (p: string, u?: boolean, f?: boolean) => void,
-  doRoute: (e: Event) => void,
-  doBack: (e: Event) => void,
+  setRoute: (path: string, preventUpdate?: boolean, force?: boolean) => void,
+  doRoute: (event: Event) => void,
+  doBack: (event: Event) => void,
   isActive: (a: Option<[string, Route]>, b: Option<[string, Route]>) => boolean,
 }
 

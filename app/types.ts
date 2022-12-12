@@ -1,5 +1,5 @@
 import { Fetch } from './hooks/fetch.hook.ts';
-import { Route, Routing } from './hooks/route.hook.ts';
+import { Routing } from './hooks/route.hook.ts';
 import { Translate } from './hooks/translate.hook.ts';
 
 export type UseState<T> = [T, SetState<T>];
