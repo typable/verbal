@@ -64,6 +64,7 @@ impl Server {
         /* handle api requests */
         app.at("/api/register").post(route::do_register);
         app.at("/api/login").post(route::do_login);
+        app.at("/api/logout").post(route::do_logout);
         app.at("/api/verify").post(route::do_verify);
 
         app.at("/api/user").get(route::get_user);

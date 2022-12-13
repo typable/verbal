@@ -222,6 +222,23 @@ pub async fn do_login(mut req: Request<State>) -> Result {
     Ok(rsp)
 }
 
+pub async fn do_logout(req: Request<State>) -> Result {
+    let user = match req.ext::<model::User>() {
+        Some(user) => user,
+        None => {
+            return Ok(Body::throw(messages::USER_NOT_LOGGED_IN));
+        }
+    };
+    let mut rsp = Body::ok();
+    let mut cookie = Cookie::named("token");
+    cookie.set_path("/");
+    cookie.set_secure(true);
+    cookie.set_same_site(SameSite::Strict);
+    rsp.remove_cookie(cookie);
+    debug!("user '{}' was logged out.", user.email);
+    Ok(rsp)
+}
+
 pub async fn do_verify(mut req: Request<State>) -> Result {
     let form = req.body_json::<model::VerfiyForm>().await?;
     let mut conn = req.sqlx_conn::<Postgres>().await;

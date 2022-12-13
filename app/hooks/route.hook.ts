@@ -14,7 +14,7 @@ export interface Routing {
   isActive: (a: Option<[string, Route]>, b: Option<[string, Route]>) => boolean,
 }
 
-export default function useRoute(routes: Routes, initial: [string, Route]): Routing {
+export default function useRoute(routes: Routes, initial: [string, Route], fallback: [string, Route]): Routing {
   const [current, setCurrent]: UseState<[string, Route]> = useState(initial);
   const [value, setValue]: UseState<Route> = useState(initial[1]);
   
@@ -43,15 +43,17 @@ export default function useRoute(routes: Routes, initial: [string, Route]): Rout
         break;
       }
     }
-    if (route == null) {
-      console.warn('No route for given path found!');
-      return;
-    }
     if (force !== true && window.location.pathname === path) {
       return;
     }
-    setCurrent(current);
-    setValue(route);
+    if (route == null) {
+      setCurrent(fallback);
+      setValue(fallback[1]);
+    }
+    else {
+      setCurrent(current);
+      setValue(route);
+    }
     if (preventUpdate !== true) {
       window.history.pushState(null, '', path);
     }

@@ -9,7 +9,7 @@ export type Props = {
 
 export default function ProfilePage(props: Props) {
   const { routing, user }: GlobalContext = useContext(global);
-  const { setRoute } = routing;
+  const { doRoute, setRoute } = routing;
   const profile: UseFetch<User> = useFetch(ORIGIN, ENDPOINTS.GET_USER_BY_NAME);
 
   useEffect(() => {
@@ -35,6 +35,7 @@ export default function ProfilePage(props: Props) {
             <p>Name: ${user.value?.name ?? 'None'}</p>
             <p>Email: ${user.value?.email}</p>
             <p>Language: ${user.value?.language ?? 'None'}</p>
+            <p><a @click="${doRoute}" href="/logout">Log out</a></p>
           </div>
         ` : ''}
       ` : html`

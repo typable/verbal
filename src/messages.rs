@@ -9,5 +9,6 @@ pub const USER_DOES_NOT_EXIST_OR_PASSWORD_IS_WRONG: &str =
 pub const USER_IS_NOT_VERIFIED: &str = "user.is-not-verified";
 pub const USER_ALREADY_VERIFIED: &str = "user.already-verified";
 pub const USER_ALREADY_LOGGED_IN: &str = "user.already-logged-in";
+pub const USER_NOT_LOGGED_IN: &str = "user.not-logged-in";
 pub const INVALID_VERIFICATION: &str = "invalid.verification";
 pub const INTERNAL_ERROR: &str = "internal.error";
