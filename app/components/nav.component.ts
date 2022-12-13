@@ -38,7 +38,7 @@ export default function NavComponent() {
           class="account ${isActive(current, ROUTES.PROFILE) ? 'account--active' : ''}"
         >
           <i class="ti ti-user"></i>
-          <p>${user.value?.email}</p>
+          <p>${user.value?.name ?? user.value?.email}</p>
         </div>
       `}
       </div>

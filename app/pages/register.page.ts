@@ -11,8 +11,9 @@ export default function RegisterPage() {
   const { routing, user }: GlobalContext = useContext(global);
   const { setRoute } = routing;
   const register: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.DO_REGISTER);
-  const form: UseForm<RegisterForm> = useForm({ email: '', password: '' }, doRegister);
+  const form: UseForm<RegisterForm> = useForm({ name: '', email: '', password: '' }, doRegister);
   const { data, handleChange, handleSubmit } = form;
+  const nameRef = useInput(data.name);
   const emailRef = useInput(data.email);
   const passwordRef = useInput(data.password);
 
@@ -32,12 +33,23 @@ export default function RegisterPage() {
       <p>${register.pending ? '' : register.error?.message}</p>
       <form @submit="${handleSubmit}">
         <input
+          ref="${nameRef}"
+          @change="${handleChange}"
+          name="name"
+          type="text"
+          value="${data.name}"
+          spellcheck="false"
+          autocomplete="off"
+          required="true"
+        >
+        <input
           ref="${emailRef}"
           @change="${handleChange}"
           name="email"
           type="email"
           value="${data.email}"
           spellcheck="false"
+          required="true"
         >
         <input
           ref="${passwordRef}"
@@ -47,6 +59,7 @@ export default function RegisterPage() {
           value="${data.password}"
           spellcheck="false"
           autocomplete="off"
+          required="true"
         >
         <button type="submit">Create an account</button>
       </form>

@@ -148,6 +148,7 @@ pub struct Verification {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct RegisterForm {
+    pub name: String,
     pub email: String,
     pub password: String,
 }

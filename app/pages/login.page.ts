@@ -27,7 +27,7 @@ export default function LoginPage() {
       user.doFetch();
       setRoute('/');
     }
-  }, [auth.pending, auth.value]);
+  }, [auth.pending]);
 
   function doAuth() {
     auth.doFetch({ payload: data });
@@ -45,6 +45,7 @@ export default function LoginPage() {
           type="email"
           value="${data.email}"
           spellcheck="false"
+          required="true"
         >
         <input
           ref="${passwordRef}"
@@ -53,9 +54,11 @@ export default function LoginPage() {
           type="password"
           value="${data.password}"
           spellcheck="false"
+          required="true"
         >
         <button type="submit">Log in</button>
-        <a @click="${doRoute}" href="/reset">Reset password</a>
+        <p>Forgot your password? <a @click="${doRoute}" href="/reset">Reset password</a></p>
+        <p>Don't have an account? <a @click="${doRoute}" href="/register">Create an account</a></p>
       </form>
     </login-page>
   `;

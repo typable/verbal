@@ -1,5 +1,7 @@
+pub const INVALID_NAME: &str = "invalid.name";
 pub const INVALID_EMAIL: &str = "invalid.email";
 pub const INVALID_PASSWORD: &str = "invalid.password";
+pub const NAME_ALREADY_IN_USE: &str = "name.already-in-use";
 pub const USER_ALREADY_EXISTS: &str = "user.already-exists";
 pub const USER_DOES_NOT_EXIST: &str = "user.does-not-exist";
 pub const USER_DOES_NOT_EXIST_OR_PASSWORD_IS_WRONG: &str =

@@ -1,0 +1,5 @@
+Hello {name},
+
+please click the following link to verify your account.
+
+Click to verify account: {verification_url}

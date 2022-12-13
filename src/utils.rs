@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use std::fs;
+
 use lettre::message::MultiPart;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::Message;
@@ -21,13 +24,25 @@ pub fn hash_password(password: &str, config: &Auth) -> Result<String> {
     Ok(hash.to_string())
 }
 
-pub fn send_email(recipient: &str, content: MultiPart, config: &Mail) -> Result<()> {
+pub fn create_multipart(filename: &str, content: HashMap<&str, &str>) -> Result<MultiPart> {
+    let mut plain = fs::read_to_string(format!("emails/{}.txt", filename))?;
+    let mut html = fs::read_to_string(format!("emails/{}.html", filename))?;
+    for (key, value) in content.iter() {
+        let exp = format!("{{{}}}", key);
+        plain = plain.replace(&exp, value);
+        html = html.replace(&exp, value);
+    }
+    let multipart = MultiPart::alternative_plain_html(plain, html);
+    Ok(multipart)
+}
+
+pub fn send_email(recipient: &str, multipart: MultiPart, config: &Mail) -> Result<()> {
     let sender = format!("verbal.fm <{}>", config.email);
     let email = Message::builder()
         .from(sender.parse().unwrap())
         .to(recipient.parse().unwrap())
         .subject("Verify your account")
-        .multipart(content)
+        .multipart(multipart)
         .unwrap();
     let credentials = Credentials::new(config.username.clone(), config.password.clone());
     let mailer = SmtpTransport::relay(&config.provider)

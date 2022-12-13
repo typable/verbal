@@ -1,6 +1,7 @@
+use std::collections::HashMap;
+
 use async_std::io::ReadExt;
 use fancy_regex::Regex;
-use lettre::message::MultiPart;
 use serde::Serialize;
 use sqlx::Acquire;
 use sqlx::Postgres;
@@ -33,6 +34,13 @@ pub async fn do_register(mut req: Request<State>) -> Result {
         return Ok(Body::throw(messages::USER_ALREADY_LOGGED_IN));
     }
     let form = req.body_json::<model::RegisterForm>().await?;
+    if !Regex::new("^[\\w\\d\\-\\._]{3,20}$")
+        .unwrap()
+        .is_match(&form.name)
+        .unwrap_or_default()
+    {
+        return Ok(Body::throw(messages::INVALID_NAME));
+    }
     if !Regex::new("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
         .unwrap()
         .is_match(&form.email)
@@ -47,18 +55,41 @@ pub async fn do_register(mut req: Request<State>) -> Result {
     {
         return Ok(Body::throw(messages::INVALID_PASSWORD));
     }
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let sql = format!(
+        r#"
+            SELECT users.* FROM users
+            WHERE users.name = '{name}'
+        "#,
+        name = form.name,
+    );
+    match sqlx::query_as::<_, model::User>(&sql)
+        .fetch_optional(conn.acquire().await?)
+        .await
+    {
+        Ok(user) => {
+            if user.is_some() {
+                debug!("name '{}' is already in use!", form.name);
+                return Ok(Body::throw(messages::NAME_ALREADY_IN_USE));
+            }
+        }
+        Err(err) => {
+            error!("unable to get user for name '{}'! Err: {}", form.name, err);
+            return Ok(Body::throw(messages::INTERNAL_ERROR));
+        }
+    }
     let auth = &req.state().config.auth;
     let hashed_password = ok_or_throw!(
         utils::hash_password(&form.password, auth),
         messages::INTERNAL_ERROR
     );
-    let mut conn = req.sqlx_conn::<Postgres>().await;
     let sql = format!(
         r#"
-            INSERT INTO users (email, password)
-            VALUES ('{email}', '{password}')
+            INSERT INTO users (name, email, password)
+            VALUES ('{name}', '{email}', '{password}')
             RETURNING users.*
         "#,
+        name = form.name,
         email = form.email,
         password = hashed_password,
     );
@@ -95,27 +126,28 @@ pub async fn do_register(mut req: Request<State>) -> Result {
     };
     let state = req.state();
     let hostname = ok_or_throw!(state.config.server.to_url(), messages::INTERNAL_ERROR);
-    let recipient = format!(
-        "{} <{}>",
-        user.name.as_deref().unwrap_or_else(|| &user.email),
-        user.email
-    );
+    let template_id = "verify";
+    let mut content = HashMap::new();
+    let name = user.name.as_ref().unwrap_or(&user.email);
+    content.insert("name", name.as_str());
     let verification_url = format!("{}/verify/{}", hostname, verification.code);
-    let content = MultiPart::alternative_plain_html(
-        format!(
-            "Click to verify your account: {url}",
-            url = verification_url
-        ),
-        format!(
-            "Click to verify your account: <a href=\"{url}\">{url}</a>",
-            url = verification_url
-        ),
-    );
-    if let Err(err) = utils::send_email(&recipient, content, &state.config.mail) {
+    content.insert("verification_url", &verification_url);
+    let multipart = match utils::create_multipart(template_id, content) {
+        Ok(body) => body,
+        Err(err) => {
+            error!(
+                "failed to read email for template id '{}'! Err: {}",
+                template_id, err
+            );
+            return Ok(Body::throw(messages::INTERNAL_ERROR));
+        }
+    };
+    let recipient = format!("{} <{}>", name, user.email);
+    if let Err(err) = utils::send_email(&recipient, multipart, &state.config.mail) {
         error!("failed to send verification email! Err: {}", err);
         return Ok(Body::throw(messages::INTERNAL_ERROR));
     }
-    debug!("verification email was sent to {}", recipient);
+    debug!("verification email was sent to '{}'", recipient);
     Ok(Body::ok())
 }
 
