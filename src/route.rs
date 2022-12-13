@@ -1,10 +1,6 @@
 use async_std::io::ReadExt;
 use fancy_regex::Regex;
 use lettre::message::MultiPart;
-use lettre::transport::smtp::authentication::Credentials;
-use lettre::Message;
-use lettre::SmtpTransport;
-use lettre::Transport;
 use serde::Serialize;
 use sqlx::Acquire;
 use sqlx::Postgres;
@@ -99,37 +95,27 @@ pub async fn do_register(mut req: Request<State>) -> Result {
     };
     let state = req.state();
     let hostname = ok_or_throw!(state.config.server.to_url(), messages::INTERNAL_ERROR);
-    let mail = &state.config.mail;
-    let sender = format!("verbal.fm <{}>", mail.email);
-    let recipient = format!("{email} <{email}>", email = user.email);
+    let recipient = format!(
+        "{} <{}>",
+        user.name.as_deref().unwrap_or_else(|| &user.email),
+        user.email
+    );
     let verification_url = format!("{}/verify/{}", hostname, verification.code);
-    let email = Message::builder()
-        .from(sender.parse().unwrap())
-        .to(recipient.parse().unwrap())
-        .subject("Verify your account")
-        .multipart(MultiPart::alternative_plain_html(
-            format!(
-                "Click to verify your account: {url}",
-                url = verification_url
-            ),
-            format!(
-                "Click to verify your account: <a href=\"{url}\">{url}</a>",
-                url = verification_url
-            ),
-        ))
-        .unwrap();
-    let credentials = Credentials::new(mail.username.clone(), mail.password.clone());
-    let mailer = SmtpTransport::relay(&mail.provider)
-        .unwrap()
-        .credentials(credentials)
-        .build();
-    match mailer.send(&email) {
-        Ok(_) => info!("verification email was sent to {}", user.email),
-        Err(err) => error!(
-            "failed to send verification email to {}! Err: {}",
-            user.email, err
+    let content = MultiPart::alternative_plain_html(
+        format!(
+            "Click to verify your account: {url}",
+            url = verification_url
         ),
+        format!(
+            "Click to verify your account: <a href=\"{url}\">{url}</a>",
+            url = verification_url
+        ),
+    );
+    if let Err(err) = utils::send_email(&recipient, content, &state.config.mail) {
+        error!("failed to send verification email! Err: {}", err);
+        return Ok(Body::throw(messages::INTERNAL_ERROR));
     }
+    debug!("verification email was sent to {}", recipient);
     Ok(Body::ok())
 }
 
@@ -200,6 +186,7 @@ pub async fn do_login(mut req: Request<State>) -> Result {
     cookie.set_same_site(SameSite::Strict);
     cookie.set_max_age(Duration::hours(options.session_hours));
     rsp.insert_cookie(cookie);
+    debug!("user '{}' was logged in.", user.email);
     Ok(rsp)
 }
 
@@ -242,6 +229,7 @@ pub async fn do_verify(mut req: Request<State>) -> Result {
         );
         return Ok(Body::throw(messages::INTERNAL_ERROR));
     }
+    debug!("user '{}' was verified.", user.email);
     Ok(Body::ok())
 }
 
