@@ -1,4 +1,4 @@
-use crate::Response;
+use crate::Body;
 
 #[derive(Default)]
 pub struct ErrorMiddleware;
@@ -9,7 +9,7 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for ErrorMidd
         let res = next.run(req).await;
         if let Some(err) = res.error() {
             error!("{}", err.to_string());
-            return Response::throw(&err.to_string());
+            return Ok(Body::throw(&err.to_string()));
         }
         Ok(res)
     }

@@ -8,9 +8,9 @@ use crate::middleware::AuthMiddleware;
 use crate::middleware::CacheMiddleware;
 use crate::middleware::CorsMiddleware;
 use crate::middleware::ErrorMiddleware;
+use crate::ok_or_abort;
 use crate::route;
-use crate::unwrap_option_or_abort;
-use crate::unwrap_result_or_abort;
+use crate::some_or_abort;
 use crate::Config;
 use crate::Result;
 use crate::ToAddress;
@@ -26,7 +26,7 @@ pub struct State {
 
 impl Server {
     pub async fn run(&self) -> Result<()> {
-        let config = unwrap_result_or_abort!(Config::acquire(), "cannot acquire config!");
+        let config = Config::acquire()?;
         let state = State {
             config: config.clone(),
         };
@@ -34,8 +34,8 @@ impl Server {
 
         /* bind middleware */
         app.with(ErrorMiddleware::default());
-        app.with(unwrap_result_or_abort!(
-            SQLxMiddleware::<Postgres>::new(&unwrap_result_or_abort!(
+        app.with(ok_or_abort!(
+            SQLxMiddleware::<Postgres>::new(&ok_or_abort!(
                 config.database.to_url(),
                 "cannot parse database address!"
             ))
@@ -86,19 +86,18 @@ impl Server {
         app.at("/api/tags").get(route::get_tags);
         app.at("/api/devices").get(route::get_devices);
 
-        let address =
-            unwrap_result_or_abort!(config.server.to_address(), "cannot parse server address!");
-        let url = unwrap_result_or_abort!(config.server.to_url(), "cannot parse server address!");
+        let address = ok_or_abort!(config.server.to_address(), "cannot parse server address!");
+        let url = ok_or_abort!(config.server.to_url(), "cannot parse server address!");
         info!("starting server on {}", url);
         let listener = if config.server.is_tls() {
             app.listen(
                 TlsListener::build()
                     .addrs(&address)
-                    .cert(unwrap_option_or_abort!(
+                    .cert(some_or_abort!(
                         config.server.cert_path,
                         "no certificate for TLS found!"
                     ))
-                    .key(unwrap_option_or_abort!(
+                    .key(some_or_abort!(
                         config.server.key_path,
                         "no key for TLS found!"
                     )),
@@ -107,7 +106,7 @@ impl Server {
         } else {
             app.listen(address).await
         };
-        unwrap_result_or_abort!(listener, "cannot start server!");
+        ok_or_abort!(listener, "cannot start server!");
         Ok(())
     }
 }

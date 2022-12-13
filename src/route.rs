@@ -9,26 +9,29 @@ use serde::Serialize;
 use sqlx::Acquire;
 use sqlx::Postgres;
 use tide::log::warn;
+use tide::Request;
+use tide::Result;
 use tide_sqlx::SQLxRequestExt;
 
+use crate::body::Body;
 use crate::messages;
 use crate::model;
+use crate::ok_or_throw;
 use crate::server::State;
-use crate::unwrap_option_or_throw;
-use crate::unwrap_result_or_throw;
+use crate::some_or_throw;
+use crate::utils;
 use crate::Category;
-use crate::Response;
 use crate::ToSql;
 use crate::ToUrl;
 
-pub async fn do_prefetch(_: tide::Request<State>) -> tide::Result {
-    Ok(tide::Response::new(200))
+pub async fn do_prefetch(_: Request<State>) -> Result {
+    Ok(Body::ok())
 }
 
-pub async fn do_register(mut req: tide::Request<State>) -> tide::Result {
+pub async fn do_register(mut req: Request<State>) -> Result {
     let user = req.ext::<model::User>();
     if user.is_some() {
-        return Response::throw(messages::USER_ALREADY_LOGGED_IN);
+        return Ok(Body::throw(messages::USER_ALREADY_LOGGED_IN));
     }
     let form = req.body_json::<model::RegisterForm>().await?;
     if !Regex::new("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
@@ -36,24 +39,20 @@ pub async fn do_register(mut req: tide::Request<State>) -> tide::Result {
         .is_match(&form.email)
         .unwrap_or_default()
     {
-        return Response::throw(messages::INVALID_EMAIL);
+        return Ok(Body::throw(messages::INVALID_EMAIL));
     }
     if !Regex::new("^(?=.*([A-Z]){1,})(?=.*[!@#$&*]{1,})(?=.*[0-9]{1,})(?=.*[a-z]{1,}).{8,100}$")
         .unwrap()
         .is_match(&form.password)
         .unwrap_or_default()
     {
-        return Response::throw(messages::INVALID_PASSWORD);
+        return Ok(Body::throw(messages::INVALID_PASSWORD));
     }
     let auth = &req.state().config.auth;
-    let hash = match bcrypt::hash_with_salt(&form.password, auth.cost, auth.salt) {
-        Ok(hash) => hash,
-        Err(err) => {
-            error!("unable to generate hash for password! Err: {}", err);
-            return Response::throw(messages::INTERNAL_ERROR);
-        }
-    };
-    let hashed_password = hash.to_string();
+    let hashed_password = ok_or_throw!(
+        utils::hash_password(&form.password, auth),
+        messages::INTERNAL_ERROR
+    );
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let sql = format!(
         r#"
@@ -71,7 +70,7 @@ pub async fn do_register(mut req: tide::Request<State>) -> tide::Result {
         Ok(model) => model,
         Err(_) => {
             warn!("user '{}' already exists!", form.email);
-            return Response::throw(messages::USER_ALREADY_EXISTS);
+            return Ok(Body::throw(messages::USER_ALREADY_EXISTS));
         }
     };
     let sql = format!(
@@ -92,11 +91,11 @@ pub async fn do_register(mut req: tide::Request<State>) -> tide::Result {
                 "unable to create verification for user '{}'! Err: {}",
                 user.email, err
             );
-            return Response::throw(messages::INTERNAL_ERROR);
+            return Ok(Body::throw(messages::INTERNAL_ERROR));
         }
     };
     let state = req.state();
-    let hostname = unwrap_result_or_throw!(state.config.server.to_url(), messages::INTERNAL_ERROR);
+    let hostname = ok_or_throw!(state.config.server.to_url(), messages::INTERNAL_ERROR);
     let mail = &state.config.mail;
     let sender = format!("verbal.fm <{}>", mail.email);
     let recipient = format!("{email} <{email}>", email = user.email);
@@ -128,24 +127,20 @@ pub async fn do_register(mut req: tide::Request<State>) -> tide::Result {
             user.email, err
         ),
     }
-    Response::ok()
+    Ok(Body::ok())
 }
 
-pub async fn do_login(mut req: tide::Request<State>) -> tide::Result {
+pub async fn do_login(mut req: Request<State>) -> Result {
     let user = req.ext::<model::User>();
     if user.is_some() {
-        return Response::throw(messages::USER_ALREADY_LOGGED_IN);
+        return Ok(Body::throw(messages::USER_ALREADY_LOGGED_IN));
     }
     let form = req.body_json::<model::LoginForm>().await?;
     let auth = &req.state().config.auth;
-    let hash = match bcrypt::hash_with_salt(&form.password, auth.cost, auth.salt) {
-        Ok(hash) => hash,
-        Err(err) => {
-            error!("unable to generate hash for password! Err: {}", err);
-            return Response::throw(messages::INTERNAL_ERROR);
-        }
-    };
-    let hashed_password = hash.to_string();
+    let hashed_password = ok_or_throw!(
+        utils::hash_password(&form.password, auth),
+        messages::INTERNAL_ERROR
+    );
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let sql = format!(
         r#"
@@ -162,12 +157,14 @@ pub async fn do_login(mut req: tide::Request<State>) -> tide::Result {
         Ok(model) => model,
         Err(_) => {
             warn!("user '{}' does not exist or password is wrong!", form.email);
-            return Response::throw(messages::USER_DOES_NOT_EXIST_OR_PASSWORD_IS_WRONG);
+            return Ok(Body::throw(
+                messages::USER_DOES_NOT_EXIST_OR_PASSWORD_IS_WRONG,
+            ));
         }
     };
     if !user.verified {
         warn!("user '{}' is not verified!", user.email);
-        return Response::throw(messages::USER_IS_NOT_VERIFIED);
+        return Ok(Body::throw(messages::USER_IS_NOT_VERIFIED));
     }
     let sql = format!(
         r#"
@@ -189,13 +186,13 @@ pub async fn do_login(mut req: tide::Request<State>) -> tide::Result {
                 "unable to create session for user '{}'! Err: {}",
                 user.email, err
             );
-            return Response::throw(messages::INTERNAL_ERROR);
+            return Ok(Body::throw(messages::INTERNAL_ERROR));
         }
     };
-    Response::with(session)
+    Ok(Body::with(session))
 }
 
-pub async fn do_verify(mut req: tide::Request<State>) -> tide::Result {
+pub async fn do_verify(mut req: Request<State>) -> Result {
     let form = req.body_json::<model::VerfiyForm>().await?;
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let sql = format!(
@@ -213,11 +210,11 @@ pub async fn do_verify(mut req: tide::Request<State>) -> tide::Result {
         Ok(model) => model,
         Err(_) => {
             warn!("invalid verification for code '{}'!", form.code);
-            return Response::throw(messages::INVALID_VERIFICATION);
+            return Ok(Body::throw(messages::INVALID_VERIFICATION));
         }
     };
     if user.verified {
-        return Response::throw(messages::USER_ALREADY_VERIFIED);
+        return Ok(Body::throw(messages::USER_ALREADY_VERIFIED));
     }
     let sql = format!(
         r#"
@@ -232,18 +229,18 @@ pub async fn do_verify(mut req: tide::Request<State>) -> tide::Result {
             "unable to update verified status for user '{}'! Err: {}",
             user.email, err
         );
-        return Response::throw(messages::INTERNAL_ERROR);
+        return Ok(Body::throw(messages::INTERNAL_ERROR));
     }
-    Response::ok()
+    Ok(Body::ok())
 }
 
-pub async fn get_user(req: tide::Request<State>) -> tide::Result {
+pub async fn get_user(req: Request<State>) -> Result {
     let user = req.ext::<model::User>();
-    Response::with(user)
+    Ok(Body::with(user))
 }
 
-pub async fn get_user_by_name(req: tide::Request<State>) -> tide::Result {
-    let user_name = unwrap_result_or_throw!(req.param("name"), messages::USER_DOES_NOT_EXIST);
+pub async fn get_user_by_name(req: Request<State>) -> Result {
+    let user_name = ok_or_throw!(req.param("name"), messages::USER_DOES_NOT_EXIST);
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let sql = format!(
         r#"
@@ -259,24 +256,23 @@ pub async fn get_user_by_name(req: tide::Request<State>) -> tide::Result {
         Ok(model) => model,
         Err(_) => {
             warn!("user for name '{}' does not exist!", user_name);
-            return Response::throw(messages::USER_DOES_NOT_EXIST);
+            return Ok(Body::throw(messages::USER_DOES_NOT_EXIST));
         }
     };
     if !user.verified {
-        return Response::throw(messages::USER_DOES_NOT_EXIST);
+        return Ok(Body::throw(messages::USER_DOES_NOT_EXIST));
     }
-    Response::with(user)
+    Ok(Body::with(user))
 }
 
-pub async fn get_account(req: tide::Request<State>) -> tide::Result {
-    let account =
-        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
-    Response::with(account)
+pub async fn get_account(req: Request<State>) -> Result {
+    let account = some_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    Ok(Body::with(account))
 }
 
-pub async fn add_account(mut req: tide::Request<State>) -> tide::Result {
+pub async fn add_account(mut req: Request<State>) -> Result {
     if req.ext::<model::Account>().is_some() {
-        return Response::throw("already logged in with another account!");
+        return Ok(Body::throw("already logged in with another account!"));
     }
     let add_account = req.body_json::<model::AddAccount>().await?;
     let mut conn = req.sqlx_conn::<Postgres>().await;
@@ -316,13 +312,12 @@ pub async fn add_account(mut req: tide::Request<State>) -> tide::Result {
     let device = sqlx::query_as::<_, model::Device>(&sql)
         .fetch_one(conn.acquire().await?)
         .await?;
-    Response::with(device)
+    Ok(Body::with(device))
 }
 
-pub async fn do_search(req: tide::Request<State>) -> tide::Result {
+pub async fn do_search(req: Request<State>) -> Result {
     let query = req.query::<model::Query>()?;
-    let account =
-        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    let account = some_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
         r#"
             SELECT
@@ -354,18 +349,17 @@ pub async fn do_search(req: tide::Request<State>) -> tide::Result {
         "#,
         account_id = account.id,
         offset = query.page.unwrap_or_default() * 10,
-        conditions = unwrap_result_or_throw!(query.to_sql(), "cannot parse sql statement!"),
+        conditions = ok_or_throw!(query.to_sql(), "cannot parse sql statement!"),
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let result = sqlx::query_as::<_, model::Station>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
-    Response::with(result)
+    Ok(Body::with(result))
 }
 
-pub async fn get_song(req: tide::Request<State>) -> tide::Result {
-    let account =
-        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+pub async fn get_song(req: Request<State>) -> Result {
+    let account = some_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let station = req.query::<model::Station>()?;
     let sql = format!(
         r#"
@@ -387,24 +381,23 @@ pub async fn get_song(req: tide::Request<State>) -> tide::Result {
     let mut response = surf::get(&station.url).header("icy-metadata", "1").await?;
     let meta_int = match response.header("icy-metaint") {
         Some(header) => header.as_str(),
-        None => return Response::throw("no icy metadata header found!"),
+        None => return Ok(Body::throw("no icy metadata header found!")),
     };
     let interval = match meta_int.parse::<usize>() {
         Ok(interval) => interval * 2,
-        Err(_) => return Response::throw("icy metadata interval is not a number!"),
+        Err(_) => return Ok(Body::throw("icy metadata interval is not a number!")),
     };
     let mut total = 0;
     let mut bytes = Vec::new();
     let mut buf = [0; 10000];
     let mut title = None;
     loop {
-        let len =
-            unwrap_result_or_throw!(response.read(&mut buf).await, "cannot read stream data!");
+        let len = ok_or_throw!(response.read(&mut buf).await, "cannot read stream data!");
         bytes.extend_from_slice(&buf);
         if total + len > interval {
             let metadata = String::from_utf8_lossy(&bytes);
             if let Some(cap) =
-                unwrap_result_or_throw!(Regex::new("StreamTitle='([^;]*)';"), "cannot parse regex!")
+                ok_or_throw!(Regex::new("StreamTitle='([^;]*)';"), "cannot parse regex!")
                     .captures_iter(&metadata)
                     .next()
             {
@@ -418,12 +411,11 @@ pub async fn get_song(req: tide::Request<State>) -> tide::Result {
         }
         total += len;
     }
-    Response::with(title)
+    Ok(Body::with(title))
 }
 
-pub async fn get_favorites(req: tide::Request<State>) -> tide::Result {
-    let account =
-        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+pub async fn get_favorites(req: Request<State>) -> Result {
+    let account = some_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
         r#"
             SELECT
@@ -453,13 +445,12 @@ pub async fn get_favorites(req: tide::Request<State>) -> tide::Result {
     let result = sqlx::query_as::<_, model::Station>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
-    Response::with(result)
+    Ok(Body::with(result))
 }
 
-pub async fn add_favorite(mut req: tide::Request<State>) -> tide::Result {
+pub async fn add_favorite(mut req: Request<State>) -> Result {
     let station_id = req.body_json::<i32>().await?;
-    let account =
-        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    let account = some_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
         r#"
             INSERT INTO
@@ -473,13 +464,12 @@ pub async fn add_favorite(mut req: tide::Request<State>) -> tide::Result {
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
     sqlx::query(&sql).execute(conn.acquire().await?).await?;
-    Response::ok()
+    Ok(Body::ok())
 }
 
-pub async fn delete_favorite(mut req: tide::Request<State>) -> tide::Result {
+pub async fn delete_favorite(mut req: Request<State>) -> Result {
     let station_id = req.body_json::<i32>().await?;
-    let account =
-        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    let account = some_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
         r#"
             DELETE FROM
@@ -492,11 +482,11 @@ pub async fn delete_favorite(mut req: tide::Request<State>) -> tide::Result {
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
     sqlx::query(&sql).execute(conn.acquire().await?).await?;
-    Response::ok()
+    Ok(Body::ok())
 }
 
-pub async fn get_account_by_id(req: tide::Request<State>) -> tide::Result {
-    let account_id = unwrap_result_or_throw!(req.param("id"), "no account id found!");
+pub async fn get_account_by_id(req: Request<State>) -> Result {
+    let account_id = ok_or_throw!(req.param("id"), "no account id found!");
     let sql = format!(
         r#"
             SELECT
@@ -516,13 +506,12 @@ pub async fn get_account_by_id(req: tide::Request<State>) -> tide::Result {
     let result = sqlx::query_as::<_, model::Account>(&sql)
         .fetch_optional(conn.acquire().await?)
         .await?;
-    Response::with(result)
+    Ok(Body::with(result))
 }
 
-pub async fn get_station_by_id(req: tide::Request<State>) -> tide::Result {
-    let station_id = unwrap_result_or_throw!(req.param("id"), "no station id found!");
-    let account =
-        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+pub async fn get_station_by_id(req: Request<State>) -> Result {
+    let station_id = ok_or_throw!(req.param("id"), "no station id found!");
+    let account = some_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
         r#"
             SELECT
@@ -565,13 +554,12 @@ pub async fn get_station_by_id(req: tide::Request<State>) -> tide::Result {
     let result = sqlx::query_as::<_, model::StationDetail>(&sql)
         .fetch_optional(conn.acquire().await?)
         .await?;
-    Response::with(result)
+    Ok(Body::with(result))
 }
 
-pub async fn get_group(req: tide::Request<State>) -> tide::Result {
-    let group_id = unwrap_result_or_throw!(req.param("id"), "no group id was provided!");
-    let account =
-        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+pub async fn get_group(req: Request<State>) -> Result {
+    let group_id = ok_or_throw!(req.param("id"), "no group id was provided!");
+    let account = some_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let sql = format!(
         r#"
@@ -582,7 +570,7 @@ pub async fn get_group(req: tide::Request<State>) -> tide::Result {
         "#,
         group_id = group_id,
     );
-    let group = unwrap_option_or_throw!(
+    let group = some_or_throw!(
         sqlx::query_as::<_, model::StationGroup>(&sql)
             .fetch_optional(conn.acquire().await?)
             .await?,
@@ -627,14 +615,13 @@ pub async fn get_group(req: tide::Request<State>) -> tide::Result {
         stations: Vec<model::Station>,
     }
     let result = Result { group, stations };
-    Response::with(result)
+    Ok(Body::with(result))
 }
 
-pub async fn get_category(req: tide::Request<State>) -> tide::Result {
-    let kind = unwrap_result_or_throw!(req.param("kind"), "no kind was provided!");
-    let account =
-        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
-    let category = unwrap_result_or_throw!(Category::from(kind), "invalid category provided!");
+pub async fn get_category(req: Request<State>) -> Result {
+    let kind = ok_or_throw!(req.param("kind"), "no kind was provided!");
+    let account = some_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    let category = ok_or_throw!(Category::from(kind), "invalid category provided!");
     let mut conn = req.sqlx_conn::<Postgres>().await;
     let sql = format!(
         r#"
@@ -660,15 +647,15 @@ pub async fn get_category(req: tide::Request<State>) -> tide::Result {
                 LIMIT 10
         "#,
         account_id = account.id,
-        category = unwrap_result_or_throw!(category.to_sql(), "cannot parse sql statement!"),
+        category = ok_or_throw!(category.to_sql(), "cannot parse sql statement!"),
     );
     let result = sqlx::query_as::<_, model::Station>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
-    Response::with(result)
+    Ok(Body::with(result))
 }
 
-pub async fn get_countries(req: tide::Request<State>) -> tide::Result {
+pub async fn get_countries(req: Request<State>) -> Result {
     let sql = r#"
             SELECT
                 country
@@ -682,10 +669,10 @@ pub async fn get_countries(req: tide::Request<State>) -> tide::Result {
     let result = sqlx::query_as::<_, model::Value>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
-    Response::with(result)
+    Ok(Body::with(result))
 }
 
-pub async fn get_languages(req: tide::Request<State>) -> tide::Result {
+pub async fn get_languages(req: Request<State>) -> Result {
     let sql = r#"
             SELECT
                 UNNEST(languages) AS language
@@ -698,10 +685,10 @@ pub async fn get_languages(req: tide::Request<State>) -> tide::Result {
     let result = sqlx::query_as::<_, model::Value>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
-    Response::with(result)
+    Ok(Body::with(result))
 }
 
-pub async fn get_tags(req: tide::Request<State>) -> tide::Result {
+pub async fn get_tags(req: Request<State>) -> Result {
     let sql = r#"
             SELECT
                 UNNEST(tags) AS tag
@@ -715,12 +702,11 @@ pub async fn get_tags(req: tide::Request<State>) -> tide::Result {
     let result = sqlx::query_as::<_, model::Value>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
-    Response::with(result)
+    Ok(Body::with(result))
 }
 
-pub async fn get_devices(req: tide::Request<State>) -> tide::Result {
-    let account =
-        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+pub async fn get_devices(req: Request<State>) -> Result {
+    let account = some_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
         r#"
             SELECT
@@ -734,13 +720,12 @@ pub async fn get_devices(req: tide::Request<State>) -> tide::Result {
     let result = sqlx::query_as::<_, model::Device>(&sql)
         .fetch_all(conn.acquire().await?)
         .await?;
-    Response::with(result)
+    Ok(Body::with(result))
 }
 
-pub async fn update_account(mut req: tide::Request<State>) -> tide::Result {
+pub async fn update_account(mut req: Request<State>) -> Result {
     let updated_account = req.body_json::<model::Account>().await?;
-    let account =
-        unwrap_option_or_throw!(req.ext::<model::Account>(), "no account in request found!");
+    let account = some_or_throw!(req.ext::<model::Account>(), "no account in request found!");
     let sql = format!(
         r#"
             UPDATE
@@ -766,5 +751,5 @@ pub async fn update_account(mut req: tide::Request<State>) -> tide::Result {
     let result = sqlx::query_as::<_, model::Account>(&sql)
         .fetch_one(conn.acquire().await?)
         .await?;
-    Response::with(result)
+    Ok(Body::with(result))
 }

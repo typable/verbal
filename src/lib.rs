@@ -2,18 +2,19 @@ use env_logger::Builder;
 use env_logger::Target;
 use log::LevelFilter;
 
+pub mod body;
 pub mod error;
 pub mod messages;
 pub mod middleware;
 pub mod model;
 pub mod route;
+pub mod utils;
 
 mod config;
-mod response;
 mod server;
 
+pub use body::Body;
 pub use config::Config;
-pub use response::Response;
 pub use server::Server;
 
 use error::Error;
@@ -34,40 +35,40 @@ macro_rules! abort {
 }
 
 #[macro_export]
-macro_rules! unwrap_result_or_abort {
+macro_rules! ok_or_abort {
     ($target:expr, $message:expr) => {{
         $target.unwrap_or_else(|err| abort!($message, &err))
     }};
 }
 
 #[macro_export]
-macro_rules! unwrap_option_or_abort {
+macro_rules! some_or_abort {
     ($target:expr, $message:expr) => {{
         $target.unwrap_or_else(|| abort!($message))
     }};
 }
 
 #[macro_export]
-macro_rules! unwrap_result_or_throw {
+macro_rules! ok_or_throw {
     ($target:expr, $message:expr) => {{
         match $target {
             Ok(target) => target,
             Err(err) => {
                 error!("{}\n{}", $message, err);
-                return $crate::Response::throw($message);
+                return Ok($crate::Body::throw($message));
             }
         }
     }};
 }
 
 #[macro_export]
-macro_rules! unwrap_option_or_throw {
+macro_rules! some_or_throw {
     ($target:expr, $message:expr) => {{
         match $target {
             Some(target) => target,
             None => {
                 error!("{}", $message);
-                return $crate::Response::throw($message);
+                return Ok($crate::Body::throw($message));
             }
         }
     }};

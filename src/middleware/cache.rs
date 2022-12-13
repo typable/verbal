@@ -13,7 +13,7 @@ impl CacheMiddleware {
         if let Some(caching) = &mut caching {
             let mut invalid_keys = Vec::new();
             for key in caching.keys() {
-                if let Err(err) = Regex::new(&key) {
+                if let Err(err) = Regex::new(key) {
                     error!("invalid cache key '{}'! Err: {}", key, err);
                     invalid_keys.push(key.clone());
                 }
@@ -35,14 +35,14 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for CacheMidd
         if let Some(caching) = &self.caching {
             if method == Method::Get && res.status() == StatusCode::Ok {
                 for (key, value) in caching.iter() {
-                    let regex = match Regex::new(&key) {
+                    let regex = match Regex::new(key) {
                         Ok(regex) => regex,
                         Err(err) => {
                             error!("invalid cache key '{}'! Err: {}", key, err);
                             continue;
                         }
                     };
-                    if regex.is_match(&url.path()).unwrap_or_default() {
+                    if regex.is_match(url.path()).unwrap_or_default() {
                         res.insert_header("Cache-Control", value);
                         break;
                     }
