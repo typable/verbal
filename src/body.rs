@@ -1,5 +1,7 @@
 use serde::Serialize;
 
+use crate::error::Error;
+
 #[derive(Debug, Clone, Serialize)]
 pub struct Body<T, E> {
     pub ok: bool,
@@ -29,12 +31,12 @@ impl<T: Serialize> Body<T, ()> {
     }
 }
 
-impl<E: Serialize> Body<(), E> {
-    pub fn throw(error: E) -> tide::Response {
+impl Body<(), Error> {
+    pub fn throw(message: &str) -> tide::Response {
         Self {
             ok: false,
             data: None,
-            error: Some(error),
+            error: Some(Error::new(message)),
         }
         .into()
     }

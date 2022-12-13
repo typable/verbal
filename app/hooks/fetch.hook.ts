@@ -6,6 +6,7 @@ export type UseFetch<T> = Fetch<T>;
 export interface Fetch<T> {
   value: Option<T>,
   pending: boolean,
+  ok: Option<boolean>,
   error: Option<Error>,
   setValue: SetState<T>,
   doFetch: (props?: FetchProps) => Promise<void>,
@@ -30,12 +31,14 @@ interface FetchData<T> {
 
 export default function useFetch<T>(address: string, endpoint: Endpoint, initial?: T) {
   const [value, setValue] = useState(initial);
-  const [pending, setPending] = useState(initial);
-  const [error, setError] = useState(initial);
+  const [pending, setPending] = useState(null);
+  const [ok, setOk] = useState(null);
+  const [error, setError] = useState(null);
 
   async function doFetch(props?: FetchProps) {
     setPending(true);
     setValue(null);
+    setOk(null);
     setError(null);
     let url = `${address}/api${endpoint.path(props?.query ?? [])}`;
     const options: FetchOptions = {
@@ -53,6 +56,7 @@ export default function useFetch<T>(address: string, endpoint: Endpoint, initial
     try {
       const rsp = await fetch(url, options);
       const data: FetchData<T> = await rsp.json();
+      setOk(data.ok);
       if (data.ok) {
         setValue(data.data);
       }
@@ -67,5 +71,5 @@ export default function useFetch<T>(address: string, endpoint: Endpoint, initial
     }
   }
 
-  return { value, pending, error, setValue, doFetch };
+  return { value, pending, ok, error, setValue, doFetch };
 }

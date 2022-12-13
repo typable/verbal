@@ -73,9 +73,3 @@ export type ResetForm = {
   email: string;
   password: string;
 }
-
-export type Session = {
-  id: number,
-  token: string,
-  user_id: string,
-}

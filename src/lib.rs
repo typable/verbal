@@ -1,7 +1,3 @@
-use env_logger::Builder;
-use env_logger::Target;
-use log::LevelFilter;
-
 pub mod body;
 pub mod error;
 pub mod messages;
@@ -113,12 +109,4 @@ impl ToSql for Category {
         }
         .to_string())
     }
-}
-
-pub fn init_logger() {
-    Builder::new()
-        .format_timestamp_secs()
-        .filter_module(APP_NAME, LevelFilter::Info)
-        .target(Target::Stdout)
-        .init();
 }

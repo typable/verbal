@@ -5,12 +5,12 @@ import { UseFetch } from "../hooks/fetch.hook.ts";
 import useForm from "../hooks/form.hook.ts";
 import { UseForm } from "../hooks/form.hook.ts";
 import useInput from "../hooks/input.hook.ts";
-import { GlobalContext, LoginForm, Session } from "../types.ts";
+import { GlobalContext, LoginForm } from "../types.ts";
 
 export default function LoginPage() {
   const { routing, user }: GlobalContext = useContext(global);
   const { doRoute, setRoute } = routing;
-  const auth: UseFetch<Session> = useFetch(ORIGIN, ENDPOINTS.DO_LOGIN);
+  const auth: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.DO_LOGIN);
   const form: UseForm<LoginForm> = useForm({ email: '', password: '' }, doAuth);
   const { data, handleChange, handleSubmit } = form;
   const emailRef = useInput(data.email);
@@ -23,12 +23,11 @@ export default function LoginPage() {
   }, [user.value]);
 
   useEffect(() => {
-    if (auth.value != null) {
-      document.cookie = `token=${auth.value.token}; Path=/; SameSite=None; Secure`;
+    if (!auth.pending && auth.ok) {
       user.doFetch();
       setRoute('/');
     }
-  }, [auth.value]);
+  }, [auth.pending, auth.value]);
 
   function doAuth() {
     auth.doFetch({ payload: data });

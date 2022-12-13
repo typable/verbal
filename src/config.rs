@@ -58,6 +58,7 @@ impl ToAddress for Server {
 #[derive(Debug, Clone, Deserialize)]
 pub struct Options {
     pub cors: String,
+    pub session_hours: i64,
     pub caching: Option<HashMap<String, String>>,
 }
 

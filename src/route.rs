@@ -8,10 +8,13 @@ use lettre::Transport;
 use serde::Serialize;
 use sqlx::Acquire;
 use sqlx::Postgres;
+use surf::http::cookies::SameSite;
+use tide::http::Cookie;
 use tide::log::warn;
 use tide::Request;
 use tide::Result;
 use tide_sqlx::SQLxRequestExt;
+use time::Duration;
 
 use crate::body::Body;
 use crate::messages;
@@ -69,7 +72,7 @@ pub async fn do_register(mut req: Request<State>) -> Result {
     {
         Ok(model) => model,
         Err(_) => {
-            warn!("user '{}' already exists!", form.email);
+            debug!("user '{}' already exists!", form.email);
             return Ok(Body::throw(messages::USER_ALREADY_EXISTS));
         }
     };
@@ -156,14 +159,14 @@ pub async fn do_login(mut req: Request<State>) -> Result {
     {
         Ok(model) => model,
         Err(_) => {
-            warn!("user '{}' does not exist or password is wrong!", form.email);
+            debug!("user '{}' does not exist or password is wrong!", form.email);
             return Ok(Body::throw(
                 messages::USER_DOES_NOT_EXIST_OR_PASSWORD_IS_WRONG,
             ));
         }
     };
     if !user.verified {
-        warn!("user '{}' is not verified!", user.email);
+        debug!("user '{}' is not verified!", user.email);
         return Ok(Body::throw(messages::USER_IS_NOT_VERIFIED));
     }
     let sql = format!(
@@ -189,7 +192,15 @@ pub async fn do_login(mut req: Request<State>) -> Result {
             return Ok(Body::throw(messages::INTERNAL_ERROR));
         }
     };
-    Ok(Body::with(session))
+    let options = &req.state().config.server.options;
+    let mut rsp = Body::ok();
+    let mut cookie = Cookie::new("token", session.token);
+    cookie.set_path("/");
+    cookie.set_secure(true);
+    cookie.set_same_site(SameSite::Strict);
+    cookie.set_max_age(Duration::hours(options.session_hours));
+    rsp.insert_cookie(cookie);
+    Ok(rsp)
 }
 
 pub async fn do_verify(mut req: Request<State>) -> Result {
@@ -209,7 +220,7 @@ pub async fn do_verify(mut req: Request<State>) -> Result {
     {
         Ok(model) => model,
         Err(_) => {
-            warn!("invalid verification for code '{}'!", form.code);
+            debug!("invalid verification for code '{}'!", form.code);
             return Ok(Body::throw(messages::INVALID_VERIFICATION));
         }
     };
@@ -255,7 +266,7 @@ pub async fn get_user_by_name(req: Request<State>) -> Result {
     {
         Ok(model) => model,
         Err(_) => {
-            warn!("user for name '{}' does not exist!", user_name);
+            debug!("user for name '{}' does not exist!", user_name);
             return Ok(Body::throw(messages::USER_DOES_NOT_EXIST));
         }
     };

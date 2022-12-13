@@ -5,7 +5,7 @@ edition = "2018"
 
 [dependencies]
 toml = "0.5.9"
-tide = "0.16.0"
+tide = { version = "0.16.0", features = ["cookies"] }
 tide-sqlx = "0.6.1"
 serde_json = "1.0.82"
 tide-compress = "0.10.2"
@@ -21,3 +21,4 @@ tide-rustls = "0.3.0"
 fancy-regex = "0.10.0"
 lettre = { version = "0.10.1", features = ["smtp-transport"] }
 bcrypt = "0.13.0"
+time = "0.2.27"
