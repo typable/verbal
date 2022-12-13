@@ -5,6 +5,7 @@ export default {
       search: "Suche",
     },
     account: {
+      register: "Kostenlos registrieren",
       login: "Anmelden",
     },
   },

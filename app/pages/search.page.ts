@@ -21,28 +21,30 @@ export default function SearchPage() {
 
   return html`
     <search-page class="page">
-      <h1>Search</h1>
-      <form @submit="${handleSubmit}">
-        <input
-          ref="${nameRef}"
-          @change="${handleChange}"
-          name="name"
-          type="text"
-          value="${data.name}"
-          spellcheck="false"
-          autocomplete="off"
-        >
-        <button type="submit">Search</button>
-        <button type="button" @click="${() => doReset()}">Reset</button>
-      </form>
-      <ul>
-        ${search.pending ? 'Loading...' : search.value?.map((station) => html`
-          <li>
-            <p>${station.name}</p>
-            <a @click="${doRoute}" href="/station/${station.id}">View</a>
-          </li>
-        `)}
-      </ul>
+      <section class="container full-width">
+        <h1>Search</h1>
+        <form @submit="${handleSubmit}">
+          <input
+            ref="${nameRef}"
+            @change="${handleChange}"
+            name="name"
+            type="text"
+            value="${data.name}"
+            spellcheck="false"
+            autocomplete="off"
+          >
+          <button type="submit">Search</button>
+          <button type="button" @click="${() => doReset()}">Reset</button>
+        </form>
+        <ul>
+          ${search.pending ? 'Loading...' : search.value?.map((station) => html`
+            <li>
+              <p>${station.name}</p>
+              <a @click="${doRoute}" href="/station/${station.id}">View</a>
+            </li>
+          `)}
+        </ul>
+      </section>
     </search-page>
   `;
 }

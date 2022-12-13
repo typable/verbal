@@ -35,31 +35,33 @@ export default function LoginPage() {
 
   return html`
     <login-page class="page">
-      <h1>Login</h1>
-      <p>${auth.pending ? '' : auth.error?.message}</p>
-      <form @submit="${handleSubmit}">
-        <input
-          ref="${emailRef}"
-          @change="${handleChange}"
-          name="email"
-          type="email"
-          value="${data.email}"
-          spellcheck="false"
-          required="true"
-        >
-        <input
-          ref="${passwordRef}"
-          @change="${handleChange}"
-          name="password"
-          type="password"
-          value="${data.password}"
-          spellcheck="false"
-          required="true"
-        >
-        <button type="submit">Log in</button>
-        <p>Forgot your password? <a @click="${doRoute}" href="/reset">Reset password</a></p>
-        <p>Don't have an account? <a @click="${doRoute}" href="/register">Create an account</a></p>
-      </form>
+      <section class="container slim-width">
+        <h1>Login</h1>
+        <p>${auth.pending ? '' : auth.error?.message}</p>
+        <form @submit="${handleSubmit}">
+          <input
+            ref="${emailRef}"
+            @change="${handleChange}"
+            name="email"
+            type="email"
+            value="${data.email}"
+            spellcheck="false"
+            required="true"
+          >
+          <input
+            ref="${passwordRef}"
+            @change="${handleChange}"
+            name="password"
+            type="password"
+            value="${data.password}"
+            spellcheck="false"
+            required="true"
+          >
+          <button type="submit">Log in</button>
+          <p>Forgot your password? <a @click="${doRoute}" href="/reset">Reset password</a></p>
+          <p>Don't have an account? <a @click="${doRoute}" href="/register">Create an account</a></p>
+        </form>
+      </section>
     </login-page>
   `;
 }

@@ -8,8 +8,10 @@ export default function ErrorPage() {
   
   return html`
     <error-page class="page">
-      <h1>Not found</h1>
-      <p><a @click="${doRoute}" href="/">Back to home</a></p>
+      <section class="container slim-width">
+        <h1>Not found</h1>
+        <p><a @click="${doRoute}" href="/">Back to home</a></p>
+      </section>
     </error-page>
   `;
 }

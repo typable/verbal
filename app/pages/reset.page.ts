@@ -26,31 +26,33 @@ export default function ResetPage(props: Props) {
 
   return html`
     <reset-page class="page">
-      <h1>Reset</h1>
-      <a @click="${doBack}" href="/">Back</a>
-      <p>Reset code: ${props.code}</p>
-      <p>${reset.pending ? '' : reset.error?.message}</p>
-      <form @submit="${handleSubmit}">
-        <input
-          ref="${emailRef}"
-          @change="${handleChange}"
-          name="email"
-          type="email"
-          value="${data.email}"
-          spellcheck="false"
-          autocomplete="off"
-        >
-        <input
-          ref="${passwordRef}"
-          @change="${handleChange}"
-          name="password"
-          type="password"
-          value="${data.password}"
-          spellcheck="false"
-          autocomplete="off"
-        >
-        <button type="submit">Reset</button>
-      </form>
+      <section class="container slim-width">
+        <h1>Reset</h1>
+        <a @click="${doBack}" href="/">Back</a>
+        <p>Reset code: ${props.code}</p>
+        <p>${reset.pending ? '' : reset.error?.message}</p>
+        <form @submit="${handleSubmit}">
+          <input
+            ref="${emailRef}"
+            @change="${handleChange}"
+            name="email"
+            type="email"
+            value="${data.email}"
+            spellcheck="false"
+            autocomplete="off"
+          >
+          <input
+            ref="${passwordRef}"
+            @change="${handleChange}"
+            name="password"
+            type="password"
+            value="${data.password}"
+            spellcheck="false"
+            autocomplete="off"
+          >
+          <button type="submit">Reset</button>
+        </form>
+      </section>
     </reset-page>
   `;
 }

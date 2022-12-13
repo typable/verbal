@@ -1,4 +1,17 @@
 @use '../vars.scss' as *;
 
 home-page {
+
+  header {
+    padding-top: $sp-2xl;
+
+    h1 {
+      @include fs-2xl;
+    }
+
+    h4 {
+      @include fs-lg;
+      color: #A5A5A5;
+    }
+  }
 }

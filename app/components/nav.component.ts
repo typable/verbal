@@ -26,20 +26,30 @@ export default function NavComponent() {
         </li>
       </ul>
       ${user.pending ? '' : user.value == null ? html`
-        <div
-          @click="${() => setRoute('/login')}"
-          class="account"
-        >
-          <p>${translate('nav.account.login')}</p>
-        </div>
+        <ul class="account-list">
+          <li
+            @click="${() => setRoute('/register')}"
+            class="account ${isActive(current, ROUTES.REGISTER) ? 'account--active' : ''}"
+          >
+            <p>${translate('nav.account.register')}</p>
+          </li>
+          <li
+            @click="${() => setRoute('/login')}"
+            class="account ${isActive(current, ROUTES.LOGIN) ? 'account--active' : ''}"
+          >
+            <p>${translate('nav.account.login')}</p>
+          </li>
+        </ul>
       ` : html`
-        <div
-          @click="${() => setRoute('/profile')}"
-          class="account ${isActive(current, ROUTES.PROFILE) ? 'account--active' : ''}"
-        >
-          <i class="ti ti-user"></i>
-          <p>${user.value?.name ?? user.value?.email}</p>
-        </div>
+        <ul class="account-list">
+          <li
+            @click="${() => setRoute('/profile')}"
+            class="account ${isActive(current, ROUTES.PROFILE) ? 'account--active' : ''}"
+          >
+            <i class="ti ti-user"></i>
+            <p>${user.value?.name ?? user.value?.email}</p>
+          </li>
+        </ul>
       `}
       </div>
     </nav-component>

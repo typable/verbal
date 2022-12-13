@@ -18,10 +18,12 @@ export default function StationPage(props: Props) {
 
   return html`
     <station-page>
-      <h1>${station.value?.name}</h1>
-      <p>Id: ${station.value?.id}</p>
-      <p>Description: ${station.value?.description}</p>
-      <a @click="${doBack}" href="/">Back</a>
+      <section class="container full-width">
+        <h1>${station.value?.name}</h1>
+        <p>Id: ${station.value?.id}</p>
+        <p>Description: ${station.value?.description}</p>
+        <a @click="${doBack}" href="/">Back</a>
+      </section>
     </station-page>
   `;
 }

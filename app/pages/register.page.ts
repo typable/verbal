@@ -29,40 +29,42 @@ export default function RegisterPage() {
 
   return html`
     <register-page class="page">
-      <h1>Register</h1>
-      <p>${register.pending ? '' : register.error?.message}</p>
-      <form @submit="${handleSubmit}">
-        <input
-          ref="${nameRef}"
-          @change="${handleChange}"
-          name="name"
-          type="text"
-          value="${data.name}"
-          spellcheck="false"
-          autocomplete="off"
-          required="true"
-        >
-        <input
-          ref="${emailRef}"
-          @change="${handleChange}"
-          name="email"
-          type="email"
-          value="${data.email}"
-          spellcheck="false"
-          required="true"
-        >
-        <input
-          ref="${passwordRef}"
-          @change="${handleChange}"
-          name="password"
-          type="password"
-          value="${data.password}"
-          spellcheck="false"
-          autocomplete="off"
-          required="true"
-        >
-        <button type="submit">Create an account</button>
-      </form>
+      <section class="container slim-width">
+        <h1>Register</h1>
+        <p>${register.pending ? '' : register.error?.message}</p>
+        <form @submit="${handleSubmit}">
+          <input
+            ref="${nameRef}"
+            @change="${handleChange}"
+            name="name"
+            type="text"
+            value="${data.name}"
+            spellcheck="false"
+            autocomplete="off"
+            required="true"
+          >
+          <input
+            ref="${emailRef}"
+            @change="${handleChange}"
+            name="email"
+            type="email"
+            value="${data.email}"
+            spellcheck="false"
+            required="true"
+          >
+          <input
+            ref="${passwordRef}"
+            @change="${handleChange}"
+            name="password"
+            type="password"
+            value="${data.password}"
+            spellcheck="false"
+            autocomplete="off"
+            required="true"
+          >
+          <button type="submit">Create an account</button>
+        </form>
+      </section>
     </register-page>
   `;
 }

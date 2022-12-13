@@ -1,11 +1,15 @@
 // @use '../../../dist/libs/tabler-icons.min.css';
 
 /* colors */
-$bg-default: #FFFFFF;
-$fg-default: #424242;
+$bg-default: #242424;
+$fg-default: #EEEEEE;
 
 $cl-dark: #353535;
 $cl-darker: #2B2B2B;
+
+/* widths */
+$w-full: 1500px;
+$w-slim: 900px;
 
 /* spacings */
 $sp-xs: 4px;
@@ -24,4 +28,16 @@ $ft-sans: 'Inter', sans-serif;
 @mixin fs-sm {
   font-family: $ft-sans;
   font-size: 1rem;
+}
+
+@mixin fs-lg {
+  font-family: $ft-sans;
+  font-size: 1.2rem;
+  font-weight: 400;
+  line-height: 1.9rem;
+}
+
+@mixin fs-2xl {
+  font-family: $ft-sans;
+  font-size: 3.5rem;
 }

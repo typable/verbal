@@ -3,12 +3,12 @@
 nav-component {
   display: flex;
   width: 100%;
-  padding: $sp-lg;
+  padding: $sp-2xl 0px;
 
   .menu-list {
     display: flex;
     flex: 1;
-    gap: $sp-sm;
+    gap: $sp-md;
     margin: 0px;
     padding: 0px;
     list-style-type: none;
@@ -20,8 +20,10 @@ nav-component {
       height: 44px;
       padding: 0px $sp-lg;
       border-radius: 22px;
-      background-color: #EEE;
+      background-color: #333;
+      color: #AAA;
       cursor: pointer;
+      transition: background-color 100ms, color 100ms;
 
       .ti {
         margin-top: -2px;
@@ -30,39 +32,61 @@ nav-component {
       }
 
       p {
+        margin: 0px;
         text-decoration: none;
         user-select: none;
       }
 
+      &:hover {
+        background-color: #3A3A3A;
+      }
+
       &.menu--active {
-        background-color: #CCC;
+        background-color: #151515;
+        color: $fg-default;
       }
     }
   }
 
-  .account {
+  .account-list {
     display: flex;
-    align-items: center;
-    gap: $sp-sm;
-    height: 44px;
-    padding: 0px $sp-lg;
-    border-radius: 22px;
-    background-color: #EEE;
-    cursor: pointer;
+    gap: $sp-md;
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+    
+    .account {
+      display: flex;
+      align-items: center;
+      gap: $sp-sm;
+      height: 44px;
+      padding: 0px $sp-lg;
+      border-radius: 22px;
+      background-color: #333;
+      color: #AAA;
+      cursor: pointer;
+      transition: background-color 100ms, color 100ms;
 
-    .ti {
-      margin-top: -2px;
-      margin-left: -$sp-xs;
-      font-size: 20px;
-    }
+      .ti {
+        margin-top: -2px;
+        margin-left: -$sp-xs;
+        font-size: 20px;
+      }
 
-    p {
-      text-decoration: none;
-      user-select: none;
-    }
+      p {
+        margin: 0px;
+        text-decoration: none;
+        user-select: none;
+      }
 
-    &.account--active {
-      background-color: #CCC;
+      &:hover {
+        background-color: #3A3A3A;
+      }
+
+      &.account--active {
+        background-color: #151515;
+        color: $fg-default;
+      }
     }
   }
 }

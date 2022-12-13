@@ -28,30 +28,32 @@ export default function ProfilePage(props: Props) {
   
   return html`
     <profile-page class="page">
-      <h1>Profile</h1>
-      ${props.name == null ? html`
-        ${user.pending ? '' : user.value != null ? html`
-          <div>
-            <p>Name: ${user.value?.name ?? 'None'}</p>
-            <p>Email: ${user.value?.email}</p>
-            <p>Language: ${user.value?.language ?? 'None'}</p>
-            <p><a @click="${doRoute}" href="/logout">Log out</a></p>
-          </div>
-        ` : ''}
-      ` : html`
-        <div>
-          ${!profile.pending && profile.error ? html`
-            <p>${profile.error.message}</p>
-          ` : ''}
-          ${profile.pending ? '' : profile.value != null ? html`
+      <section class="container full-width">
+        <h1>Profile</h1>
+        ${props.name == null ? html`
+          ${user.pending ? '' : user.value != null ? html`
             <div>
-              <p>Name: ${profile.value?.name ?? 'None'}</p>
-              <p>Email: ${profile.value?.email}</p>
-              <p>Language: ${profile.value?.language ?? 'None'}</p>
+              <p>Name: ${user.value?.name ?? 'None'}</p>
+              <p>Email: ${user.value?.email}</p>
+              <p>Language: ${user.value?.language ?? 'None'}</p>
+              <p><a @click="${doRoute}" href="/logout">Log out</a></p>
             </div>
           ` : ''}
-        </div>
-      `}
+        ` : html`
+          <div>
+            ${!profile.pending && profile.error ? html`
+              <p>${profile.error.message}</p>
+            ` : ''}
+            ${profile.pending ? '' : profile.value != null ? html`
+              <div>
+                <p>Name: ${profile.value?.name ?? 'None'}</p>
+                <p>Email: ${profile.value?.email}</p>
+                <p>Language: ${profile.value?.language ?? 'None'}</p>
+              </div>
+            ` : ''}
+          </div>
+        `}
+      </section>
     </profile-page>
   `;
 }

@@ -27,9 +27,11 @@ export default function LogoutPage() {
   
   return html`
     <logout-page class="page">
-      <h1>Log out</h1>
-      <p>${logout.pending ? '' : logout.ok ? 'You\'ve been logged out.' : logout.error?.message}</p>
-      <p><a @click="${doRoute}" href="/">Back to home</a></p>
+      <section class="container slim-width">
+        <h1>Log out</h1>
+        <p>${logout.pending ? '' : logout.ok ? 'You\'ve been logged out.' : logout.error?.message}</p>
+        <p><a @click="${doRoute}" href="/">Back to home</a></p>
+      </section>
     </logout-page>
   `;
 }

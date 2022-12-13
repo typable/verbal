@@ -73,7 +73,9 @@ export default function App() {
   
   return html`
     ${dyn(global.Provider, { value: context })`
-      ${dyn(NavComponent)}
+      <section class="container full-width">
+        ${dyn(NavComponent)}
+      </section>
       <main>
         ${dyn(route)}
       </main>

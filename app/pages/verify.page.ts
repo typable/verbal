@@ -19,14 +19,16 @@ export default function VerifyPage(props: Props) {
 
   return html`
     <verify-page class="page">
-      <h1>Verify</h1>
-      <p>${verify.pending ? '' : verify.error?.message}</p>
-      ${verify.pending ? '' : verify.ok ? html`
-        <div>
-          <p>Your account has been verified.</p>
-          <a @click="${doRoute}" href="/login">Log in now</a>
-        </div>
-      ` : ''}
+      <section class="container slim-width">
+        <h1>Verify</h1>
+        <p>${verify.pending ? '' : verify.error?.message}</p>
+        ${verify.pending ? '' : verify.ok ? html`
+          <div>
+            <p>Your account has been verified.</p>
+            <a @click="${doRoute}" href="/login">Log in now</a>
+          </div>
+        ` : ''}
+      </section>
     </verify-page>
   `;
 }
