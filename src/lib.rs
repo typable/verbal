@@ -3,6 +3,7 @@ pub mod error;
 pub mod messages;
 pub mod middleware;
 pub mod model;
+pub mod queries;
 pub mod route;
 pub mod utils;
 

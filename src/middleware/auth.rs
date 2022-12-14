@@ -1,9 +1,8 @@
 use sqlx::postgres::Postgres;
-use sqlx::Acquire;
 use tide::http::Method;
 use tide_sqlx::SQLxRequestExt;
 
-use crate::model;
+use crate::queries;
 
 #[derive(Default)]
 pub struct AuthMiddleware;
@@ -16,34 +15,21 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for AuthMiddl
         next: tide::Next<'_, State>,
     ) -> tide::Result {
         if req.method() != Method::Options && req.url().path().starts_with("/api") {
-            let mut user = None;
             if let Some(cookie) = req.cookie("token") {
                 let token = cookie.value();
+                let user;
                 {
-                    let sql = format!(
-                        r#"
-                            SELECT users.* FROM users
-                            INNER JOIN sessions ON users.id = sessions.user_id
-                            WHERE sessions.token = '{token}'
-                        "#,
-                        token = token,
-                    );
                     let mut conn = req.sqlx_conn::<Postgres>().await;
-                    match sqlx::query_as::<_, model::User>(&sql)
-                        .fetch_one(conn.acquire().await?)
+                    user = queries::get_user_by_session_token(&mut conn, token)
                         .await
-                    {
-                        Ok(model) => {
-                            user = Some(model);
-                        }
-                        Err(err) => {
+                        .map_err(|err| {
                             warn!("session for token '{}' does not exist! Err: {}", token, err);
-                        }
-                    }
+                        })
+                        .ok();
                 }
-            }
-            if let Some(user) = user {
-                req.set_ext(user);
+                if let Some(user) = user {
+                    req.set_ext(user);
+                }
             }
         }
         let res = next.run(req).await;
