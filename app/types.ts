@@ -71,6 +71,7 @@ export type RegisterForm = {
 }
 
 export type ResetForm = {
-  email: string;
+  code?: string;
   password: string;
+  confirmPassword: string;
 }

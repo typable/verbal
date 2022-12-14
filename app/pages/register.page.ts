@@ -30,39 +30,53 @@ export default function RegisterPage() {
   return html`
     <register-page class="page">
       <section class="container slim-width">
-        <h1>Register</h1>
+        <h1>Create an account</h1>
+        <p>The password needs to be at least 8 characters long and must contain uppercase letters, lowercase letters, digits and special characters.</p>
         <p>${register.pending ? '' : register.error?.message}</p>
         <form @submit="${handleSubmit}">
-          <input
-            ref="${nameRef}"
-            @change="${handleChange}"
-            name="name"
-            type="text"
-            value="${data.name}"
-            spellcheck="false"
-            autocomplete="off"
-            required="true"
-          >
-          <input
-            ref="${emailRef}"
-            @change="${handleChange}"
-            name="email"
-            type="email"
-            value="${data.email}"
-            spellcheck="false"
-            required="true"
-          >
-          <input
-            ref="${passwordRef}"
-            @change="${handleChange}"
-            name="password"
-            type="password"
-            value="${data.password}"
-            spellcheck="false"
-            autocomplete="off"
-            required="true"
-          >
-          <button type="submit">Create an account</button>
+          <p>
+            <label for="name">Name<span aria-label="required">*</span></label>
+            <input
+              ref="${nameRef}"
+              @change="${handleChange}"
+              id="name"
+              name="name"
+              type="text"
+              value="${data.name}"
+              spellcheck="false"
+              autocomplete="off"
+              required="true"
+            >
+          </p>
+          <p>
+            <label for="email">Email address<span aria-label="required">*</span></label>
+            <input
+              ref="${emailRef}"
+              @change="${handleChange}"
+              id="email"
+              name="email"
+              type="email"
+              value="${data.email}"
+              spellcheck="false"
+              required="true"
+            >
+          </p>
+          <p>
+            <label for="password">Password<span aria-label="required">*</span></label>
+            <input
+              ref="${passwordRef}"
+              @change="${handleChange}"
+              id="password"
+              name="password"
+              type="password"
+              value="${data.password}"
+              spellcheck="false"
+              autocomplete="off"
+              required="true"
+            >
+          </p>
+          <p>* required</p>
+          <input type="submit" value="Sign up">
         </form>
       </section>
     </register-page>

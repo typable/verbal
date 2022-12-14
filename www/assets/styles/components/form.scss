@@ -1,0 +1,17 @@
+@use '../vars.scss' as *;
+
+form {
+
+  p {
+
+    label {
+      display: block;
+      width: 100%;
+      margin-bottom: $sp-sm;
+    }
+
+    input {
+      width: 100%;
+    }
+  }
+}

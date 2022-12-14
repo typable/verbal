@@ -36,6 +36,7 @@ export default function ProfilePage(props: Props) {
               <p>Name: ${user.value?.name ?? 'None'}</p>
               <p>Email: ${user.value?.email}</p>
               <p>Language: ${user.value?.language ?? 'None'}</p>
+              <p><a @click="${doRoute}" href="/reset">Update password</a></p>
               <p><a @click="${doRoute}" href="/logout">Log out</a></p>
             </div>
           ` : ''}

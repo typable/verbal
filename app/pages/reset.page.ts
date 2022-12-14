@@ -11,46 +11,61 @@ export type Props = {
 }
 
 export default function ResetPage(props: Props) {
-  const { routing }: GlobalContext = useContext(global);
-  const { doBack } = routing;
+  const { user }: GlobalContext = useContext(global);
   const request: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.GET_RESET);
   const reset: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.DO_RESET);
-  const form: UseForm<ResetForm> = useForm({ email: '', password: '' }, doRequestReset);
+  const form: UseForm<ResetForm> = useForm({ password: '', confirmPassword: '' }, doReset);
   const { data, handleChange, handleSubmit } = form;
-  const emailRef = useInput(data.email);
   const passwordRef = useInput(data.password);
+  const confirmPasswordRef = useInput(data.confirmPassword);
 
-  function doRequestReset() {
-    request.doFetch({ query: [data.email] });
+  function doReset() {
+    const payload: ResetForm = { code: props.code, ...data };
+    request.doFetch({ payload });
   }
 
   return html`
     <reset-page class="page">
       <section class="container slim-width">
-        <h1>Reset</h1>
-        <a @click="${doBack}" href="/">Back</a>
-        <p>Reset code: ${props.code}</p>
+        <h1>Reset password</h1>
+        <p>The password needs to be at least 8 characters long and must contain uppercase letters, lowercase letters, digits and special characters.</p>
+        <p>${props.code == null ? '' : `Reset code: ${props.code}`}</p>
         <p>${reset.pending ? '' : reset.error?.message}</p>
         <form @submit="${handleSubmit}">
-          <input
-            ref="${emailRef}"
-            @change="${handleChange}"
-            name="email"
-            type="email"
-            value="${data.email}"
-            spellcheck="false"
-            autocomplete="off"
-          >
-          <input
-            ref="${passwordRef}"
-            @change="${handleChange}"
-            name="password"
-            type="password"
-            value="${data.password}"
-            spellcheck="false"
-            autocomplete="off"
-          >
-          <button type="submit">Reset</button>
+          <p>
+            <label for="password">Password<span aria-label="required">*</span></label>
+            <input
+              ref="${passwordRef}"
+              @change="${handleChange}"
+              id="password"
+              name="password"
+              type="password"
+              value="${data.password}"
+              minlength="8"
+              maxlength="100"
+              spellcheck="false"
+              autocomplete="off"
+              required="true"
+            >
+          </p>
+          <p>
+            <label for="confirmPassword">Confirm password<span aria-label="required">*</span></label>
+            <input
+              ref="${confirmPasswordRef}"
+              @change="${handleChange}"
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              value="${data.confirmPassword}"
+              minlength="8"
+              maxlength="100"
+              spellcheck="false"
+              autocomplete="off"
+              required="true"
+            >
+          </p>
+          <p>* required</p>
+          <input type="submit" value="Update password">
         </form>
       </section>
     </reset-page>

@@ -36,28 +36,37 @@ export default function LoginPage() {
   return html`
     <login-page class="page">
       <section class="container slim-width">
-        <h1>Login</h1>
+        <h1>Log in</h1>
         <p>${auth.pending ? '' : auth.error?.message}</p>
         <form @submit="${handleSubmit}">
-          <input
-            ref="${emailRef}"
-            @change="${handleChange}"
-            name="email"
-            type="email"
-            value="${data.email}"
-            spellcheck="false"
-            required="true"
-          >
-          <input
-            ref="${passwordRef}"
-            @change="${handleChange}"
-            name="password"
-            type="password"
-            value="${data.password}"
-            spellcheck="false"
-            required="true"
-          >
-          <button type="submit">Log in</button>
+          <p>
+            <label for="email">Email address<span aria-label="required">*</span></label>
+            <input
+              ref="${emailRef}"
+              @change="${handleChange}"
+              id="email"
+              name="email"
+              type="email"
+              value="${data.email}"
+              spellcheck="false"
+              required="true"
+            >
+          </p>
+          <p>
+            <label for="password">Password<span aria-label="required">*</span></label>
+            <input
+              ref="${passwordRef}"
+              @change="${handleChange}"
+              id="password"
+              name="password"
+              type="password"
+              value="${data.password}"
+              spellcheck="false"
+              required="true"
+            >
+          </p>
+          <p>* required</p>
+          <input type="submit" value="Log in">
           <p>Forgot your password? <a @click="${doRoute}" href="/reset">Reset password</a></p>
           <p>Don't have an account? <a @click="${doRoute}" href="/register">Create an account</a></p>
         </form>
