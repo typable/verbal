@@ -21,7 +21,7 @@ export default function ProfilePage(props: Props) {
   useEffect(() => {
     if (props.name == null) {
       if (!user.pending && user.value == null) {
-        setRoute('/login', true);
+        setRoute('/login', { update: false });
       }
     }
   }, [props.name, user.pending, user.value]);

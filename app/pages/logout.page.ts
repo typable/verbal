@@ -14,7 +14,7 @@ export default function LogoutPage() {
         logout.doFetch();
       }
       else if (user.value == null && logout.ok == null) {
-        setRoute('/login', true);
+        setRoute('/login', { update: false });
       }
     }
   }, [user.pending]);

@@ -49,13 +49,13 @@ export const ROUTES: Routes = {
 export default function App() {
   const routing: UseRoute = useRoute(ROUTES, ROUTES.HOME, ROUTES.NOT_FOUND);
   const user: UseFetch<User> = useFetch(ORIGIN, ENDPOINTS.GET_USER);
-  const { route, setRoute } = routing;
+  const { resolver, setRoute } = routing;
   const translation = useTranslate();
   const { setLanguage } = translation;
 
   useEffect(() => {
     const path = window.location.pathname;
-    setRoute(path, true, true);
+    setRoute(path, { update: false, force: true });
     user.doFetch();
     if('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/worker.js');
@@ -80,7 +80,7 @@ export default function App() {
         ${dyn(NavComponent)}
       </section>
       <main>
-        ${dyn(route)}
+        ${dyn(resolver)}
       </main>
     `}
   `;

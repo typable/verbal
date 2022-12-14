@@ -2,21 +2,27 @@ import { useEffect, useState } from "../deps.ts";
 import { UseState, Option } from "../types.ts";
 
 export type UseRoute = Routing;
-export type Routes = Record<string, [string, Route]>;
-export type Route = (props: string[]) => unknown;
+export type Routes = Record<string, Route>;
+export type Route = [path: string, resolver: Resolver];
+export type Resolver = (props: string[]) => unknown;
 
 export interface Routing {
-  route: Option<Route>,
-  current: Option<[string, Route]>,
-  setRoute: (path: string, preventUpdate?: boolean, force?: boolean) => void,
+  path: Option<string>,
+  resolver: Option<Resolver>,
+  setRoute: (path: string, options?: RouteOptions) => void,
   doRoute: (event: Event) => void,
   doBack: (event: Event) => void,
-  isActive: (a: Option<[string, Route]>, b: Option<[string, Route]>) => boolean,
+  isActive: (path: Option<string>, route: Option<Route>) => boolean,
 }
 
-export default function useRoute(routes: Routes, initial: [string, Route], fallback: [string, Route]): Routing {
-  const [current, setCurrent]: UseState<[string, Route]> = useState(initial);
-  const [value, setValue]: UseState<Route> = useState(initial[1]);
+export interface RouteOptions {
+  update?: boolean,
+  force?: boolean,
+}
+
+export default function useRoute(routes: Routes, initial: Route, fallback: Route): Routing {
+  const [path, setPath]: UseState<string> = useState(initial[0]);
+  const [resolver, setResolver]: UseState<Resolver> = useState(initial[1]);
   
   useEffect(() => {
     addEventListener('popstate', onPopState);
@@ -27,34 +33,31 @@ export default function useRoute(routes: Routes, initial: [string, Route], fallb
 
   function onPopState() {
     const path = window.location.pathname;
-    setRoute(path, true, true);
+    setRoute(path, { update: false, force: true });
   }
   
-  function setRoute(path: string, preventUpdate?: boolean, force?: boolean) {
-    let current: Option<[string, Route]> = null;
-    let route: Option<Route> = null;
-    for (const [key, value] of Object.values(routes)) {
-      const exp = new RegExp(`^${key}$`);
-      const match = exp.exec(path);
+  function setRoute(path: string, options: RouteOptions = { update: true, force: false }) {
+    let current: Option<Route> = null;
+    for (const [key, resolver] of Object.values(routes)) {
+      const match = new RegExp(`^${key}$`).exec(path);
       if (match) {
         const [, ...groups] = match;
-        current = [key, value];
-        route = groups.length > 0 ? () => value(groups) : value;
+        current = [key, () => resolver(groups)];
         break;
       }
     }
-    if (force !== true && window.location.pathname === path) {
+    if (!options.force && window.location.pathname === path) {
       return;
     }
-    if (route == null) {
-      setCurrent(fallback);
-      setValue(fallback[1]);
+    if (current == null) {
+      setPath(fallback[0]);
+      setResolver(fallback[1]);
     }
     else {
-      setCurrent(current);
-      setValue(route);
+      setPath(current[0]);
+      setResolver(current[1]);
     }
-    if (preventUpdate !== true) {
+    if (options.update) {
       window.history.pushState(null, '', path);
     }
   }
@@ -80,12 +83,12 @@ export default function useRoute(routes: Routes, initial: [string, Route], fallb
     event.stopPropagation();
     window.history.back();
     const path = window.location.pathname;
-    setRoute(path, true);
+    setRoute(path, { update: false });
   }
 
-  function isActive(a: Option<[string, Route]>, b: Option<[string, Route]>): boolean {
-    return a?.[0] === b?.[0];
+  function isActive(path: Option<string>, route: Option<Route>): boolean {
+    return path === route?.[0];
   }
 
-  return { route: value, current, setRoute, doRoute, doBack, isActive };
+  return { path, resolver, setRoute, doRoute, doBack, isActive };
 }
