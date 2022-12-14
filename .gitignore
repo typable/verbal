@@ -1,12 +1,7 @@
-node_modules/
 target/
-www/asset/font/
-www/asset/lib/
 dist/
 media/
 
 config.toml
 Cargo.lock
-www/asset/css/output.css
-.version
-tailwindcss
+.DS_Store

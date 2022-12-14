@@ -57,6 +57,9 @@ export default function App() {
     const path = window.location.pathname;
     setRoute(path, true, true);
     user.doFetch();
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/worker.js');
+    }
   }, []);
 
   useEffect(() => {

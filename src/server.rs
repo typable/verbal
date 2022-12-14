@@ -54,6 +54,9 @@ impl Server {
         app.at("/*")
             .serve_file("www/index.html")
             .expect("unable to bind '/*'!");
+        app.at("/worker.js")
+            .serve_file("dist/worker.js")
+            .expect("unable to bind '/worker.js'!");
         app.at("/assets")
             .serve_dir("dist/")
             .expect("unable to bind '/assets'!");
