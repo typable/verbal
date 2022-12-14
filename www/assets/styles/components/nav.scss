@@ -90,3 +90,10 @@ nav-component {
     }
   }
 }
+
+@media (display-mode: standalone) {
+
+  nav-component {
+    padding: $sp-lg 0px;
+  }
+}

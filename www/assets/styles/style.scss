@@ -50,3 +50,15 @@ body {
     max-width: $w-slim;
   }
 }
+
+
+@media (display-mode: standalone) {
+
+  .container {
+    padding: 0px $sp-lg;
+
+    &.full-width {
+      max-width: 100%;
+    }
+  }
+}
