@@ -7,11 +7,12 @@ use lettre::Message;
 use lettre::SmtpTransport;
 use lettre::Transport;
 
+use crate::prelude::*;
+
 use crate::config::Auth;
 use crate::config::Mail;
 use crate::error::Error;
 use crate::messages;
-use crate::Result;
 
 pub fn hash_password(password: &str, config: &Auth) -> Result<String> {
     let hash = match bcrypt::hash_with_salt(password, config.cost, config.salt) {
@@ -25,8 +26,8 @@ pub fn hash_password(password: &str, config: &Auth) -> Result<String> {
 }
 
 pub fn create_multipart(filename: &str, content: HashMap<&str, &str>) -> Result<MultiPart> {
-    let mut plain = fs::read_to_string(format!("emails/{}.txt", filename))?;
-    let mut html = fs::read_to_string(format!("emails/{}.html", filename))?;
+    let mut plain = fs::read_to_string(format!("templates/{}.txt", filename))?;
+    let mut html = fs::read_to_string(format!("templates/{}.html", filename))?;
     for (key, value) in content.iter() {
         let exp = format!("{{{}}}", key);
         plain = plain.replace(&exp, value);

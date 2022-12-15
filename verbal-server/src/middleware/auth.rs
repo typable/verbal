@@ -23,7 +23,7 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for AuthMiddl
                     user = queries::get_user_by_session_token(&mut conn, token)
                         .await
                         .map_err(|err| {
-                            warn!("session for token '{}' does not exist! Err: {}", token, err);
+                            debug!("session for token '{}' does not exist! Err: {}", token, err);
                         })
                         .ok();
                 }

@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use fancy_regex::Regex;
-use surf::{http::Method, StatusCode};
+use tide::http::Method;
+use tide::http::StatusCode;
 
 pub struct CacheMiddleware {
     caching: Option<HashMap<String, String>>,

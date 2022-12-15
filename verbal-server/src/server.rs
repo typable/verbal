@@ -3,16 +3,10 @@ use tide_compress::CompressMiddleware;
 use tide_rustls::TlsListener;
 use tide_sqlx::SQLxMiddleware;
 
-use crate::abort;
-use crate::middleware::AuthMiddleware;
-use crate::middleware::CacheMiddleware;
-use crate::middleware::CorsMiddleware;
-use crate::middleware::ErrorMiddleware;
-use crate::ok_or_abort;
-use crate::route;
-use crate::some_or_abort;
-use crate::Config;
-use crate::Result;
+use crate::middleware::*;
+use crate::prelude::*;
+
+use crate::routes;
 use crate::ToAddress;
 use crate::ToUrl;
 
@@ -48,47 +42,31 @@ impl Server {
         app.with(CompressMiddleware::new());
 
         /* serve content */
+        let index_path = config.resolve_path("/www/index.html");
         app.at("/")
-            .serve_file("www/index.html")
-            .expect("unable to bind '/'!");
+            .serve_file(&index_path)
+            .expect("unable to bind index file!");
         app.at("/*")
-            .serve_file("www/index.html")
-            .expect("unable to bind '/*'!");
+            .serve_file(&index_path)
+            .expect("unable to bind index file!");
         app.at("/worker.js")
-            .serve_file("dist/worker.js")
-            .expect("unable to bind '/worker.js'!");
+            .serve_file(config.resolve_path("/dist/worker.js"))
+            .expect("unable to bind worker file!");
         app.at("/assets")
-            .serve_dir("dist/")
-            .expect("unable to bind '/assets'!");
+            .serve_dir(config.resolve_path("/dist"))
+            .expect("unable to bind assets directory!");
 
         /* handle prefetch */
-        app.at("*").options(route::do_prefetch);
+        app.at("*").options(routes::do_prefetch);
 
         /* handle api requests */
-        app.at("/api/register").post(route::do_register);
-        app.at("/api/login").post(route::do_login);
-        app.at("/api/logout").post(route::do_logout);
-        app.at("/api/verify").post(route::do_verify);
+        app.at("/api/register").post(routes::do_register);
+        app.at("/api/login").post(routes::do_login);
+        app.at("/api/logout").post(routes::do_logout);
+        app.at("/api/verify").post(routes::do_verify);
 
-        app.at("/api/user").get(route::get_user);
-        app.at("/api/user/:name").get(route::get_user_by_name);
-
-        app.at("/api/account").get(route::get_account);
-        app.at("/api/account").put(route::update_account);
-        app.at("/api/account").post(route::add_account);
-        app.at("/api/search").get(route::do_search);
-        app.at("/api/song").get(route::get_song);
-        app.at("/api/favorite").get(route::get_favorites);
-        app.at("/api/favorite").post(route::add_favorite);
-        app.at("/api/favorite").delete(route::delete_favorite);
-        app.at("/api/account/:id").get(route::get_account_by_id);
-        app.at("/api/station/:id").get(route::get_station_by_id);
-        app.at("/api/category/:kind").get(route::get_category);
-        app.at("/api/group/:id").get(route::get_group);
-        app.at("/api/countries").get(route::get_countries);
-        app.at("/api/languages").get(route::get_languages);
-        app.at("/api/tags").get(route::get_tags);
-        app.at("/api/devices").get(route::get_devices);
+        app.at("/api/user").get(routes::get_user);
+        app.at("/api/user/:name").get(routes::get_user_by_name);
 
         let address = ok_or_abort!(config.server.to_address(), "cannot parse server address!");
         let url = ok_or_abort!(config.server.to_url(), "cannot parse server address!");

@@ -1,12 +1,14 @@
-use serde::Deserialize;
 use std::collections::HashMap;
 use std::fmt::Write;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
 
+use serde::Deserialize;
+
+use crate::prelude::*;
+
 use crate::error::Error;
-use crate::Result;
 use crate::ToAddress;
 use crate::ToUrl;
 use crate::APP_NAME;
@@ -17,6 +19,7 @@ pub struct Server {
     pub port: i32,
     pub cert_path: Option<String>,
     pub key_path: Option<String>,
+    pub root: String,
     pub options: Options,
 }
 
@@ -121,6 +124,11 @@ impl Config {
             None => Err(Error::new("unable to determine config file!")),
         }
     }
+
+    pub fn resolve_path(&self, path: &str) -> String {
+        format!("{}{}", self.server.root, path)
+    }
+
     fn get_local() -> Option<PathBuf> {
         let local_file = Path::new("config.toml").to_path_buf();
         if !local_file.exists() {
@@ -128,6 +136,7 @@ impl Config {
         }
         Some(local_file)
     }
+
     fn get_global() -> Option<PathBuf> {
         let mut global_file = match dirs::config_dir() {
             Some(file) => file,

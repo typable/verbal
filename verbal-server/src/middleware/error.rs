@@ -1,4 +1,4 @@
-use crate::Body;
+use crate::prelude::*;
 
 #[derive(Default)]
 pub struct ErrorMiddleware;

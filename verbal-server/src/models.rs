@@ -1,9 +1,11 @@
+use std::fmt::Write;
+
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::FromRow;
-use std::fmt::Write;
 
-use crate::Result;
+use crate::prelude::*;
+
 use crate::ToSql;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
