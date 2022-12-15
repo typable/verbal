@@ -11,7 +11,8 @@ export type Props = {
 }
 
 export default function ResetPage(props: Props) {
-  const { user }: GlobalContext = useContext(global);
+  const { translation }: GlobalContext = useContext(global);
+  const { translate } = translation;
   const request: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.GET_RESET);
   const reset: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.DO_RESET);
   const form: UseForm<ResetForm> = useForm({ password: '', confirmPassword: '' }, doReset);
@@ -27,11 +28,12 @@ export default function ResetPage(props: Props) {
   return html`
     <reset-page class="page">
       <section class="container slim-width">
-        <h1>Reset password</h1>
-        <p>The password needs to be at least 8 characters long and must contain uppercase letters, lowercase letters, digits and special characters.</p>
-        <p>${props.code == null ? '' : `Reset code: ${props.code}`}</p>
-        <p>${reset.pending ? '' : reset.error?.message}</p>
         <form @submit="${handleSubmit}">
+          ${!reset.pending && reset.error ? html`
+            <p class="message">${translate('form.' + reset.error?.message)}</p>
+          ` : ''}
+          <h1 class="title">Reset password</h1>
+          <p class="description">The password needs to be at least 8 characters long and must contain uppercase letters, lowercase letters, digits and special characters.</p>
           <p>
             <label for="password">Password<span aria-label="required">*</span></label>
             <input

@@ -8,8 +8,9 @@ import useInput from "../hooks/input.hook.ts";
 import { GlobalContext, RegisterForm } from "../types.ts";
 
 export default function RegisterPage() {
-  const { routing, user }: GlobalContext = useContext(global);
+  const { routing, user, translation }: GlobalContext = useContext(global);
   const { setRoute } = routing;
+  const { translate } = translation;
   const register: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.DO_REGISTER);
   const form: UseForm<RegisterForm> = useForm({ name: '', email: '', password: '' }, doRegister);
   const { data, handleChange, handleSubmit } = form;
@@ -30,10 +31,15 @@ export default function RegisterPage() {
   return html`
     <register-page class="page">
       <section class="container slim-width">
-        <h1>Create an account</h1>
-        <p>The password needs to be at least 8 characters long and must contain uppercase letters, lowercase letters, digits and special characters.</p>
-        <p>${register.pending ? '' : register.error?.message}</p>
         <form @submit="${handleSubmit}">
+          ${!register.pending && register.error ? html`
+            <p class="message">${translate('form.' + register.error?.message)}</p>
+          ` : ''}
+          ${!register.pending && register.ok ? html`
+            <p class="message">We've sent you a verfication email to ${data.email}.</p>
+          ` : ''}
+          <h1 class="title">Create an account</h1>
+          <p class="description">The password needs to be at least 8 characters long and must contain uppercase letters, lowercase letters, digits and special characters.</p>
           <p>
             <label for="name">Name<span aria-label="required">*</span></label>
             <input

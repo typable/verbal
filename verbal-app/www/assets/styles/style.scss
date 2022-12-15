@@ -15,10 +15,23 @@
 }
 
 body {
-  @include fs-sm;
   margin: 0px;
+  font-family: $ft-sans;
   background-color: $bg-default;
-  color: $fg-default;
+
+  p {
+    @include fs-sm;
+    color: #AAAAAA;
+  }
+
+  a {
+    color: $fg-default;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 
   #root {
     display: flex;
@@ -29,6 +42,10 @@ body {
       flex: 1;
     }
   }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $fg-default;
 }
 
 .page {
@@ -51,8 +68,16 @@ body {
   }
 }
 
-
 @media (display-mode: standalone) {
+
+  body {
+
+    p,
+    label,
+    h1, h2, h3, h4, h5, h6 {
+      user-select: none;
+    }
+  }
 
   .container {
     padding: 0px $sp-lg;

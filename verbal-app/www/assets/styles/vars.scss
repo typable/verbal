@@ -28,6 +28,7 @@ $ft-sans: 'Inter', sans-serif;
 @mixin fs-sm {
   font-family: $ft-sans;
   font-size: 1rem;
+  line-height: 1.4rem;
 }
 
 @mixin fs-lg {

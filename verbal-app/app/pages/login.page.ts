@@ -8,8 +8,9 @@ import useInput from "../hooks/input.hook.ts";
 import { GlobalContext, LoginForm } from "../types.ts";
 
 export default function LoginPage() {
-  const { routing, user }: GlobalContext = useContext(global);
+  const { routing, user, translation }: GlobalContext = useContext(global);
   const { doRoute, setRoute } = routing;
+  const { translate } = translation;
   const auth: UseFetch<void> = useFetch(ORIGIN, ENDPOINTS.DO_LOGIN);
   const form: UseForm<LoginForm> = useForm({ email: '', password: '' }, doAuth);
   const { data, handleChange, handleSubmit } = form;
@@ -36,9 +37,11 @@ export default function LoginPage() {
   return html`
     <login-page class="page">
       <section class="container slim-width">
-        <h1>Log in</h1>
-        <p>${auth.pending ? '' : auth.error?.message}</p>
         <form @submit="${handleSubmit}">
+          ${!auth.pending && auth.error ? html`
+            <p class="message">${translate('form.' + auth.error?.message)}</p>
+          ` : ''}
+          <h1 class="title">Log in</h1>
           <p>
             <label for="email">Email address<span aria-label="required">*</span></label>
             <input

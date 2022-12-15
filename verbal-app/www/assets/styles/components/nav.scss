@@ -43,7 +43,10 @@ nav-component {
 
       &.menu--active {
         background-color: #151515;
-        color: $fg-default;
+
+        p {
+          color: $fg-default;
+        }
       }
     }
   }
@@ -85,7 +88,10 @@ nav-component {
 
       &.account--active {
         background-color: #151515;
-        color: $fg-default;
+
+        p {
+          color: $fg-default;
+        }
       }
     }
   }
