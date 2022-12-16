@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use fancy_regex::Regex;
-use sqlx::Acquire;
 use sqlx::Postgres;
 use tide::http::cookies::SameSite;
 use tide::http::Cookie;
@@ -14,6 +13,7 @@ use crate::prelude::*;
 
 use crate::messages;
 use crate::models;
+use crate::queries;
 use crate::utils;
 use crate::ToUrl;
 
@@ -49,17 +49,7 @@ pub async fn do_register(mut req: Request<State>) -> Result {
         return Ok(Body::throw(messages::INVALID_PASSWORD));
     }
     let mut conn = req.sqlx_conn::<Postgres>().await;
-    let sql = format!(
-        r#"
-            SELECT users.* FROM users
-            WHERE users.name = '{name}'
-        "#,
-        name = form.name,
-    );
-    match sqlx::query_as::<_, models::User>(&sql)
-        .fetch_optional(conn.acquire().await?)
-        .await
-    {
+    match queries::user::get_by_name(&mut conn, &form.name).await {
         Ok(user) => {
             if user.is_some() {
                 debug!("name '{}' is already in use!", form.name);
@@ -76,38 +66,15 @@ pub async fn do_register(mut req: Request<State>) -> Result {
         utils::hash_password(&form.password, auth),
         messages::INTERNAL_ERROR
     );
-    let sql = format!(
-        r#"
-            INSERT INTO users (name, email, password)
-            VALUES ('{name}', '{email}', '{password}')
-            RETURNING users.*
-        "#,
-        name = form.name,
-        email = form.email,
-        password = hashed_password,
-    );
-    let user = match sqlx::query_as::<_, models::User>(&sql)
-        .fetch_one(conn.acquire().await?)
-        .await
-    {
-        Ok(model) => model,
-        Err(_) => {
-            debug!("user '{}' already exists!", form.email);
-            return Ok(Body::throw(messages::USER_ALREADY_EXISTS));
-        }
-    };
-    let sql = format!(
-        r#"
-            INSERT INTO verifications (user_id)
-            VALUES ('{user_id}')
-            RETURNING verifications.*
-        "#,
-        user_id = user.id,
-    );
-    let verification = match sqlx::query_as::<_, models::Verification>(&sql)
-        .fetch_one(conn.acquire().await?)
-        .await
-    {
+    let user =
+        match queries::user::insert(&mut conn, &form.name, &form.email, &hashed_password).await {
+            Ok(model) => model,
+            Err(_) => {
+                debug!("user '{}' already exists!", form.email);
+                return Ok(Body::throw(messages::USER_ALREADY_EXISTS));
+            }
+        };
+    let verification = match queries::code::insert_verify(&mut conn, &user.id).await {
         Ok(model) => model,
         Err(err) => {
             error!(
@@ -156,44 +123,32 @@ pub async fn do_login(mut req: Request<State>) -> Result {
         messages::INTERNAL_ERROR
     );
     let mut conn = req.sqlx_conn::<Postgres>().await;
-    let sql = format!(
-        r#"
-            SELECT users.* FROM users
-            WHERE email = '{email}' AND password = '{password}'
-        "#,
-        email = form.email,
-        password = hashed_password,
-    );
-    let user = match sqlx::query_as::<_, models::User>(&sql)
-        .fetch_one(conn.acquire().await?)
-        .await
-    {
-        Ok(model) => model,
-        Err(_) => {
-            debug!("user '{}' does not exist or password is wrong!", form.email);
-            return Ok(Body::throw(
-                messages::USER_DOES_NOT_EXIST_OR_PASSWORD_IS_WRONG,
-            ));
-        }
-    };
+    let user =
+        match queries::user::get_by_email_and_password(&mut conn, &form.email, &hashed_password)
+            .await
+        {
+            Ok(model) => match model {
+                Some(user) => user,
+                None => {
+                    debug!("user '{}' does not exist or password is wrong!", form.email);
+                    return Ok(Body::throw(
+                        messages::USER_DOES_NOT_EXIST_OR_PASSWORD_IS_WRONG,
+                    ));
+                }
+            },
+            Err(err) => {
+                error!(
+                    "unable to get user for email and password '{}'! Err: {}",
+                    form.email, err
+                );
+                return Ok(Body::throw(messages::INTERNAL_ERROR));
+            }
+        };
     if !user.verified {
         debug!("user '{}' is not verified!", user.email);
         return Ok(Body::throw(messages::USER_IS_NOT_VERIFIED));
     }
-    let sql = format!(
-        r#"
-            INSERT INTO sessions (user_id)
-            VALUES ('{user_id}')
-            ON CONFLICT (user_id) DO UPDATE
-            SET token = uuid_generate_v4()
-            RETURNING sessions.*
-        "#,
-        user_id = user.id,
-    );
-    let session = match sqlx::query_as::<_, models::Session>(&sql)
-        .fetch_one(conn.acquire().await?)
-        .await
-    {
+    let session = match queries::code::insert_session(&mut conn, &user.id).await {
         Ok(model) => model,
         Err(err) => {
             error!(
@@ -205,7 +160,7 @@ pub async fn do_login(mut req: Request<State>) -> Result {
     };
     let options = &req.state().config.server.options;
     let mut rsp = Body::ok();
-    let mut cookie = Cookie::new("token", session.token);
+    let mut cookie = Cookie::new("token", session.code);
     cookie.set_path("/");
     cookie.set_secure(true);
     cookie.set_same_site(SameSite::Strict);
@@ -235,36 +190,26 @@ pub async fn do_logout(req: Request<State>) -> Result {
 pub async fn do_verify(mut req: Request<State>) -> Result {
     let form = req.body_json::<models::VerfiyForm>().await?;
     let mut conn = req.sqlx_conn::<Postgres>().await;
-    let sql = format!(
-        r#"
-            SELECT users.* FROM users
-            INNER JOIN verifications ON users.id = verifications.user_id
-            WHERE verifications.code = '{code}'
-        "#,
-        code = form.code,
-    );
-    let user = match sqlx::query_as::<_, models::User>(&sql)
-        .fetch_one(conn.acquire().await?)
-        .await
-    {
-        Ok(model) => model,
-        Err(_) => {
-            debug!("invalid verification for code '{}'!", form.code);
-            return Ok(Body::throw(messages::INVALID_VERIFICATION));
+    let user = match queries::user::get_by_verify_code(&mut conn, &form.code).await {
+        Ok(model) => match model {
+            Some(user) => user,
+            None => {
+                debug!("invalid verification for code '{}'!", form.code);
+                return Ok(Body::throw(messages::INVALID_VERIFICATION));
+            }
+        },
+        Err(err) => {
+            error!(
+                "unable to get user for verify code '{}'! Err: {}",
+                form.code, err
+            );
+            return Ok(Body::throw(messages::INTERNAL_ERROR));
         }
     };
     if user.verified {
         return Ok(Body::throw(messages::USER_ALREADY_VERIFIED));
     }
-    let sql = format!(
-        r#"
-            UPDATE users
-            SET verified = true
-            WHERE users.id = '{user_id}'
-        "#,
-        user_id = user.id,
-    );
-    if let Err(err) = sqlx::query(&sql).execute(conn.acquire().await?).await {
+    if let Err(err) = queries::user::update_verified(&mut conn, &user.id, true).await {
         error!(
             "unable to update verified status for user '{}'! Err: {}",
             user.email, err
@@ -283,24 +228,21 @@ pub async fn get_user(req: Request<State>) -> Result {
 pub async fn get_user_by_name(req: Request<State>) -> Result {
     let user_name = ok_or_throw!(req.param("name"), messages::USER_DOES_NOT_EXIST);
     let mut conn = req.sqlx_conn::<Postgres>().await;
-    let sql = format!(
-        r#"
-            SELECT users.* FROM users
-            WHERE users.name = '{name}'
-        "#,
-        name = user_name,
-    );
-    let user = match sqlx::query_as::<_, models::User>(&sql)
-        .fetch_one(conn.acquire().await?)
-        .await
-    {
-        Ok(model) => model,
-        Err(_) => {
-            debug!("user for name '{}' does not exist!", user_name);
-            return Ok(Body::throw(messages::USER_DOES_NOT_EXIST));
+    let user = match queries::user::get_by_name(&mut conn, user_name).await {
+        Ok(model) => match model {
+            Some(user) => user,
+            None => {
+                debug!("user for name '{}' does not exist!", user_name);
+                return Ok(Body::throw(messages::USER_DOES_NOT_EXIST));
+            }
+        },
+        Err(err) => {
+            error!("unable to get user for name '{}'! Err: {}", user_name, err);
+            return Ok(Body::throw(messages::INTERNAL_ERROR));
         }
     };
     if !user.verified {
+        debug!("user for name '{}' is not verified!", user_name);
         return Ok(Body::throw(messages::USER_DOES_NOT_EXIST));
     }
     Ok(Body::with(user))

@@ -13,33 +13,22 @@ CREATE TABLE users (
 );
 
 /* ############################################################ */
-/* # sessions                                                 # */
+/* # codes                                                    # */
 /* ############################################################ */
 
-CREATE TABLE sessions (
+CREATE TABLE codes (
     id SERIAL PRIMARY KEY,
-    token TEXT DEFAULT uuid_generate_v4(),
-    user_id INTEGER UNIQUE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-
-ALTER TABLE sessions
-    ADD CONSTRAINT sessions_users_id
-    FOREIGN KEY (user_id)
-    REFERENCES users(id);
-
-/* ############################################################ */
-/* # verifications                                            # */
-/* ############################################################ */
-
-CREATE TABLE verifications (
-    id SERIAL PRIMARY KEY,
+    code_type TEXT NOT NULL,
     code TEXT DEFAULT uuid_generate_v4(),
-    user_id INTEGER UNIQUE NOT NULL,
+    user_id INTEGER NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
-ALTER TABLE verifications
-    ADD CONSTRAINT verifications_users_id
+ALTER TABLE codes
+    ADD CONSTRAINT codes_users_id
     FOREIGN KEY (user_id)
     REFERENCES users(id);
+
+ALTER TABLE codes
+    ADD CONSTRAINT codes_unique
+    UNIQUE (code_type, user_id);

@@ -17,15 +17,23 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for AuthMiddl
         if req.method() != Method::Options && req.url().path().starts_with("/api") {
             if let Some(cookie) = req.cookie("token") {
                 let token = cookie.value();
-                let user;
+                let mut user = None;
                 {
                     let mut conn = req.sqlx_conn::<Postgres>().await;
-                    user = queries::get_user_by_session_token(&mut conn, token)
-                        .await
-                        .map_err(|err| {
-                            debug!("session for token '{}' does not exist! Err: {}", token, err);
-                        })
-                        .ok();
+                    match queries::user::get_by_session_code(&mut conn, token).await {
+                        Ok(model) => {
+                            if model.is_none() {
+                                debug!("session for token '{}' does not exist!", token);
+                            }
+                            user = model;
+                        }
+                        Err(err) => {
+                            error!(
+                                "unable to get user for session code '{}'! Err: {}",
+                                token, err
+                            );
+                        }
+                    }
                 }
                 if let Some(user) = user {
                     req.set_ext(user);
