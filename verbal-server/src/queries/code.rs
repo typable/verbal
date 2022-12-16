@@ -3,30 +3,18 @@ use sqlx::Acquire;
 use sqlx::PgConnection;
 use sqlx::Result;
 
-pub type Model = crate::models::Code;
+type Model = crate::models::Code;
 
-pub async fn insert_session(conn: &mut PgConnection, user_id: &i32) -> Result<Model> {
+pub const CODES_VERIFY: &str = "verify";
+
+pub async fn insert(conn: &mut PgConnection, kind: &str, user_id: &i32) -> Result<Model> {
     query_as::<_, Model>(&format!(
         r#"
-            INSERT INTO codes (code_type, user_id)
-            VALUES ('session', '{user_id}')
-            ON CONFLICT (code_type, user_id) DO UPDATE
-            SET code = uuid_generate_v4()
+            INSERT INTO codes (kind, user_id)
+            VALUES ('{kind}', '{user_id}')
             RETURNING codes.*
         "#,
-        user_id = user_id,
-    ))
-    .fetch_one(conn.acquire().await?)
-    .await
-}
-
-pub async fn insert_verify(conn: &mut PgConnection, user_id: &i32) -> Result<Model> {
-    query_as::<_, Model>(&format!(
-        r#"
-                INSERT INTO codes (code_type, user_id)
-                VALUES ('verify', '{user_id}')
-                RETURNING codes.*
-            "#,
+        kind = kind,
         user_id = user_id,
     ))
     .fetch_one(conn.acquire().await?)

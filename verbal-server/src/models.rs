@@ -137,8 +137,15 @@ pub struct User {
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Code {
     pub id: i32,
-    pub code_type: String,
+    pub kind: String,
     pub code: String,
+    pub user_id: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct Session {
+    pub id: i32,
+    pub token: String,
     pub user_id: i32,
 }
 

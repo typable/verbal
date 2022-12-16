@@ -37,39 +37,47 @@ export default function LoginPage() {
   return html`
     <login-page class="page">
       <section class="container slim-width">
-        <form @submit="${handleSubmit}">
+        <form @submit="${handleSubmit}" class="${auth.pending ? 'form--pending' : ''}">
           ${!auth.pending && auth.error ? html`
-            <p class="message">${translate('form.' + auth.error?.message)}</p>
+            <p class="message">
+              <i class="ti ti-exclamation-circle"></i>
+              ${translate('form.login.' + auth.error?.message)}
+            </p>
           ` : ''}
           <h1 class="title">Log in</h1>
-          <p>
-            <label for="email">Email address<span aria-label="required">*</span></label>
-            <input
-              ref="${emailRef}"
-              @change="${handleChange}"
-              id="email"
-              name="email"
-              type="email"
-              value="${data.email}"
-              spellcheck="false"
-              required="true"
-            >
-          </p>
-          <p>
-            <label for="password">Password<span aria-label="required">*</span></label>
-            <input
-              ref="${passwordRef}"
-              @change="${handleChange}"
-              id="password"
-              name="password"
-              type="password"
-              value="${data.password}"
-              spellcheck="false"
-              required="true"
-            >
-          </p>
-          <p>* required</p>
-          <input type="submit" value="Log in">
+          <div class="controls">
+            <div class="form-spinner">
+              <i class="ti ti-loader"></i>
+            </div>
+            <p>
+              <label for="email">Email address<span aria-label="required">*</span></label>
+              <input
+                ref="${emailRef}"
+                @change="${handleChange}"
+                id="email"
+                name="email"
+                type="email"
+                value="${data.email}"
+                spellcheck="false"
+                required="true"
+              >
+            </p>
+            <p>
+              <label for="password">Password<span aria-label="required">*</span></label>
+              <input
+                ref="${passwordRef}"
+                @change="${handleChange}"
+                id="password"
+                name="password"
+                type="password"
+                value="${data.password}"
+                spellcheck="false"
+                required="true"
+              >
+            </p>
+            <p>* required</p>
+            <input type="submit" value="Log in">
+          </div>
           <p>Forgot your password? <a @click="${doRoute}" href="/reset">Reset password</a></p>
           <p>Don't have an account? <a @click="${doRoute}" href="/register">Create an account</a></p>
         </form>

@@ -13,12 +13,23 @@ CREATE TABLE users (
 );
 
 /* ############################################################ */
+/* # sessions                                                 # */
+/* ############################################################ */
+
+CREATE TABLE sessions (
+    id SERIAL PRIMARY KEY,
+    token TEXT DEFAULT uuid_generate_v4(),
+    user_id INTEGER NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+/* ############################################################ */
 /* # codes                                                    # */
 /* ############################################################ */
 
 CREATE TABLE codes (
     id SERIAL PRIMARY KEY,
-    code_type TEXT NOT NULL,
+    kind TEXT NOT NULL,
     code TEXT DEFAULT uuid_generate_v4(),
     user_id INTEGER NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
@@ -31,4 +42,4 @@ ALTER TABLE codes
 
 ALTER TABLE codes
     ADD CONSTRAINT codes_unique
-    UNIQUE (code_type, user_id);
+    UNIQUE (kind, user_id);

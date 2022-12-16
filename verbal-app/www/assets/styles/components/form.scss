@@ -1,19 +1,71 @@
 @use '../vars.scss' as *;
 
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 form {
+
+  &.form--pending {
+
+    .controls {
+
+      .form-spinner {
+        display: block;
+      }
+
+      & > *:not(.form-spinner) {
+        opacity: 0.2;
+      }
+    }
+
+  }
 
   .title {
     
   }
 
+  .controls {
+    position: relative;
+
+    & > *:not(.form-spinner) {
+      opacity: 1;
+      transition: opacity 150ms;
+    }
+  }
+
+  .form-spinner {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    .ti {
+      display: inline-block;
+      font-size: 40px;
+      color: $fg-default;
+      animation: spin 2s linear infinite;
+    }
+  }
+
   p {
 
     &.message {
+      display: flex;
+      gap: 0px $sp-sm;
       padding: calc(1.2 * $sp-md) $sp-lg;
       margin-bottom: $sp-2xl;
       border-radius: 8px;
       background-color: #151515;
       color: $fg-default;
+
+      .ti {
+        @include fs-icon;
+        margin-top: -1px;
+      }
     }
 
     &.description {

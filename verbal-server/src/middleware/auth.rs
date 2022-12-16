@@ -20,7 +20,7 @@ impl<State: Clone + Send + Sync + 'static> tide::Middleware<State> for AuthMiddl
                 let mut user = None;
                 {
                     let mut conn = req.sqlx_conn::<Postgres>().await;
-                    match queries::user::get_by_session_code(&mut conn, token).await {
+                    match queries::user::get_by_session_token(&mut conn, token).await {
                         Ok(model) => {
                             if model.is_none() {
                                 debug!("session for token '{}' does not exist!", token);

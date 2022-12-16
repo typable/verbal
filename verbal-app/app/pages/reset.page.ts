@@ -28,46 +28,51 @@ export default function ResetPage(props: Props) {
   return html`
     <reset-page class="page">
       <section class="container slim-width">
-        <form @submit="${handleSubmit}">
+        <form @submit="${handleSubmit}" class="${reset.pending ? 'form--pending' : ''}">
           ${!reset.pending && reset.error ? html`
             <p class="message">${translate('form.' + reset.error?.message)}</p>
           ` : ''}
           <h1 class="title">Reset password</h1>
           <p class="description">The password needs to be at least 8 characters long and must contain uppercase letters, lowercase letters, digits and special characters.</p>
-          <p>
-            <label for="password">Password<span aria-label="required">*</span></label>
-            <input
-              ref="${passwordRef}"
-              @change="${handleChange}"
-              id="password"
-              name="password"
-              type="password"
-              value="${data.password}"
-              minlength="8"
-              maxlength="100"
-              spellcheck="false"
-              autocomplete="off"
-              required="true"
-            >
-          </p>
-          <p>
-            <label for="confirmPassword">Confirm password<span aria-label="required">*</span></label>
-            <input
-              ref="${confirmPasswordRef}"
-              @change="${handleChange}"
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              value="${data.confirmPassword}"
-              minlength="8"
-              maxlength="100"
-              spellcheck="false"
-              autocomplete="off"
-              required="true"
-            >
-          </p>
-          <p>* required</p>
-          <input type="submit" value="Update password">
+          <div class="controls">
+            <div class="form-spinner">
+              <i class="ti ti-loader"></i>
+            </div>
+            <p>
+              <label for="password">Password<span aria-label="required">*</span></label>
+              <input
+                ref="${passwordRef}"
+                @change="${handleChange}"
+                id="password"
+                name="password"
+                type="password"
+                value="${data.password}"
+                minlength="8"
+                maxlength="100"
+                spellcheck="false"
+                autocomplete="off"
+                required="true"
+              >
+            </p>
+            <p>
+              <label for="confirmPassword">Confirm password<span aria-label="required">*</span></label>
+              <input
+                ref="${confirmPasswordRef}"
+                @change="${handleChange}"
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                value="${data.confirmPassword}"
+                minlength="8"
+                maxlength="100"
+                spellcheck="false"
+                autocomplete="off"
+                required="true"
+              >
+            </p>
+            <p>* required</p>
+            <input type="submit" value="Update password">
+          </div>
         </form>
       </section>
     </reset-page>

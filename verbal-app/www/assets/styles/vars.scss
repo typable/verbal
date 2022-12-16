@@ -25,6 +25,10 @@ $sp-4xl: 84px;
 $ft-sans: 'Inter', sans-serif;
 
 /* font sizes */
+@mixin fs-icon {
+  font-size: 1.4rem;
+}
+
 @mixin fs-sm {
   font-family: $ft-sans;
   font-size: 1rem;

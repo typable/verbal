@@ -4,7 +4,9 @@ use sqlx::Acquire;
 use sqlx::PgConnection;
 use sqlx::Result;
 
-pub type Model = crate::models::User;
+use crate::queries::code::CODES_VERIFY;
+
+type Model = crate::models::User;
 
 pub async fn insert(
     conn: &mut PgConnection,
@@ -70,15 +72,14 @@ pub async fn get_by_email_and_password(
     .await
 }
 
-pub async fn get_by_session_code(conn: &mut PgConnection, code: &str) -> Result<Option<Model>> {
+pub async fn get_by_session_token(conn: &mut PgConnection, token: &str) -> Result<Option<Model>> {
     query_as::<_, Model>(&format!(
         r#"
             SELECT users.* FROM users
-            INNER JOIN codes ON users.id = codes.user_id
-            WHERE codes.code_type = 'session'
-            AND codes.code = '{code}'
+            INNER JOIN sessions ON users.id = sessions.user_id
+            WHERE sessions.token = '{token}'
         "#,
-        code = code,
+        token = token,
     ))
     .fetch_optional(conn.acquire().await?)
     .await
@@ -89,9 +90,10 @@ pub async fn get_by_verify_code(conn: &mut PgConnection, code: &str) -> Result<O
         r#"
             SELECT users.* FROM users
             INNER JOIN codes ON users.id = codes.user_id
-            WHERE codes.code_type = 'verify'
+            WHERE codes.kind = '{kind}'
             AND codes.code = '{code}'
         "#,
+        kind = CODES_VERIFY,
         code = code,
     ))
     .fetch_optional(conn.acquire().await?)

@@ -14,6 +14,7 @@ use crate::prelude::*;
 use crate::messages;
 use crate::models;
 use crate::queries;
+use crate::queries::code::CODES_VERIFY;
 use crate::utils;
 use crate::ToUrl;
 
@@ -74,7 +75,7 @@ pub async fn do_register(mut req: Request<State>) -> Result {
                 return Ok(Body::throw(messages::USER_ALREADY_EXISTS));
             }
         };
-    let verification = match queries::code::insert_verify(&mut conn, &user.id).await {
+    let verification = match queries::code::insert(&mut conn, CODES_VERIFY, &user.id).await {
         Ok(model) => model,
         Err(err) => {
             error!(
@@ -148,7 +149,7 @@ pub async fn do_login(mut req: Request<State>) -> Result {
         debug!("user '{}' is not verified!", user.email);
         return Ok(Body::throw(messages::USER_IS_NOT_VERIFIED));
     }
-    let session = match queries::code::insert_session(&mut conn, &user.id).await {
+    let session = match queries::session::insert(&mut conn, &user.id).await {
         Ok(model) => model,
         Err(err) => {
             error!(
@@ -160,7 +161,7 @@ pub async fn do_login(mut req: Request<State>) -> Result {
     };
     let options = &req.state().config.server.options;
     let mut rsp = Body::ok();
-    let mut cookie = Cookie::new("token", session.code);
+    let mut cookie = Cookie::new("token", session.token);
     cookie.set_path("/");
     cookie.set_secure(true);
     cookie.set_same_site(SameSite::Strict);

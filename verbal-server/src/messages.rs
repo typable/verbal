@@ -11,4 +11,4 @@ pub const USER_ALREADY_VERIFIED: &str = "user.already-verified";
 pub const USER_ALREADY_LOGGED_IN: &str = "user.already-logged-in";
 pub const USER_NOT_LOGGED_IN: &str = "user.not-logged-in";
 pub const INVALID_VERIFICATION: &str = "invalid.verification";
-pub const INTERNAL_ERROR: &str = "internal.error";
+pub const INTERNAL_ERROR: &str = "internal-error";
