@@ -34,8 +34,6 @@ pub struct Station {
     pub country: Option<String>,
     pub state: Option<String>,
     pub city: Option<String>,
-    pub is_favorite: Option<bool>,
-    pub is_icon: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
@@ -54,15 +52,8 @@ pub struct StationDetail {
     pub languages: Option<Vec<String>>,
     pub score: i32,
     pub utc: Option<i32>,
-    pub is_favorite: Option<bool>,
-    pub is_restricted: Option<bool>,
-    pub is_broken: Option<bool>,
-    pub is_no_track_info: Option<bool>,
-    pub is_icon: Option<bool>,
-    pub playtime: Option<i32>,
     pub color: Option<String>,
     pub group_id: Option<i32>,
-    pub likes: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
@@ -80,7 +71,7 @@ pub struct Favorite {
 }
 
 #[derive(Debug, Default, Deserialize)]
-pub struct Query {
+pub struct SearchQuery {
     pub name: String,
     pub tags: Option<Vec<String>>,
     pub country: Option<String>,
@@ -88,7 +79,7 @@ pub struct Query {
     pub page: Option<i32>,
 }
 
-impl ToSql for Query {
+impl ToSql for SearchQuery {
     fn to_sql(&self) -> Result<String> {
         let mut sql = String::new();
         writeln!(
@@ -118,12 +109,6 @@ impl ToSql for Query {
 
 #[derive(Debug, Clone, Serialize, FromRow)]
 pub struct Value(pub String);
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct AddAccount {
-    pub name: String,
-    pub language: String,
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct User {

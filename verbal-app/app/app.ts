@@ -1,5 +1,5 @@
-import { html, dyn, createContext, useEffect } from './deps.ts';
-import { User, Endpoint, GlobalContext, Method } from './types.ts';
+import { html, dyn, createContext, useEffect, useState } from './deps.ts';
+import { User, Endpoint, GlobalContext, Method, UseState, StationDetail } from './types.ts';
 import useFetch, { UseFetch } from "./hooks/fetch.hook.ts";
 import useRoute, { Routes, UseRoute } from "./hooks/route.hook.ts";
 import useTranslate from "./hooks/translate.hook.ts";
@@ -49,6 +49,7 @@ export const ROUTES: Routes = {
 export default function App() {
   const routing: UseRoute = useRoute(ROUTES, ROUTES.HOME, ROUTES.NOT_FOUND);
   const user: UseFetch<User> = useFetch(ORIGIN, ENDPOINTS.GET_USER);
+  const [station, setStation]: UseState<StationDetail> = useState(null);
   const { resolver, setRoute } = routing;
   const translation = useTranslate();
   const { setLanguage } = translation;
@@ -72,16 +73,27 @@ export default function App() {
     routing,
     user,
     translation,
+    station,
+    setStation,
   }
   
   return html`
     ${dyn(global.Provider, { value: context })`
-      <section class="container full-width">
+      <section class="nav-container container full-width">
         ${dyn(NavComponent)}
       </section>
       <main>
         ${dyn(resolver)}
       </main>
+      <div class="player ${station != null ? 'player--active' : ''}">
+        ${station != null ? html`
+          <audio controls="true" autoplay="true" src="${station?.url}">
+            <source src="${station?.url}" type="audio/mpeg">
+            <source src="${station?.url}" type="audio/ogg">
+            <source src="${station?.url}" type="audio/aac">
+          </audio>
+        ` : ''}
+      </div>
     `}
   `;
 }

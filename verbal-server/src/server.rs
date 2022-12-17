@@ -64,9 +64,11 @@ impl Server {
         app.at("/api/login").post(routes::do_login);
         app.at("/api/logout").post(routes::do_logout);
         app.at("/api/verify").post(routes::do_verify);
+        app.at("/api/search").get(routes::do_search);
 
         app.at("/api/user").get(routes::get_user);
         app.at("/api/user/:name").get(routes::get_user_by_name);
+        app.at("/api/station/:id").get(routes::get_station_by_id);
 
         let address = ok_or_abort!(config.server.to_address(), "cannot parse server address!");
         let url = ok_or_abort!(config.server.to_url(), "cannot parse server address!");

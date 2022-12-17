@@ -30,6 +30,8 @@ export interface GlobalContext {
   routing: Routing,
   user: Fetch<User>,
   translation: Translate,
+  station: StationDetail,
+  setStation: SetState<StationDetail>,
 }
 
 export interface User {
@@ -47,8 +49,6 @@ export type Station = {
   city?: string;
   state?: string;
   country?: string;
-  is_favorite: boolean;
-  is_icon?: boolean;
 }
 
 export type StationDetail = Station & {

@@ -8,7 +8,7 @@ export type Props = {
 }
 
 export default function StationPage(props: Props) {
-  const { routing }: GlobalContext = useContext(global);
+  const { routing, setStation }: GlobalContext = useContext(global);
   const { doBack } = routing;
   const station: UseFetch<StationDetail> = useFetch(ORIGIN, ENDPOINTS.GET_STATION_BY_ID);
 
@@ -19,10 +19,10 @@ export default function StationPage(props: Props) {
   return html`
     <station-page>
       <section class="container full-width">
-        <h1>${station.value?.name}</h1>
-        <p>Id: ${station.value?.id}</p>
-        <p>Description: ${station.value?.description}</p>
         <a @click="${doBack}" href="/">Back</a>
+        <h1>${station.value?.name}</h1>
+        <p>${station.value?.description}</p>
+        <button @click="${() => setStation(station.value)}">Play</button>
       </section>
     </station-page>
   `;

@@ -9,6 +9,7 @@ use tide::Result;
 use tide_sqlx::SQLxRequestExt;
 use time::Duration;
 
+use crate::models::SearchQuery;
 use crate::prelude::*;
 
 use crate::messages;
@@ -221,6 +222,19 @@ pub async fn do_verify(mut req: Request<State>) -> Result {
     Ok(Body::ok())
 }
 
+pub async fn do_search(req: Request<State>) -> Result {
+    let query = req.query::<SearchQuery>()?;
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let stations = match queries::station::get_by_search_query(&mut conn, query).await {
+        Ok(models) => models,
+        Err(err) => {
+            error!("unable to get stations for search query! Err: {}", err);
+            return Ok(Body::throw(messages::INTERNAL_ERROR));
+        }
+    };
+    Ok(Body::with(stations))
+}
+
 pub async fn get_user(req: Request<State>) -> Result {
     let user = req.ext::<models::User>();
     Ok(Body::with(user))
@@ -247,4 +261,29 @@ pub async fn get_user_by_name(req: Request<State>) -> Result {
         return Ok(Body::throw(messages::USER_DOES_NOT_EXIST));
     }
     Ok(Body::with(user))
+}
+
+pub async fn get_station_by_id(req: Request<State>) -> Result {
+    let station_id = ok_or_throw!(
+        ok_or_throw!(req.param("id"), messages::STATION_DOES_NOT_EXIST).parse::<i32>(),
+        messages::INVALID_ID
+    );
+    let mut conn = req.sqlx_conn::<Postgres>().await;
+    let station = match queries::station::get_by_id(&mut conn, &station_id).await {
+        Ok(model) => match model {
+            Some(station) => station,
+            None => {
+                debug!("station for id '{}' does not exist!", station_id);
+                return Ok(Body::throw(messages::STATION_DOES_NOT_EXIST));
+            }
+        },
+        Err(err) => {
+            error!(
+                "unable to get station for id '{}'! Err: {}",
+                station_id, err
+            );
+            return Ok(Body::throw(messages::INTERNAL_ERROR));
+        }
+    };
+    Ok(Body::with(station))
 }

@@ -1,0 +1,30 @@
+@use '../vars.scss' as *;
+
+search-page {
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $sp-md;
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+
+    li {
+      flex: 0 0 calc(25% - $sp-md / 4 * 3);
+      min-width: 0px;
+      padding: $sp-lg;
+      border: 1px solid #404040;
+      border-radius: 10px;
+      background-color: #2B2B2B;
+
+      p {
+        margin: 0px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: $fg-default;
+      }
+    }
+  }
+}
