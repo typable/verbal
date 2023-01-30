@@ -4,7 +4,7 @@ version = "0.0.3-dev"
 edition = "2018"
 
 [dependencies]
-toml = "0.5.9"
+toml = "0.7.0"
 tide = "0.16.0"
 regex = "1.5.6"
 tide-sqlx = "0.6.1"
