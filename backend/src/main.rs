@@ -1,4 +1,4 @@
-use verbal_server::prelude::*;
+use backend::prelude::*;
 
 #[macro_use]
 extern crate log;
