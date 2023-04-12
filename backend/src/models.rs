@@ -93,15 +93,15 @@ impl ToSql for SearchQuery {
                 if i > 0 {
                     write!(sql, ", ")?;
                 }
-                write!(sql, "LOWER('{}')", tag)?;
+                write!(sql, "LOWER('{tag}')")?;
             }
             writeln!(sql, "]")?;
         }
         if let Some(country) = &self.country {
-            writeln!(sql, "AND station.country = UPPER('{}')", country)?;
+            writeln!(sql, "AND station.country = UPPER('{country}')")?;
         }
         if let Some(language) = &self.language {
-            writeln!(sql, "AND station.languages = array[LOWER('{}')]", language)?;
+            writeln!(sql, "AND station.languages = array[LOWER('{language}')]")?;
         }
         Ok(sql)
     }

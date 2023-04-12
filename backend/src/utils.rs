@@ -26,10 +26,10 @@ pub fn hash_password(password: &str, config: &Auth) -> Result<String> {
 }
 
 pub fn create_multipart(filename: &str, content: HashMap<&str, &str>) -> Result<MultiPart> {
-    let mut plain = fs::read_to_string(format!("templates/{}.txt", filename))?;
-    let mut html = fs::read_to_string(format!("templates/{}.html", filename))?;
+    let mut plain = fs::read_to_string(format!("templates/{filename}.txt"))?;
+    let mut html = fs::read_to_string(format!("templates/{filename}.html"))?;
     for (key, value) in content.iter() {
-        let exp = format!("{{{}}}", key);
+        let exp = format!("{{{key}}}");
         plain = plain.replace(&exp, value);
         html = html.replace(&exp, value);
     }
@@ -52,8 +52,7 @@ pub fn send_email(recipient: &str, multipart: MultiPart, config: &Mail) -> Resul
         .build();
     if let Err(err) = mailer.send(&email) {
         return Err(Error::new(&format!(
-            "failed to send email to '{}'! Err: {}",
-            recipient, err
+            "failed to send email to '{recipient}'! Err: {err}"
         )));
     }
     Ok(())

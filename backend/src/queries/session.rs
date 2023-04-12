@@ -12,7 +12,6 @@ pub async fn insert(conn: &mut PgConnection, user_id: &i32) -> Result<Model> {
             VALUES ('{user_id}')
             RETURNING sessions.*
         "#,
-        user_id = user_id,
     ))
     .fetch_one(conn.acquire().await?)
     .await

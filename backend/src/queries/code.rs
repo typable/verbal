@@ -14,8 +14,6 @@ pub async fn insert(conn: &mut PgConnection, kind: &str, user_id: &i32) -> Resul
             VALUES ('{kind}', '{user_id}')
             RETURNING codes.*
         "#,
-        kind = kind,
-        user_id = user_id,
     ))
     .fetch_one(conn.acquire().await?)
     .await

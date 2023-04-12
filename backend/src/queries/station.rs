@@ -20,8 +20,7 @@ pub async fn get_by_search_query(
         Ok(sql) => sql,
         Err(err) => {
             return Err(Error::new(&format!(
-                "unable to create sql for search query! Err: {}",
-                err
+                "unable to create sql for search query! Err: {err}"
             )));
         }
     };
@@ -30,11 +29,9 @@ pub async fn get_by_search_query(
             SELECT station.* FROM station
             {conditions}
             OFFSET {offset}
-            LIMIT {limit}
+            LIMIT {LIMIT}
         "#,
-        conditions = conditions,
         offset = query.page.unwrap_or_default() * LIMIT,
-        limit = LIMIT,
     ))
     .fetch_all(conn.acquire().await?)
     .await?;
@@ -47,7 +44,6 @@ pub async fn get_by_id(conn: &mut PgConnection, id: &i32) -> Result<Option<Model
             SELECT station.* FROM station
             WHERE id = {id}
         "#,
-        id = id,
     ))
     .fetch_optional(conn.acquire().await?)
     .await?;

@@ -117,7 +117,7 @@ impl Config {
         }
         match config_file {
             Some(file) => {
-                let raw = fs::read_to_string(&file)?;
+                let raw = fs::read_to_string(file)?;
                 let config: Self = toml::from_str(&raw)?;
                 Ok(config)
             }
