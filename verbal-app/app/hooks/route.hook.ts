@@ -1,5 +1,7 @@
-import { useEffect, useState } from "../deps.ts";
+import { React } from "../deps.ts";
 import { UseState, Option } from "../types.ts";
+
+const { useState, useEffect } = React;
 
 export type UseRoute = Routing;
 export type Routes = Record<string, Route>;

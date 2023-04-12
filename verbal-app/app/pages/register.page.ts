@@ -1,11 +1,13 @@
-import { ORIGIN, ENDPOINTS, global } from "../app.ts";
-import { html, useContext, useEffect } from "../deps.ts";
+import { ORIGIN, ENDPOINTS } from "../app.ts";
+import { html, global, React } from "../deps.ts";
 import useFetch from "../hooks/fetch.hook.ts";
 import { UseFetch } from "../hooks/fetch.hook.ts";
 import useForm from "../hooks/form.hook.ts";
 import { UseForm } from "../hooks/form.hook.ts";
 import useInput from "../hooks/input.hook.ts";
 import { GlobalContext, RegisterForm } from "../types.ts";
+
+const { useContext, useEffect } = React;
 
 export default function RegisterPage() {
   const { routing, user, translation }: GlobalContext = useContext(global);
@@ -31,7 +33,7 @@ export default function RegisterPage() {
   return html`
     <register-page class="page">
       <section class="container slim-width">
-        <form @submit="${handleSubmit}" class="${register.pending ? 'form--pending' : ''}">
+        <form on:submit=${handleSubmit} class="${register.pending ? 'form--pending' : ''}">
           ${!register.pending && register.error ? html`
             <p class="message">
               <i class="ti ti-exclamation-circle"></i>
@@ -54,7 +56,7 @@ export default function RegisterPage() {
               <label for="name">Name<span aria-label="required">*</span></label>
               <input
                 ref="${nameRef}"
-                @change="${handleChange}"
+                on:change=${handleChange}
                 id="name"
                 name="name"
                 type="text"
@@ -68,7 +70,7 @@ export default function RegisterPage() {
               <label for="email">Email address<span aria-label="required">*</span></label>
               <input
                 ref="${emailRef}"
-                @change="${handleChange}"
+                on:change=${handleChange}
                 id="email"
                 name="email"
                 type="email"
@@ -81,7 +83,7 @@ export default function RegisterPage() {
               <label for="password">Password<span aria-label="required">*</span></label>
               <input
                 ref="${passwordRef}"
-                @change="${handleChange}"
+                on:change=${handleChange}
                 id="password"
                 name="password"
                 type="password"

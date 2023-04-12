@@ -1,11 +1,13 @@
-import { ORIGIN, ENDPOINTS, global } from "../app.ts";
-import { html, useContext, useEffect } from "../deps.ts";
+import { ORIGIN, ENDPOINTS } from "../app.ts";
+import { html, global, React } from "../deps.ts";
 import useFetch from "../hooks/fetch.hook.ts";
 import { UseFetch } from "../hooks/fetch.hook.ts";
 import useForm from "../hooks/form.hook.ts";
 import { UseForm } from "../hooks/form.hook.ts";
 import useInput from "../hooks/input.hook.ts";
 import { GlobalContext, LoginForm } from "../types.ts";
+
+const { useContext, useEffect } = React;
 
 export default function LoginPage() {
   const { routing, user, translation }: GlobalContext = useContext(global);
@@ -37,7 +39,7 @@ export default function LoginPage() {
   return html`
     <login-page class="page">
       <section class="container slim-width">
-        <form @submit="${handleSubmit}" class="${auth.pending ? 'form--pending' : ''}">
+        <form on:submit=${handleSubmit} class="${auth.pending ? 'form--pending' : ''}">
           ${!auth.pending && auth.error ? html`
             <p class="message">
               <i class="ti ti-exclamation-circle"></i>
@@ -53,7 +55,7 @@ export default function LoginPage() {
               <label for="email">Email address<span aria-label="required">*</span></label>
               <input
                 ref="${emailRef}"
-                @change="${handleChange}"
+                on:change=${handleChange}
                 id="email"
                 name="email"
                 type="email"
@@ -66,7 +68,7 @@ export default function LoginPage() {
               <label for="password">Password<span aria-label="required">*</span></label>
               <input
                 ref="${passwordRef}"
-                @change="${handleChange}"
+                on:change=${handleChange}
                 id="password"
                 name="password"
                 type="password"
@@ -78,8 +80,8 @@ export default function LoginPage() {
             <p>* required</p>
             <input type="submit" value="Log in">
           </div>
-          <p>Forgot your password? <a @click="${doRoute}" href="/reset">Reset password</a></p>
-          <p>Don't have an account? <a @click="${doRoute}" href="/register">Create an account</a></p>
+          <p>Forgot your password? <a on:click=${doRoute} href="/reset">Reset password</a></p>
+          <p>Don't have an account? <a on:click=${doRoute} href="/register">Create an account</a></p>
         </form>
       </section>
     </login-page>

@@ -1,6 +1,8 @@
-import { global, ROUTES } from "../app.ts";
-import { html, useContext } from "../deps.ts";
+import { ROUTES } from "../app.ts";
+import { html, global, React } from "../deps.ts";
 import { GlobalContext } from "../types.ts";
+
+const { useContext } = React;
 
 export default function NavComponent() {
   const { routing, user, translation }: GlobalContext = useContext(global);
@@ -11,14 +13,14 @@ export default function NavComponent() {
     <nav-component>
       <ul class="menu-list">
         <li
-          @click="${() => setRoute('/')}"
+          on:click=${() => setRoute('/')}
           class="menu ${isActive(path, ROUTES.HOME) ? 'menu--active' : ''}"
         >
           <i class="ti ti-home"></i>
           <p>${translate('nav.menu.home')}</p>
         </li>
         <li
-          @click="${() => setRoute('/search')}"
+          on:click=${() => setRoute('/search')}
           class="menu ${isActive(path, ROUTES.SEARCH) ? 'menu--active' : ''}"
         >
           <i class="ti ti-search"></i>
@@ -28,13 +30,13 @@ export default function NavComponent() {
       ${user.pending ? '' : user.value == null ? html`
         <ul class="account-list">
           <li
-            @click="${() => setRoute('/register')}"
+            on:click=${() => setRoute('/register')}
             class="account ${isActive(path, ROUTES.REGISTER) ? 'account--active' : ''}"
           >
             <p>${translate('nav.account.register')}</p>
           </li>
           <li
-            @click="${() => setRoute('/login')}"
+            on:click=${() => setRoute('/login')}
             class="account ${isActive(path, ROUTES.LOGIN) ? 'account--active' : ''}"
           >
             <p>${translate('nav.account.login')}</p>
@@ -43,7 +45,7 @@ export default function NavComponent() {
       ` : html`
         <ul class="account-list">
           <li
-            @click="${() => setRoute('/profile')}"
+            on:click=${() => setRoute('/profile')}
             class="account ${isActive(path, ROUTES.PROFILE) ? 'account--active' : ''}"
           >
             <i class="ti ti-user"></i>

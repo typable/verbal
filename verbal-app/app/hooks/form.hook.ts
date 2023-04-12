@@ -1,5 +1,7 @@
-import { useEffect, useState } from "../deps.ts";
+import { React } from "../deps.ts";
 import { Callback, ChangeEvent, SetState } from "../types.ts";
+
+const { useState, useEffect } = React;
 
 export type UseForm<T> = Form<T>;
 

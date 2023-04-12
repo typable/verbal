@@ -1,5 +1,7 @@
-import { useRef, useEffect } from '../deps.ts';
+import { React } from '../deps.ts';
 import { Ref } from '../types.ts';
+
+const { useRef, useEffect } = React;
 
 export type UseInput<T> = (initial: T) => Ref<T>;
 

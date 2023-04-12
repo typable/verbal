@@ -1,7 +1,9 @@
-import { useEffect, useState } from '../deps.ts';
+import { React } from '../deps.ts';
 import TRANSLATION_EN from '../translations/en.translation.ts';
 import TRANSLATION_DE from '../translations/de.translation.ts';
 import { Option, SetState } from '../types.ts';
+
+const { useState, useEffect } = React;
 
 export type UseTranslate = (initial?: string) => Translate;
 

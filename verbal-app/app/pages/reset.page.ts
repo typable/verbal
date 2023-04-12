@@ -1,10 +1,12 @@
-import { ORIGIN, ENDPOINTS, global } from "../app.ts";
-import { html, useContext } from "../deps.ts";
+import { ORIGIN, ENDPOINTS } from "../app.ts";
+import { html, global, React } from "../deps.ts";
 import useFetch from "../hooks/fetch.hook.ts";
 import { UseFetch } from "../hooks/fetch.hook.ts";
 import useForm, { UseForm } from "../hooks/form.hook.ts";
 import useInput from "../hooks/input.hook.ts";
 import { GlobalContext, ResetForm } from "../types.ts";
+
+const { useContext } = React;
 
 export type Props = {
   code?: string;
@@ -28,7 +30,7 @@ export default function ResetPage(props: Props) {
   return html`
     <reset-page class="page">
       <section class="container slim-width">
-        <form @submit="${handleSubmit}" class="${reset.pending ? 'form--pending' : ''}">
+        <form on:submit=${handleSubmit} class="${reset.pending ? 'form--pending' : ''}">
           ${!reset.pending && reset.error ? html`
             <p class="message">${translate('form.' + reset.error?.message)}</p>
           ` : ''}
@@ -42,7 +44,7 @@ export default function ResetPage(props: Props) {
               <label for="password">Password<span aria-label="required">*</span></label>
               <input
                 ref="${passwordRef}"
-                @change="${handleChange}"
+                on:change=${handleChange}
                 id="password"
                 name="password"
                 type="password"
@@ -58,7 +60,7 @@ export default function ResetPage(props: Props) {
               <label for="confirmPassword">Confirm password<span aria-label="required">*</span></label>
               <input
                 ref="${confirmPasswordRef}"
-                @change="${handleChange}"
+                on:change=${handleChange}
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"

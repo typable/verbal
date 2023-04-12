@@ -1,9 +1,11 @@
-import { ORIGIN, ENDPOINTS, global } from "../app.ts";
-import { html, useContext } from "../deps.ts";
+import { ORIGIN, ENDPOINTS } from "../app.ts";
+import { html, global, React } from "../deps.ts";
 import useFetch, { UseFetch } from "../hooks/fetch.hook.ts";
 import { GlobalContext, SearchQuery, Station } from "../types.ts";
 import useForm, { UseForm } from "../hooks/form.hook.ts";
 import useInput from "../hooks/input.hook.ts";
+
+const { useContext } = React;
 
 export default function SearchPage() {
   const { routing }: GlobalContext = useContext(global);
@@ -23,10 +25,10 @@ export default function SearchPage() {
     <search-page class="page">
       <section class="container full-width">
         <h1>Search</h1>
-        <form @submit="${handleSubmit}">
+        <form on:submit=${handleSubmit}>
           <input
             ref="${nameRef}"
-            @change="${handleChange}"
+            on:change=${handleChange}
             name="name"
             type="text"
             value="${data.name}"
@@ -34,13 +36,13 @@ export default function SearchPage() {
             autocomplete="off"
           >
           <button type="submit">Search</button>
-          <button type="button" @click="${() => doReset()}">Reset</button>
+          <button type="button" on:click=${() => doReset()}>Reset</button>
         </form>
         <ul>
           ${search.pending ? 'Loading...' : search.value?.map((station) => html`
             <li>
               <p>${station.name}</p>
-              <a @click="${doRoute}" href="/station/${station.id}">View</a>
+              <a on:click=${doRoute} href="/station/${station.id}">View</a>
             </li>
           `)}
         </ul>

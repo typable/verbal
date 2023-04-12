@@ -1,8 +1,9 @@
-import { html, dyn, createContext, useEffect, useState } from './deps.ts';
+import { html, dyn, React } from './deps.ts';
 import { User, Endpoint, GlobalContext, Method, UseState, StationDetail } from './types.ts';
 import useFetch, { UseFetch } from "./hooks/fetch.hook.ts";
 import useRoute, { Routes, UseRoute } from "./hooks/route.hook.ts";
 import useTranslate from "./hooks/translate.hook.ts";
+
 import HomePage from './pages/home.page.ts';
 import LoginPage from './pages/login.page.ts';
 import ProfilePage from './pages/profile.page.ts';
@@ -11,11 +12,10 @@ import ResetPage from "./pages/reset.page.ts";
 import SearchPage from './pages/search.page.ts';
 import StationPage from "./pages/station.page.ts";
 import VerifyPage from "./pages/verify.page.ts";
-import NavComponent from "./components/nav.component.ts";
 import ErrorPage from "./pages/error.page.ts";
 import LogoutPage from "./pages/logout.page.ts";
 
-export const global = createContext({});
+const { useEffect, useState } = React;
 
 export const ORIGIN = window.location.origin;
 
@@ -76,14 +76,14 @@ export default function App() {
     station,
     setStation,
   }
-  
+
   return html`
-    ${dyn(global.Provider, { value: context })`
+    <ctx:global value=${context}>
       <section class="nav-container container full-width">
-        ${dyn(NavComponent)}
+        <app:nav></app:nav>
       </section>
       <main>
-        ${dyn(resolver)}
+        ${resolver}
       </main>
       <div class="player ${station != null ? 'player--active' : ''}">
         ${station != null ? html`
@@ -94,6 +94,6 @@ export default function App() {
           </audio>
         ` : ''}
       </div>
-    `}
+    </ctx:global>
   `;
 }

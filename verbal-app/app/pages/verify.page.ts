@@ -1,8 +1,10 @@
-import { ORIGIN, ENDPOINTS, global } from "../app.ts";
-import { html, useContext, useEffect } from "../deps.ts";
+import { ORIGIN, ENDPOINTS } from "../app.ts";
+import { html, global, React } from "../deps.ts";
 import useFetch from "../hooks/fetch.hook.ts";
 import { UseFetch } from "../hooks/fetch.hook.ts";
 import { GlobalContext } from "../types.ts";
+
+const { useContext, useEffect } = React;
 
 export type Props = {
   code: string;
@@ -25,7 +27,7 @@ export default function VerifyPage(props: Props) {
         ${verify.pending ? '' : verify.ok ? html`
           <div>
             <p>Your account has been verified.</p>
-            <a @click="${doRoute}" href="/login">Log in now</a>
+            <a on:click=${doRoute} href="/login">Log in now</a>
           </div>
         ` : ''}
       </section>

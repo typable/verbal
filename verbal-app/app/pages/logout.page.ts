@@ -1,7 +1,9 @@
-import { ENDPOINTS, global, ORIGIN } from "../app.ts";
-import { html, useContext, useEffect } from "../deps.ts";
+import { ENDPOINTS, ORIGIN } from "../app.ts";
+import { html, global, React } from "../deps.ts";
 import useFetch, { UseFetch } from "../hooks/fetch.hook.ts";
 import { GlobalContext } from "../types.ts";
+
+const { useContext, useEffect } = React;
 
 export default function LogoutPage() {
   const { routing, user }: GlobalContext = useContext(global);
@@ -30,7 +32,7 @@ export default function LogoutPage() {
       <section class="container slim-width">
         <h1>Log out</h1>
         <p>${logout.pending ? '' : logout.ok ? 'You\'ve been logged out.' : logout.error?.message}</p>
-        <p><a @click="${doRoute}" href="/">Back to home</a></p>
+        <p><a on:click=${doRoute} href="/">Back to home</a></p>
       </section>
     </logout-page>
   `;

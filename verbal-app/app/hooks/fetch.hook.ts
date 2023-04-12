@@ -1,5 +1,7 @@
-import { useState } from "../deps.ts";
+import { React } from "../deps.ts";
 import { Option, Endpoint, SetState, Method } from "../types.ts";
+
+const { useState } = React;
 
 export type UseFetch<T> = Fetch<T>;
 
